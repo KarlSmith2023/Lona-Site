@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#05080b"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="LONA"/>
+<meta name="format-detection" content="telephone=no"/>
+<title>LONA :: terminal</title>
+<style>
+/* ---------------------------------------------------------------- tokens */
+:root{
+  --bg:#05080b; --panel:#0a0f14; --panel2:#0d141b; --line:#18232e; --line2:#233240;
+  --ink:#d6e2ee; --dim:#7b8ea1; --faint:#4a5c6d;
+  --acc:#2de0a5; --acc2:#31a8ff; --warn:#f0a02a; --bad:#e8544a; --violet:#a78bfa;
+  --pos:#2de0a5; --neg:#e8544a;
+  --r:10px; --tap:44px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+body{padding-bottom:calc(64px + var(--safe-b))}
+a{color:var(--acc2);text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .dim{color:var(--dim)} .faint{color:var(--faint)}
+.warn{color:var(--warn)} .acc{color:var(--acc)} .acc2{color:var(--acc2)}
+
+/* ---------------------------------------------------------------- header */
+.top{position:sticky;top:0;z-index:60;background:rgba(5,8,11,.92);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:10px 14px;display:flex;align-items:center;gap:12px}
+.brand{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.06em}
+.brand i{color:var(--acc);font-style:normal}
+.brand b{color:var(--faint);font-weight:400}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none;
+  box-shadow:0 0 0 0 rgba(45,224,165,.6)}
+.dot.on{background:var(--acc);animation:pulse 2.4s infinite}
+.dot.err{background:var(--bad)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(45,224,165,.5)}
+  70%{box-shadow:0 0 0 7px rgba(45,224,165,0)}100%{box-shadow:0 0 0 0 rgba(45,224,165,0)}}
+.top .spacer{flex:1}
+.clock{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
+.iconbtn{width:var(--tap);height:36px;display:grid;place-items:center;border-radius:8px;
+  color:var(--dim);border:1px solid transparent}
+.iconbtn:hover{color:var(--ink);border-color:var(--line2);background:var(--panel)}
+
+/* ------------------------------------------------------ desktop tab rail */
+.rail{display:none}
+@media(min-width:900px){
+  body{padding-bottom:0}
+  .rail{display:flex;gap:2px;padding:0 14px;background:var(--bg);
+    border-bottom:1px solid var(--line);position:sticky;top:53px;z-index:55}
+  .rail button{padding:11px 18px;font-size:12.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent}
+  .rail button.on{color:var(--acc);border-bottom-color:var(--acc)}
+  .rail button:hover{color:var(--ink)}
+}
+
+/* ---------------------------------------------------- mobile bottom tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;
+  grid-template-columns:repeat(5,1fr);background:rgba(8,12,16,.96);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  padding-bottom:var(--safe-b)}
+.tabs button{height:56px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;color:var(--faint);font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase}
+.tabs button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.tabs button.on{color:var(--acc)}
+@media(min-width:900px){.tabs{display:none}}
+
+/* ---------------------------------------------------------------- layout */
+.wrap{max-width:1500px;margin:0 auto;padding:14px}
+.view{display:none} .view.on{display:block}
+.grid{display:grid;gap:12px;grid-template-columns:1fr;align-items:start}
+@media(min-width:900px){
+  .grid.g2{grid-template-columns:1fr 1fr}
+  .grid.g3{grid-template-columns:repeat(3,1fr)}
+  .grid.side{grid-template-columns:minmax(0,2fr) minmax(300px,1fr)}
+}
+.pnl{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden}
+.pnl>h2{margin:0;padding:11px 14px;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;font-weight:600}
+.pnl>h2 .car{color:var(--acc)}
+.pnl>h2 .tail{margin-left:auto;color:var(--faint);letter-spacing:.06em;
+  text-transform:none;font-weight:400;font-size:10.5px}
+.pad{padding:14px}
+.note{padding:10px 14px;border-top:1px solid var(--line);color:var(--dim);
+  font-size:12px;line-height:1.65;background:var(--panel2)}
+
+/* ------------------------------------------------------------- stat tiles */
+.tiles{display:grid;gap:8px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1200px){.tiles.six{grid-template-columns:repeat(6,1fr)}}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:11px 12px;min-width:0}
+.tile .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v{font-family:var(--mono);font-size:19px;margin-top:5px;letter-spacing:-.03em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .s{font-size:10.5px;color:var(--faint);margin-top:2px}
+@media(min-width:900px){.tile .v{font-size:22px}}
+
+/* ---------------------------------------------------------------- tables */
+.scroll{overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:right;padding:8px 12px;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);font-weight:600;
+  border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+  background:var(--panel)}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 12px;text-align:right;border-bottom:1px solid rgba(24,35,46,.55);
+  font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child{font-family:var(--sans);font-weight:500}
+tbody tr:hover{background:rgba(45,224,165,.035)}
+tbody tr:last-child td{border-bottom:none}
+tr.hl{background:rgba(45,224,165,.07)}
+
+/* ---------------------------------------------------------- mobile cards */
+.cards{display:grid;gap:8px;padding:10px;max-height:min(560px,64vh);overflow-y:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:11px 12px;display:grid;gap:7px}
+.card .row1{display:flex;align-items:baseline;gap:9px}
+.card .sym{font-weight:650;font-size:14.5px;letter-spacing:.01em}
+.card .px{margin-left:auto;font-family:var(--mono);font-size:14px}
+.card .row2{display:flex;flex-wrap:wrap;gap:5px 16px;font-size:11.5px;color:var(--dim)}
+.card .row2 b{font-family:var(--mono);font-weight:500;color:var(--ink)}
+@media(min-width:900px){.cards{display:none}}
+.desk{display:none}
+@media(min-width:900px){.desk{display:block}}
+
+/* ----------------------------------------------------------------- chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;
+  border-bottom:1px solid var(--line)}
+.chip{padding:6px 12px;border:1px solid var(--line2);border-radius:99px;
+  font-size:11.5px;color:var(--dim);letter-spacing:.03em;min-height:32px}
+.chip.on{border-color:var(--acc);color:var(--acc);background:rgba(45,224,165,.09)}
+.chip:hover{color:var(--ink)}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;font-family:var(--sans);font-weight:600}
+.badge.long{background:rgba(45,224,165,.14);color:var(--acc)}
+.badge.short{background:rgba(232,84,74,.14);color:var(--bad)}
+.badge.cash{background:rgba(123,142,161,.14);color:var(--dim)}
+.badge.new{background:rgba(240,160,42,.16);color:var(--warn)}
+
+/* ----------------------------------------------------------- form pieces */
+input,select{width:100%;background:var(--bg);border:1px solid var(--line2);
+  border-radius:8px;padding:11px 12px;color:var(--ink);font-family:var(--mono);
+  font-size:13px;min-height:var(--tap)}
+input:focus,select:focus{outline:none;border-color:var(--acc)}
+label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:6px}
+.field{margin-bottom:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:var(--tap);padding:0 18px;border-radius:9px;border:1px solid var(--line2);
+  background:var(--panel2);font-size:13px;font-weight:600;letter-spacing:.03em}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.primary{background:var(--acc);color:#04120c;border-color:var(--acc)}
+.btn.primary:hover{filter:brightness(1.1);color:#04120c}
+.btn.danger{border-color:rgba(232,84,74,.5);color:var(--bad)}
+.btn.danger:hover{background:rgba(232,84,74,.12)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btnrow{display:flex;gap:9px;flex-wrap:wrap}
+
+/* ---------------------------------------------------------------- alerts */
+.alert{border:1px solid var(--line2);border-left:3px solid var(--warn);
+  background:var(--panel);border-radius:var(--r);padding:13px 15px;margin-bottom:12px}
+.alert .t{font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--warn);font-weight:700;margin-bottom:7px}
+.alert .b{font-size:12.5px;line-height:1.7;color:var(--dim)}
+.alert .b b{color:var(--ink)}
+.alert.bad{border-left-color:var(--bad)} .alert.bad .t{color:var(--bad)}
+.alert.ok{border-left-color:var(--acc)} .alert.ok .t{color:var(--acc)}
+
+/* ----------------------------------------------------------------- misc */
+.bar{height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:99px;
+  transition:width .4s ease}
+.spark{width:100%;height:34px;display:block}
+.empty{padding:34px 16px;text-align:center;color:var(--faint);font-size:12.5px}
+.skel{background:linear-gradient(90deg,var(--panel2) 25%,#132030 50%,var(--panel2) 75%);
+  background-size:200% 100%;animation:sh 1.3s infinite;border-radius:5px;height:11px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;
+  border-bottom:1px solid rgba(24,35,46,.55);font-size:12.5px}
+.kv:last-child{border-bottom:none}
+.kv span{color:var(--dim)} .kv b{font-family:var(--mono);font-weight:500}
+.mono{font-family:var(--mono)}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:639px){
+  .hide-s{display:none}
+  /* iOS zooms the page when a focused field is under 16px. Nothing else on the
+     page is focusable, so this is the only place it can happen. */
+  input,select{font-size:16px}
+  th,td{padding:8px 9px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="dot" id="live"></span>
+  <span class="brand">LONA<b>://</b><i id="viewname">account</i></span>
+  <span class="spacer"></span>
+  <span class="clock" id="clock">--:--:-- UTC</span>
+  <button class="iconbtn" id="refresh" title="Refresh now" aria-label="Refresh">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.8" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7"/>
+      <path d="M21 4v5h-5"/></svg>
+  </button>
+</header>
+
+<nav class="rail">
+  <button data-go="account" class="on">Account</button>
+  <button data-go="markets">Markets</button>
+  <button data-go="signals">Signals</button>
+  <button data-go="research">Research</button>
+  <button data-go="risk">Risk &amp; execution</button>
+</nav>
+
+<div class="wrap">
+
+<!-- ============================================================== ACCOUNT -->
+<section class="view on" id="v-account">
+  <div id="acct-empty">
+    <div class="alert ok">
+      <div class="t">&#9679; Connect, read-only</div>
+      <div class="b">Paste your <b>public Hyperliquid address</b> below. It is a public
+      identifier &mdash; the same thing a block explorer shows &mdash; and it lets this
+      page read your balances, positions and funding directly from Hyperliquid.
+      <b>Never paste a private key or seed phrase into any web page, including this one.</b>
+      Nothing here can trade or withdraw; order placement lives in the LONA execution
+      service, which runs on your own machine and holds its key in an environment variable.</div>
+    </div>
+    <div class="pnl"><div class="pad">
+      <div class="field">
+        <label for="addr">Hyperliquid address</label>
+        <input id="addr" placeholder="0x…" spellcheck="false" autocomplete="off"/>
+      </div>
+      <div class="btnrow">
+        <button class="btn primary" id="connect">Connect</button>
+        <button class="btn" id="demo">Watch a live whale instead</button>
+      </div>
+      <div class="note" style="margin:13px -14px -14px;border-radius:0">
+        The address is kept in this page&rsquo;s URL, not in browser storage, so
+        bookmarking the page remembers it and closing the tab forgets it.
+      </div>
+    </div></div>
+  </div>
+
+  <div id="acct-body" style="display:none">
+    <div class="tiles six" id="acct-tiles"></div>
+
+    <div class="grid side" style="margin-top:12px">
+      <div class="pnl">
+        <h2><span class="car">&#9656;</span>open positions
+          <span class="tail" id="pos-count"></span></h2>
+        <div class="scroll desk"><table>
+          <thead><tr><th>market</th><th>side</th><th>size</th><th>entry</th>
+            <th>mark</th><th>liq.</th><th>lev</th><th>funding paid</th><th>unrealised</th>
+            <th>return</th></tr></thead>
+          <tbody id="pos-rows"></tbody></table></div>
+        <div class="cards" id="pos-cards"></div>
+      </div>
+
+      <div class="pnl">
+        <h2><span class="car">&#9656;</span>margin</h2>
+        <div class="pad" id="margin-body"></div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:12px">
+      <div class="pnl">
+        <h2><span class="car">&#9656;</span>recent fills<span class="tail">last 50</span></h2>
+        <div class="scroll" style="max-height:min(340px,52vh)"><table>
+          <thead><tr><th>time</th><th>market</th><th>side</th><th>size</th>
+            <th>price</th><th>fee</th><th>closed pnl</th></tr></thead>
+          <tbody id="fill-rows"></tbody></table></div>
+      </div>
+      <div class="pnl">
+        <h2><span class="car">&#9656;</span>funding paid and received
+          <span class="tail" id="fund-net"></span></h2>
+        <div class="scroll" style="max-height:min(340px,52vh)"><table>
+          <thead><tr><th>time</th><th>market</th><th>size held</th><th>rate</th>
+            <th>amount</th></tr></thead>
+          <tbody id="fund-rows"></tbody></table></div>
+        <div class="note">Positive amounts are funding you <b>received</b>. Finding 009
+        turns this column into the strategy: the average top-40 perp pays a long
+        <b>16.9% a year</b>, and a hedged short collects it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== MARKETS -->
+<section class="view" id="v-markets">
+  <div class="tiles six" id="mkt-tiles"></div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>hyperliquid perpetuals
+      <span class="tail" id="mkt-count"></span></h2>
+    <div class="chips" id="mkt-chips">
+      <button class="chip on" data-sort="vol">Volume</button>
+      <button class="chip" data-sort="chg">24h move</button>
+      <button class="chip" data-sort="fund">Funding</button>
+      <button class="chip" data-sort="oi">Open interest</button>
+      <button class="chip" data-sort="name">Name</button>
+      <button class="chip" data-filt="uni">Top 20 universe</button>
+      <button class="chip" data-filt="sig">Signal only</button>
+    </div>
+    <div class="scroll desk" style="max-height:72vh"><table>
+      <thead><tr><th>market</th><th>mark</th><th>24h</th><th>24h volume</th>
+        <th>open interest</th><th>funding /8h</th><th>annualised</th>
+        <th>max lev</th><th>LONA</th></tr></thead>
+      <tbody id="mkt-rows"></tbody></table></div>
+    <div class="cards" id="mkt-cards"></div>
+    <div class="note">Funding is quoted per hour on Hyperliquid, not per eight hours
+    like most venues &mdash; the 8h column here is the hourly rate multiplied by eight
+    so it can be compared with everywhere else. <b>Annualised</b> is the current
+    rate extrapolated forward, which is why a market in a short squeeze can read
+    &minus;3,000%: it is a snapshot of one hour, not a forecast of a year. The carry
+    book on the signals page ranks on the <b>trailing 7-day mean</b> for exactly that
+    reason.</div>
+  </div>
+</section>
+
+<!-- ============================================================== SIGNALS -->
+<section class="view" id="v-signals">
+  <div class="alert" id="sig-status">
+    <div class="t">&#9888; Computing from live candles</div>
+    <div class="b">Both books below are recomputed in this page from Hyperliquid&rsquo;s
+    own daily candles every time you load it. Nothing is cached and nothing is
+    pre-baked, so what you see is what the rules say right now.</div>
+  </div>
+
+  <div class="tiles" id="sig-tiles"></div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>finding 008 &middot; breakout momentum
+        <span class="tail">long only</span></h2>
+      <div class="scroll desk"><table>
+        <thead><tr><th>market</th><th>weight</th><th>close</th><th>50d high</th>
+          <th>days held</th><th>30d volume</th><th>carry cost</th></tr></thead>
+        <tbody id="sig8-rows"></tbody></table></div>
+      <div class="cards" id="sig8-cards"></div>
+      <div class="note">Rank the perps by trailing 30-day dollar volume, take the top 20.
+      Hold one for five days after it closes at a <b>new 50-day high</b>, at 1/20 of
+      capital each. Dividing by the size of the <b>universe</b> and not by the number of
+      signals is deliberate: it means a quiet market leaves you in cash instead of
+      putting the whole account into one coin.</div>
+    </div>
+
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>finding 009 &middot; hedged funding carry
+        <span class="tail">market neutral</span></h2>
+      <div class="scroll desk"><table>
+        <thead><tr><th>market</th><th>weight</th><th>7d mean</th><th>annualised</th>
+          <th>mark</th><th>spot leg</th></tr></thead>
+        <tbody id="sig9-rows"></tbody></table></div>
+      <div class="cards" id="sig9-cards"></div>
+      <div class="note">Short the ten richest funding payers on the perp and hold an
+      equal size on <b>spot</b>, so the price cancels and only the funding is kept.
+      <b>Unhedged this loses 62% a year</b> &mdash; the coins paying the most funding are
+      the ones going up hardest, so shorting them without the spot leg is shorting
+      momentum.</div>
+    </div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>near misses<span class="tail">how close is the
+      rest of the universe</span></h2>
+    <div class="scroll" style="max-height:min(320px,50vh)"><table>
+      <thead><tr><th>market</th><th>close</th><th>50-day high</th><th>gap to trigger</th>
+        <th class="hide-s">progress</th></tr></thead>
+      <tbody id="near-rows"></tbody></table></div>
+    <div class="note">A market at 100% is at a new high right now. This table is here so
+    a quiet signals page reads as <b>&ldquo;nothing qualified&rdquo;</b> rather than
+    &ldquo;something is broken&rdquo; &mdash; the rule is in cash about a third of all days
+    and that is the design, not a fault.</div>
+  </div>
+</section>
+<!-- ============================================================= RESEARCH -->
+<section class="view" id="v-research">
+  <div class="tiles six" id="res-tiles"></div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>the two candidates<span class="tail">2023-08-11
+        &rarr; 2026-08-10, after fees and funding</span></h2>
+      <div class="scroll"><table>
+        <thead><tr><th>strategy</th><th>CAGR</th><th>Sharpe</th><th>worst DD</th>
+          <th>Calmar</th><th>t</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>breakout + hedged carry</td><td class="pos">+49.5%</td>
+            <td class="pos">+2.03</td><td>&minus;11%</td><td>4.52</td><td>&mdash;</td></tr>
+          <tr><td>breakout (008)</td><td class="pos">+22.9%</td><td class="pos">+1.10</td>
+            <td>&minus;15%</td><td>1.51</td><td class="warn">+1.5</td></tr>
+          <tr><td>hedged carry (009)</td><td class="pos">+21.7%</td><td class="pos">+11.24</td>
+            <td>&minus;1%</td><td>30.5</td><td class="pos">+2.4</td></tr>
+          <tr><td>buy and hold BTC</td><td class="pos">+30.3%</td><td>+0.80</td>
+            <td class="neg">&minus;53%</td><td>0.57</td><td>+1.2</td></tr>
+          <tr><td>buy and hold the top-20 book</td><td class="neg">&minus;15.9%</td>
+            <td>+0.16</td><td class="neg">&minus;83%</td><td>&minus;0.19</td><td>+0.2</td></tr>
+        </tbody></table></div>
+      <div class="note">The <b>t</b> column is the Sharpe divided by its own standard
+      error, and that error depends on the number of <b>years</b>, not the number of
+      rows. Three years gives roughly &plusmn;0.7. <b>The breakout&rsquo;s 1.5 is a hint,
+      not a proof</b> &mdash; which is the entire reason the forward record exists.</div>
+    </div>
+
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>year by year<span class="tail">where the honesty
+        lives</span></h2>
+      <div class="scroll"><table>
+        <thead><tr><th>year</th><th>breakout</th><th>carry</th><th>both</th><th>BTC</th>
+          </tr></thead>
+        <tbody>
+          <tr><td>2023 <span class="faint">(part)</span></td><td class="pos">+38.6%</td>
+            <td class="pos">+22.1%</td><td class="pos">+171.7%</td><td class="pos">+52%</td></tr>
+          <tr><td>2024</td><td class="pos">+43.4%</td><td class="pos">+27.9%</td>
+            <td class="pos">+61.4%</td><td class="pos">+121%</td></tr>
+          <tr><td>2025</td><td class="pos">+13.3%</td><td class="pos">+24.8%</td>
+            <td class="pos">+5.3%</td><td class="neg">&minus;6%</td></tr>
+          <tr><td>2026 <span class="faint">(to Aug)</span></td><td class="pos">+0.4%</td>
+            <td class="pos">+11.6%</td><td class="neg">&minus;13.7%</td>
+            <td class="neg">&minus;26%</td></tr>
+        </tbody></table></div>
+      <div class="note">The breakout is a <b>bull-market engine with a cash brake</b>: it
+      earns close to nothing in a bear and loses very little. Nov 2025 &rarr; Aug 2026 it
+      returned &minus;3% at a &minus;8% drawdown while Bitcoin fell 48% with a &minus;43%
+      one. The carry is the flat income stream that does not care. Neither alone is a
+      business.</div>
+    </div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>what each rule survived</h2>
+    <div class="scroll" style="max-height:min(420px,60vh)"><table>
+      <thead><tr><th>attack</th><th>result</th><th>verdict</th></tr></thead>
+      <tbody>
+        <tr><td>parameter surface</td><td>31 of 32 cells positive &mdash; a region, not a
+          spike</td><td class="pos">survived</td></tr>
+        <tr><td>fees to 30 bps a side</td><td>positive; venue charges 4.5</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>actual hourly funding</td><td>costs 8.4 points of CAGR</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>adverse selection, measured</td><td>held coins pay +25.7% carry vs +16.9%
+          for the average</td><td class="pos">survived</td></tr>
+        <tr><td>delete the best 3 coins</td><td>Sharpe still +0.87</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>remove delisted names</td><td>they contribute &minus;0.3%</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>fill one day late</td><td>Sharpe +1.13 &nbsp;&middot;&nbsp; two days,
+          +0.42</td><td class="pos">survived</td></tr>
+        <tr class="hl"><td>broken-shift control</td><td>+427% a year, Sharpe 9.2 &mdash;
+          the look-ahead guard is load-bearing</td><td class="pos">survived</td></tr>
+        <tr><td>2020&ndash;2023, never fitted</td><td>Sharpe +1.55 to +1.73</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>carry: 7-day-stale data</td><td>+17.1% &mdash; funding is persistent</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>carry: drop the best month</td><td>+15.1% from what is left</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>carry: hedge leaks 25%</td><td>+16.9%, Sharpe +1.57</td>
+          <td class="pos">survived</td></tr>
+        <tr><td>short side: new 50-day LOW</td><td>&minus;9.5% a year</td>
+          <td class="neg">failed</td></tr>
+        <tr><td>funding filter on entries</td><td>non-monotonic &mdash; fitted noise</td>
+          <td class="neg">failed</td></tr>
+        <tr><td>carry at 50 bps a leg</td><td>&minus;17.5% a year</td>
+          <td class="neg">failed</td></tr>
+      </tbody></table></div>
+    <div class="note">The failures are listed on purpose. Long-only is correct here, and
+    unlike finding 006 we know that because <b>the short side was measured</b>, not
+    because it was never looked at.</div>
+  </div>
+
+  <div class="alert bad" style="margin-top:12px">
+    <div class="t">&#9888; What these numbers do not contain</div>
+    <div class="b"><b>Three years is one and a half cycles.</b> No amount of re-reading
+    the same history adds evidence.<br><br>
+    <b>A carry Sharpe of 11 is not a real Sharpe.</b> Carry income arrives in a trickle
+    and the loss arrives all at once, from something not in the sample: venue failure
+    (FTX paid excellent funding right up until it did not exist), a delisting while
+    short, a liquidation on a wick before the hedge can be topped up, a depeg of the
+    stablecoin that is 100% of the collateral. Volatility cannot see that shape.<br><br>
+    <b>The carry needs a second venue</b> for the spot leg &mdash; two sets of fees, two
+    sets of collateral, and transfer risk between them. Until that is measured, the
+    +21.7% is a ceiling.<br><br>
+    <b>This is research, not advice.</b> Every number here is a backtest. Losses are
+    possible and leverage makes them faster.</div>
+  </div>
+</section>
+
+<!-- ================================================== RISK AND EXECUTION -->
+<section class="view" id="v-risk">
+  <div class="alert bad">
+    <div class="t">&#9888; Read this before arming anything</div>
+    <div class="b">You have chosen to let LONA place orders through an agent wallet. My
+    honest read, once, and then I will help you do it properly: <b>the breakout&rsquo;s
+    t-statistic is 1.5</b>, which is below the bar this project set for itself, and the
+    forward record is eight days old. The carry is stronger statistically but its real
+    risks &mdash; venue, hedge, collateral &mdash; are exactly the ones three years of
+    data cannot show.<br><br>
+    If you go ahead anyway, the architecture below is what makes it survivable: an
+    <b>agent wallet that can trade but cannot withdraw and can be revoked in one click</b>,
+    a key that lives in an environment variable and never in the repo or this page,
+    <b>dry-run by default</b>, and hard limits that are checked in code before every
+    single order rather than remembered by a human.</div>
+  </div>
+
+  <div class="grid g2">
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>position sizing<span class="tail">what the
+        rules would actually send</span></h2>
+      <div class="pad">
+        <div class="field">
+          <label for="equity">Account equity (USDC)</label>
+          <input id="equity" class="num" value="10000" inputmode="decimal"/>
+        </div>
+        <div class="field">
+          <label for="lev">Notional multiplier &mdash; <span id="levout">1.0&times;</span></label>
+          <input id="lev" type="range" min="1" max="4" step="0.5" value="1"
+                 style="padding:0;min-height:34px"/>
+        </div>
+        <div class="kv"><span>Breakout book, deployed today</span><b id="sz-b">&mdash;</b></div>
+        <div class="kv"><span>Per breakout position</span><b id="sz-p">&mdash;</b></div>
+        <div class="kv"><span>Carry book, perp leg</span><b id="sz-c">&mdash;</b></div>
+        <div class="kv"><span>Carry book, spot leg required</span><b id="sz-s">&mdash;</b></div>
+        <div class="kv"><span>Total notional</span><b id="sz-t">&mdash;</b></div>
+        <div class="kv"><span>Backtested worst drawdown at this size</span>
+          <b id="sz-dd" class="warn">&mdash;</b></div>
+        <div class="kv"><span>Estimated round-trip cost per rebalance</span>
+          <b id="sz-fee">&mdash;</b></div>
+      </div>
+      <div class="note">The multiplier scales notional, not risk appetite. Sharpe does
+      not improve with leverage &mdash; only the drawdown grows. At <b>3&times;</b> the
+      backtested worst loss goes from &minus;11% to roughly &minus;36%, on three years
+      that contained no venue failure.</div>
+    </div>
+
+    <div class="pnl">
+      <h2><span class="car">&#9656;</span>hard limits<span class="tail">checked in code,
+        before every order</span></h2>
+      <div class="pad">
+        <div class="field"><label for="l-pos">Max single position, % of equity</label>
+          <input id="l-pos" class="num" value="10" inputmode="decimal"/></div>
+        <div class="field"><label for="l-gross">Max gross notional, % of equity</label>
+          <input id="l-gross" class="num" value="150" inputmode="decimal"/></div>
+        <div class="field"><label for="l-day">Daily loss kill switch, % of equity</label>
+          <input id="l-day" class="num" value="5" inputmode="decimal"/></div>
+        <div class="field"><label for="l-dd">Total drawdown kill switch, %</label>
+          <input id="l-dd" class="num" value="20" inputmode="decimal"/></div>
+        <div class="field"><label for="l-arm">Arm for</label>
+          <select id="l-arm">
+            <option value="0">Dry run &mdash; log the order, send nothing</option>
+            <option value="1">1 day, then disarm automatically</option>
+            <option value="7">7 days, then disarm automatically</option>
+            <option value="30">30 days, then disarm automatically</option>
+          </select></div>
+        <div class="btnrow">
+          <button class="btn" id="gen">Generate config</button>
+          <button class="btn danger" id="panic">Panic &mdash; flatten everything</button>
+        </div>
+      </div>
+      <div class="note">There is <b>no permanent arm option</b> and that is on purpose.
+      Every arming expires. A system that is on until someone remembers to turn it off is
+      a system that is on.</div>
+    </div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>execution service<span class="tail"
+      id="svc-state">not connected</span></h2>
+    <div class="pad" id="svc-body">
+      <p class="dim" style="margin-top:0;font-size:12.5px;line-height:1.7">
+        This page never holds a key and never signs anything. Orders are signed by
+        <b>Lona.Execution</b>, a small service that runs on your own machine, reads the
+        agent key from the <span class="mono acc">LONA_HL_AGENT_KEY</span> environment
+        variable, enforces every limit above <em>in code</em>, and exposes a local
+        endpoint this page can talk to on <span class="mono">127.0.0.1:7717</span>.
+        It is not built yet &mdash; it is the next thing I write, and it will ship with
+        its own test suite proving each limit blocks what it claims to block.</p>
+      <div class="kv"><span>Endpoint</span><b class="mono">http://127.0.0.1:7717</b></div>
+      <div class="kv"><span>Key source</span><b class="mono">env: LONA_HL_AGENT_KEY</b></div>
+      <div class="kv"><span>Wallet type</span><b>agent &mdash; trade yes, withdraw no</b></div>
+      <div class="kv"><span>Default mode</span><b class="acc">dry run</b></div>
+      <div class="kv"><span>Status</span><b id="svc-dot" class="dim">offline</b></div>
+      <div id="svc-json" style="display:none;margin-top:13px"></div>
+    </div>
+    <div class="note">To create the agent wallet: Hyperliquid &rarr; More &rarr; API, generate
+    one, and <b>revoke it from the same screen the moment anything looks wrong</b>. An
+    agent wallet cannot move funds off the exchange even if the key leaks &mdash; that is
+    the entire reason to use one.</div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<nav class="tabs">
+  <button data-go="account" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Account</button>
+  <button data-go="markets"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Markets</button>
+  <button data-go="signals"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 9v6M19 7v10"/></svg>Signals</button>
+  <button data-go="research"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.4-4.4"/></svg>Research</button>
+  <button data-go="risk"><svg viewBox="0 0 24 24"><path d="M12 3l8 3.6v5.2c0 4.6-3.3 8.4-8 9.2-4.7-.8-8-4.6-8-9.2V6.6z"/></svg>Risk</button>
+</nav>
+<script>
+"use strict";
+/* ===========================================================================
+   LONA terminal
+
+   Everything on this page is computed here, in the browser, from Hyperliquid's
+   own public endpoint. There is no LONA server, no cache and no pre-baked
+   number, which means the page cannot quietly show you a stale signal from a
+   run that happened yesterday.
+
+   It also means there is no key here. Reading an address is public; signing an
+   order is not, and signing lives in a service on your own machine.
+   =========================================================================== */
+
+const API = "https://api.hyperliquid.xyz/info";
+const REFRESH_MS = 20000;      // market data
+const SIGNAL_MS  = 15 * 60000; // candles change once a day; 15 min is generous
+
+const S = {                    // everything the page knows, in one place
+  view: "account",
+  addr: "",
+  meta: null, ctx: null,
+  trailFund: new Map(),        // coin -> {mean hourly rate over the last 7 days}
+  spot: new Set(),
+  candles: new Map(),          // coin -> [{t, c, v}]
+  universe20: [], universe40: [],
+  book8: [], book9: [], near: [],
+  account: null, fills: [], funding: [],
+  sort: "vol", filter: null,
+  lastSignal: 0,
+  error: null,
+};
+
+/* ------------------------------------------------------------------ utils */
+const $ = (id) => document.getElementById(id);
+const el = (t, c, h) => { const n = document.createElement(t);
+  if (c) n.className = c; if (h !== undefined) n.innerHTML = h; return n; };
+
+const n2 = (v, d = 2) => (v === null || v === undefined || !isFinite(v))
+  ? "&mdash;" : Number(v).toLocaleString("en-US",
+      { minimumFractionDigits: d, maximumFractionDigits: d });
+
+function money(v, d) {
+  if (v === null || v === undefined || !isFinite(v)) return "&mdash;";
+  const a = Math.abs(v);
+  if (d === undefined) d = a >= 1000 ? 0 : a >= 1 ? 2 : a >= 0.01 ? 4 : 6;
+  return "$" + n2(v, d);
+}
+function compact(v) {
+  if (!isFinite(v)) return "&mdash;";
+  const a = Math.abs(v);
+  if (a >= 1e9) return "$" + n2(v / 1e9, 2) + "B";
+  if (a >= 1e6) return "$" + n2(v / 1e6, 1) + "M";
+  if (a >= 1e3) return "$" + n2(v / 1e3, 0) + "K";
+  return "$" + n2(v, 0);
+}
+const pct = (v, d = 2) => (v === null || !isFinite(v))
+  ? "&mdash;" : (v >= 0 ? "+" : "") + n2(v * 100, d) + "%";
+const cls = (v) => v > 0 ? "pos" : v < 0 ? "neg" : "dim";
+const sgn = (v, d = 2) => `<span class="${cls(v)}">${pct(v, d)}</span>`;
+
+async function post(body, tries = 3) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(API, { method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body) });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return await r.json();
+    } catch (e) {
+      if (i === tries - 1) throw e;
+      await new Promise(z => setTimeout(z, 500 * (i + 1)));
+    }
+  }
+}
+
+/** Run `jobs` with a concurrency cap. The venue rate-limits hard above ~6. */
+async function pool(items, worker, limit = 6) {
+  const out = new Array(items.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const i = next++;
+      try { out[i] = await worker(items[i], i); } catch (e) { out[i] = null; }
+    }
+  }));
+  return out;
+}
+
+/* --------------------------------------------------------------- routing */
+function go(view) {
+  S.view = view;
+  document.querySelectorAll(".view").forEach(v =>
+    v.classList.toggle("on", v.id === "v-" + view));
+  document.querySelectorAll("[data-go]").forEach(b =>
+    b.classList.toggle("on", b.dataset.go === view));
+  $("viewname").textContent = view === "risk" ? "risk" : view;
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+document.querySelectorAll("[data-go]").forEach(b =>
+  b.addEventListener("click", () => go(b.dataset.go)));
+
+/* ---------------------------------------------------------- market data */
+async function loadMarkets() {
+  const [meta, ctx] = await post({ type: "metaAndAssetCtxs" });
+  S.meta = meta; S.ctx = ctx;
+  renderMarkets();
+  if (S.view === "signals" || !S.book8.length) { /* signals refresh separately */ }
+}
+
+async function loadSpot() {
+  try {
+    const s = await post({ type: "spotMeta" });
+    s.universe.forEach(p => {
+      const base = p.name.split("/")[0];
+      if (base) S.spot.add(base.replace(/^U/, ""));
+      S.spot.add(base);
+    });
+    (s.tokens || []).forEach(t => t.name && S.spot.add(t.name));
+  } catch (e) { /* spot availability is a nicety, not a dependency */ }
+}
+
+/** Markets, joined and sorted, as one array of plain objects. */
+function markets() {
+  if (!S.meta) return [];
+  return S.meta.universe.map((u, i) => {
+    const c = S.ctx[i] || {};
+    const mark = parseFloat(c.markPx || c.midPx || 0);
+    const prev = parseFloat(c.prevDayPx || 0);
+    const f = parseFloat(c.funding || 0);
+    return {
+      name: u.name,
+      delisted: !!u.isDelisted,
+      lev: u.maxLeverage,
+      mark,
+      chg: prev > 0 ? (mark - prev) / prev : 0,
+      vol: parseFloat(c.dayNtlVlm || 0),
+      oi: parseFloat(c.openInterest || 0) * mark,
+      fundHr: f,
+      fund8: f * 8,
+      fundYr: f * 24 * 365,
+    };
+  }).filter(m => !m.delisted && m.mark > 0);
+}
+
+function renderMarkets() {
+  const all = markets();
+  const t = $("mkt-tiles");
+  const totVol = all.reduce((a, m) => a + m.vol, 0);
+  const totOi = all.reduce((a, m) => a + m.oi, 0);
+  const up = all.filter(m => m.chg > 0).length;
+  const wf = all.filter(m => m.vol > 5e6);
+  const medF = wf.length
+    ? wf.map(m => m.fundYr).sort((a, b) => a - b)[Math.floor(wf.length / 2)] : 0;
+  const btc = all.find(m => m.name === "BTC");
+
+  t.innerHTML = "";
+  [["Bitcoin", btc ? money(btc.mark, 0) : "&mdash;",
+      btc ? `<span class="${cls(btc.chg)}">${pct(btc.chg)}</span> 24h` : ""],
+   ["24h volume", compact(totVol), all.length + " live markets"],
+   ["Open interest", compact(totOi), "across the venue"],
+   ["Breadth", up + " / " + all.length,
+      `<span class="${cls(up * 2 - all.length)}">${n2(up / all.length * 100, 0)}% up</span>`],
+  ].forEach(([k, v, s]) => {
+    const d = el("div", "tile");
+    d.appendChild(el("div", "k", k));
+    d.appendChild(el("div", "v", v));
+    d.appendChild(el("div", "s", s || ""));
+    t.appendChild(d);
+  });
+  [["Median funding", pct(medF, 1), "annualised, liquid markets", cls(medF)],
+   ["LONA universe", S.universe20.length ? String(S.universe20.length) : "—",
+      S.book8.length + " long &middot; " + S.book9.length + " carry", "acc"],
+  ].forEach(([k, v, sub, c]) => {
+    const d = el("div", "tile");
+    d.appendChild(el("div", "k", k));
+    d.appendChild(el("div", "v " + (c || ""), v));
+    d.appendChild(el("div", "s", sub));
+    t.appendChild(d);
+  });
+
+  let rows = all.slice();
+  if (S.filter === "uni") rows = rows.filter(m => S.universe20.includes(m.name));
+  if (S.filter === "sig") {
+    const on = new Set([...S.book8.map(b => b.coin), ...S.book9.map(b => b.coin)]);
+    rows = rows.filter(m => on.has(m.name));
+  }
+  const by = { vol: (a, b) => b.vol - a.vol, chg: (a, b) => b.chg - a.chg,
+    fund: (a, b) => b.fundYr - a.fundYr, oi: (a, b) => b.oi - a.oi,
+    name: (a, b) => a.name.localeCompare(b.name) };
+  rows.sort(by[S.sort]);
+
+  $("mkt-count").textContent = rows.length + " shown";
+  const long = new Set(S.book8.map(b => b.coin));
+  const short = new Set(S.book9.map(b => b.coin));
+  const tag = (m) => long.has(m.name)
+    ? '<span class="badge long">long</span>'
+    : short.has(m.name) ? '<span class="badge short">carry</span>'
+    : S.universe20.includes(m.name) ? '<span class="badge cash">universe</span>' : "";
+
+  $("mkt-rows").innerHTML = rows.slice(0, 240).map(m => `<tr>
+    <td>${m.name}</td>
+    <td>${money(m.mark)}</td>
+    <td class="${cls(m.chg)}">${pct(m.chg)}</td>
+    <td>${compact(m.vol)}</td>
+    <td>${compact(m.oi)}</td>
+    <td class="${cls(m.fund8)}">${pct(m.fund8, 3)}</td>
+    <td class="${cls(m.fundYr)}">${pct(m.fundYr, 1)}</td>
+    <td class="faint">${m.lev}&times;</td>
+    <td>${tag(m)}</td></tr>`).join("");
+
+  $("mkt-cards").innerHTML = rows.slice(0, 60).map(m => `<div class="card">
+    <div class="row1"><span class="sym">${m.name}</span>${tag(m)}
+      <span class="px">${money(m.mark)}</span></div>
+    <div class="row2">
+      <span>24h <b class="${cls(m.chg)}">${pct(m.chg)}</b></span>
+      <span>vol <b>${compact(m.vol)}</b></span>
+      <span>OI <b>${compact(m.oi)}</b></span>
+      <span>carry <b class="${cls(m.fundYr)}">${pct(m.fundYr, 1)}</b></span>
+    </div></div>`).join("");
+}
+
+document.querySelectorAll("#mkt-chips .chip").forEach(c =>
+  c.addEventListener("click", () => {
+    if (c.dataset.sort) {
+      S.sort = c.dataset.sort;
+      document.querySelectorAll("#mkt-chips [data-sort]").forEach(x =>
+        x.classList.toggle("on", x === c));
+    } else {
+      S.filter = S.filter === c.dataset.filt ? null : c.dataset.filt;
+      document.querySelectorAll("#mkt-chips [data-filt]").forEach(x =>
+        x.classList.toggle("on", x.dataset.filt === S.filter));
+    }
+    renderMarkets();
+  }));
+</script>
+<script>
+"use strict";
+/* ===========================================================================
+   THE SIGNAL ENGINE
+
+   This is the same arithmetic as the C# and the Python, written a third time.
+   Three independent implementations agreeing is the strongest verification
+   available without a fourth person, and the first two already agree to within
+   a tenth of a percent a year.
+
+   ONE HONEST DEVIATION, STATED HERE RATHER THAN BURIED
+   The backtest ranks the universe on trailing 30-day dollar volume across every
+   market. Fetching a full candle history for all 230 perpetuals from a phone
+   would be rude to the venue and slow for you. So this page shortlists on the
+   venue's own 24-hour volume figure, pulls candles for that shortlist, and then
+   applies the real 30-day ranking within it. A market outside the top 60 by
+   volume today has never been anywhere near the top 20 by trailing volume, so
+   the shortcut has no effect on the book - but it IS a shortcut, and you should
+   know it is there.
+   =========================================================================== */
+
+const SHORTLIST = 60;   // markets we pull candles for
+const UNIVERSE  = 20;   // finding 008 book size
+const CARRY_UNI = 40;   // finding 009 ranking pool
+const LOOKBACK  = 50;   // "new 50-day high"
+const HOLD      = 5;    // days held after a trigger
+const CARRY_N   = 10;   // carry positions
+
+async function loadSignals(force) {
+  if (!S.meta) return;
+  if (!force && Date.now() - S.lastSignal < SIGNAL_MS) return;
+
+  const all = markets().sort((a, b) => b.vol - a.vol);
+  const shortlist = all.slice(0, SHORTLIST).map(m => m.name);
+
+  const now = Date.now();
+  const from = now - 200 * 86400000;   // 200 days is plenty for a 50-day window
+  const got = await pool(shortlist, async (coin) => {
+    const c = await post({ type: "candleSnapshot",
+      req: { coin, interval: "1d", startTime: from, endTime: now } });
+    return { coin, bars: Array.isArray(c) ? c : [] };
+  }, 5);
+
+  got.forEach(g => { if (g && g.bars.length) S.candles.set(g.coin, g.bars); });
+
+  // The carry book is ranked on the TRAILING 7-DAY MEAN funding rate, not on
+  // the instantaneous one the ticker reports. That distinction is not cosmetic:
+  // Hyperliquid clamps the resting rate to 1.25 bps an hour, so on a calm day
+  // most of the venue reads exactly +11.0% annualised and a ranking on the spot
+  // rate is a ranking on ties. Pull the real history for the shortlist.
+  const week = now - 7.5 * 86400000;
+  const hist = await pool(shortlist.slice(0, CARRY_UNI + 10), async (coin) => {
+    const h = await post({ type: "fundingHistory", coin, startTime: week });
+    if (!Array.isArray(h) || !h.length) return null;
+    let sum = 0;
+    for (const r of h) sum += parseFloat(r.fundingRate);
+    return { coin, mean: sum / h.length, hours: h.length };
+  }, 5);
+  hist.forEach(x => { if (x) S.trailFund.set(x.coin, x); });
+
+  computeBooks(all);
+  S.lastSignal = Date.now();
+  try { renderSignals(); } catch (e) { S.error = "renderSignals: " + (e.stack || e); throw e; }
+  renderMarkets();
+  S.renders = (S.renders || 0) + 1;
+}
+
+/** Mean dollar volume over the trailing `days` bars, excluding today. */
+function trailingVolume(bars, days) {
+  const n = bars.length;
+  let total = 0, seen = 0;
+  for (let i = n - 2; i >= 0 && seen < days; i--) {
+    total += parseFloat(bars[i].c) * parseFloat(bars[i].v);
+    seen++;
+  }
+  return seen ? total / seen : 0;
+}
+
+/**
+ * How many days ago did this market last close STRICTLY above every close in
+ * the preceding `LOOKBACK - 1` days? Returns null if never within the window.
+ *
+ * Strictly above matters. A flat or pegged market is never below any earlier
+ * close, so a loose test makes it a permanent breakout - which is exactly how
+ * finding 004 ended up with a currency peg at the top of its leaderboard.
+ */
+function daysSinceNewHigh(bars) {
+  const close = bars.map(b => parseFloat(b.c));
+  const n = close.length;
+  for (let back = 0; back < HOLD; back++) {
+    const i = n - 1 - back;
+    if (i < LOOKBACK) break;
+    let highest = -Infinity;
+    for (let j = i - LOOKBACK + 1; j < i; j++) highest = Math.max(highest, close[j]);
+    if (close[i] > highest) return back;
+  }
+  return null;
+}
+
+/** How close is this market to triggering, as a fraction of its own 50d high? */
+function progress(bars) {
+  const close = bars.map(b => parseFloat(b.c));
+  const n = close.length;
+  if (n < LOOKBACK + 1) return null;
+  let highest = -Infinity;
+  for (let j = n - LOOKBACK; j < n - 1; j++) highest = Math.max(highest, close[j]);
+  const last = close[n - 1];
+  return { last, high: highest, ratio: last / highest };
+}
+
+function computeBooks(all) {
+  const ranked = [];
+  for (const m of all) {
+    const bars = S.candles.get(m.name);
+    if (!bars || bars.length < LOOKBACK + 10) continue;
+    const v30 = trailingVolume(bars, 30);
+    if (v30 > 0) ranked.push({ ...m, bars, v30 });
+  }
+  ranked.sort((a, b) => b.v30 - a.v30);
+
+  const uni20 = ranked.slice(0, UNIVERSE);
+  const uni40 = ranked.slice(0, CARRY_UNI);
+  S.universe20 = uni20.map(m => m.name);
+  S.universe40 = uni40.map(m => m.name);
+
+  // ---- finding 008
+  const w = 1 / UNIVERSE;
+  S.book8 = [];
+  S.near = [];
+  for (const m of uni20) {
+    const since = daysSinceNewHigh(m.bars);
+    const p = progress(m.bars);
+    if (since !== null) {
+      S.book8.push({ coin: m.name, weight: w, close: p ? p.last : m.mark,
+        high: p ? p.high : null, held: since + 1, v30: m.v30, fundYr: m.fundYr });
+    } else if (p) {
+      S.near.push({ coin: m.name, ...p });
+    }
+  }
+  S.book8.sort((a, b) => a.held - b.held || b.v30 - a.v30);
+  S.near.sort((a, b) => b.ratio - a.ratio);
+
+  // ---- finding 009
+  const withHist = uni40.map(m => {
+    const h = S.trailFund.get(m.name);
+    return { ...m, trailHr: h ? h.mean : null, hours: h ? h.hours : 0 };
+  }).filter(m => m.trailHr !== null && m.trailHr > 0);
+
+  withHist.sort((a, b) => b.trailHr - a.trailHr);
+  S.book9 = withHist.slice(0, CARRY_N).map(m => ({
+    coin: m.name, weight: -1 / CARRY_N,
+    trail7d: m.trailHr * 24 * 7,
+    trailYr: m.trailHr * 24 * 365,
+    spotRate: m.fundYr,
+    mark: m.mark, spot: S.spot.has(m.name), hours: m.hours,
+  }));
+  S.carryStale = withHist.length < CARRY_N;
+}
+
+function renderSignals() {
+  const deployed = S.book8.reduce((a, b) => a + b.weight, 0);
+  const carryYr = S.book9.length
+    ? S.book9.reduce((a, b) => a + b.trailYr, 0) / S.book9.length : 0;
+
+  const t = $("sig-tiles"); t.innerHTML = "";
+  [["Breakout deployed", pct(deployed, 0).replace("+", ""),
+      S.book8.length + " of " + UNIVERSE + " names", deployed > 0 ? "acc" : "dim"],
+   ["Cash", pct(1 - deployed, 0).replace("+", ""), "not at risk", ""],
+   ["Carry legs", String(S.book9.length), "shorts, spot-hedged", "acc2"],
+   ["Carry yield", pct(carryYr, 1), "average of the book, annualised",
+      carryYr > 0 ? "pos" : "neg"],
+  ].forEach(([k, v, s, c]) => {
+    const d = el("div", "tile");
+    d.appendChild(el("div", "k", k));
+    d.appendChild(el("div", "v " + (c || ""), v));
+    d.appendChild(el("div", "s", s));
+    t.appendChild(d);
+  });
+
+  // ---- 008 table + cards
+  if (!S.book8.length) {
+    $("sig8-rows").innerHTML =
+      `<tr><td colspan="7" class="empty">No market in the top 20 is at a new
+       50-day high. <b>The correct book today is 100% cash.</b></td></tr>`;
+    $("sig8-cards").innerHTML =
+      `<div class="empty">No breakout. The correct book today is <b>100% cash</b>.</div>`;
+  } else {
+    $("sig8-rows").innerHTML = S.book8.map(b => `<tr>
+      <td>${b.coin} ${b.held === 1 ? '<span class="badge new">new</span>' : ""}</td>
+      <td class="pos">${n2(b.weight * 100, 1)}%</td>
+      <td>${money(b.close)}</td>
+      <td>${money(b.high)}</td>
+      <td>${b.held} / ${HOLD}</td>
+      <td>${compact(b.v30)}</td>
+      <td class="${cls(-b.fundYr)}">${pct(b.fundYr, 1)}</td></tr>`).join("");
+    $("sig8-cards").innerHTML = S.book8.map(b => `<div class="card">
+      <div class="row1"><span class="sym">${b.coin}</span>
+        <span class="badge long">long ${n2(b.weight * 100, 1)}%</span>
+        <span class="px">${money(b.close)}</span></div>
+      <div class="row2"><span>day <b>${b.held}/${HOLD}</b></span>
+        <span>50d high <b>${money(b.high)}</b></span>
+        <span>carry <b class="${cls(-b.fundYr)}">${pct(b.fundYr, 1)}</b></span></div>
+      </div>`).join("");
+  }
+
+  // ---- 009 table + cards
+  const spotTag = (s) => s
+    ? '<span class="pos">HL spot</span>'
+    : '<span class="warn">off-venue</span>';
+  $("sig9-rows").innerHTML = S.book9.map(b => `<tr>
+    <td>${b.coin}</td>
+    <td class="neg">${n2(b.weight * 100, 1)}%</td>
+    <td class="pos">${pct(b.trail7d, 3)}</td>
+    <td class="pos">${pct(b.trailYr, 1)}</td>
+    <td>${money(b.mark)}</td>
+    <td>${spotTag(b.spot)}</td></tr>`).join("")
+    || `<tr><td colspan="6" class="empty">Nothing in the top 40 is paying positive
+        funding. <b>The carry book is flat.</b></td></tr>`;
+  $("sig9-cards").innerHTML = S.book9.map(b => `<div class="card">
+    <div class="row1"><span class="sym">${b.coin}</span>
+      <span class="badge short">short ${n2(Math.abs(b.weight) * 100, 1)}%</span>
+      <span class="px">${money(b.mark)}</span></div>
+    <div class="row2"><span>7d carry <b class="pos">${pct(b.trailYr, 1)}</b></span>
+      <span>now <b class="${cls(b.spotRate)}">${pct(b.spotRate, 1)}</b></span>
+      <span>spot leg <b>${b.spot ? "on HL" : "off-venue"}</b></span></div>
+    </div>`).join("")
+    || `<div class="empty">Nothing is paying positive funding. The carry book is flat.</div>`;
+
+  // ---- near misses
+  $("near-rows").innerHTML = S.near.slice(0, 20).map(m => {
+    const gap = (m.high - m.last) / m.last;
+    const w = Math.max(0, Math.min(100, m.ratio * 100));
+    return `<tr><td>${m.coin}</td><td>${money(m.last)}</td><td>${money(m.high)}</td>
+      <td class="${gap < 0.03 ? "warn" : "dim"}">${pct(gap, 1)}</td>
+      <td class="hide-s" style="width:150px"><div class="bar"><i style="width:${w}%"></i></div></td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="empty">Every name in the universe is
+      already in the book.</td></tr>`;
+
+  const st = $("sig-status");
+  st.className = "alert " + (S.book8.length ? "ok" : "");
+  st.querySelector(".t").innerHTML = S.book8.length
+    ? "&#9679; " + S.book8.length + " breakout" + (S.book8.length > 1 ? "s" : "")
+      + " live &middot; " + S.book9.length + " carry legs"
+    : "&#9679; No breakout today &middot; " + S.book9.length + " carry legs";
+  st.querySelector(".b").innerHTML =
+    `Both books are recomputed here from Hyperliquid&rsquo;s own daily candles, on every
+     load. Nothing is cached and nothing is pre-baked.
+     <b>Last computed ${new Date(S.lastSignal || Date.now()).toUTCString().slice(17, 25)} UTC.</b>
+     The rules place no orders from this page.`;
+  sizeBook();
+}
+</script>
+<script>
+"use strict";
+/* ===========================================================================
+   ACCOUNT, SIZING, AND THE EXECUTION SERVICE HANDSHAKE
+   =========================================================================== */
+
+function setAddr(a) {
+  S.addr = (a || "").trim();
+  if (S.addr) location.hash = S.addr;
+  $("acct-empty").style.display = S.addr ? "none" : "";
+  $("acct-body").style.display = S.addr ? "" : "none";
+  if (S.addr) loadAccount();
+}
+
+$("connect").addEventListener("click", () => {
+  const v = $("addr").value.trim();
+  if (!/^0x[0-9a-fA-F]{40}$/.test(v)) {
+    // A 66-character string is a private key, not an address. Say so loudly
+    // rather than sending it anywhere.
+    $("addr").style.borderColor = "var(--bad)";
+    $("addr").value = "";
+    $("addr").placeholder = v.length > 50
+      ? "That looks like a PRIVATE KEY. Never paste one here."
+      : "An address is 0x followed by 40 hex characters";
+    return;
+  }
+  setAddr(v);
+  go("account");
+});
+$("demo").addEventListener("click", () =>
+  setAddr("0x31ca8395cf837de08b24da3f660e77761dfb974b"));
+
+async function loadAccount() {
+  if (!S.addr) return;
+  try {
+    const [state, fills, funding] = await Promise.all([
+      post({ type: "clearinghouseState", user: S.addr }),
+      post({ type: "userFills", user: S.addr }),
+      post({ type: "userFunding", user: S.addr,
+        startTime: Date.now() - 30 * 86400000 }),
+    ]);
+    S.account = state;
+    S.fills = Array.isArray(fills) ? fills : [];
+    S.funding = Array.isArray(funding) ? funding : [];
+    renderAccount();
+  } catch (e) {
+    $("acct-tiles").innerHTML =
+      `<div class="tile" style="grid-column:1/-1"><div class="k">Error</div>
+       <div class="v neg" style="font-size:14px">${e.message}</div>
+       <div class="s">Could not reach Hyperliquid for this address.</div></div>`;
+  }
+}
+
+function renderAccount() {
+  const a = S.account;
+  if (!a) return;
+  const m = a.marginSummary || {};
+  const value = parseFloat(m.accountValue || 0);
+  const ntl = parseFloat(m.totalNtlPos || 0);
+  const used = parseFloat(m.totalMarginUsed || 0);
+  const free = parseFloat(a.withdrawable || 0);
+  const pos = (a.assetPositions || []).map(p => p.position).filter(Boolean);
+  const upnl = pos.reduce((s, p) => s + parseFloat(p.unrealizedPnl || 0), 0);
+  const fundNet = S.funding.reduce((s, f) =>
+    s - parseFloat((f.delta && f.delta.usdc) || 0), 0);
+
+  const t = $("acct-tiles"); t.innerHTML = "";
+  [["Account value", money(value, 2), S.addr.slice(0, 6) + "…" + S.addr.slice(-4), ""],
+   ["Unrealised", money(upnl, 2), pos.length + " open", cls(upnl)],
+   ["Notional", money(ntl, 0), ntl > 0 ? n2(ntl / Math.max(value, 1e-9), 2) + "× equity" : "flat", ""],
+   ["Margin used", money(used, 2), value > 0 ? n2(used / value * 100, 1) + "% of equity" : "", ""],
+   ["Withdrawable", money(free, 2), "free collateral", ""],
+   ["Funding, 30d", money(fundNet, 2), fundNet >= 0 ? "received" : "paid", cls(fundNet)],
+  ].forEach(([k, v, s, c]) => {
+    const d = el("div", "tile");
+    d.appendChild(el("div", "k", k));
+    d.appendChild(el("div", "v " + (c || ""), v));
+    d.appendChild(el("div", "s", s));
+    t.appendChild(d);
+  });
+
+  $("pos-count").textContent = pos.length ? pos.length + " open" : "flat";
+  const paidBy = {};
+  S.funding.forEach(f => {
+    const c = f.delta && f.delta.coin;
+    if (c) paidBy[c] = (paidBy[c] || 0) - parseFloat(f.delta.usdc || 0);
+  });
+
+  if (!pos.length) {
+    $("pos-rows").innerHTML =
+      `<tr><td colspan="10" class="empty">No open positions.</td></tr>`;
+    $("pos-cards").innerHTML = `<div class="empty">No open positions.</div>`;
+  } else {
+    $("pos-rows").innerHTML = pos.map(p => {
+      const sz = parseFloat(p.szi);
+      const entry = parseFloat(p.entryPx || 0);
+      const mk = markets().find(x => x.name === p.coin);
+      const mark = mk ? mk.mark : entry;
+      const pnl = parseFloat(p.unrealizedPnl || 0);
+      const roe = parseFloat(p.returnOnEquity || 0);
+      const lev = p.leverage ? p.leverage.value : "";
+      const fd = paidBy[p.coin] || 0;
+      return `<tr>
+        <td>${p.coin}</td>
+        <td><span class="badge ${sz > 0 ? "long" : "short"}">${sz > 0 ? "long" : "short"}</span></td>
+        <td>${n2(Math.abs(sz), 4)}</td>
+        <td>${money(entry)}</td>
+        <td>${money(mark)}</td>
+        <td class="faint">${p.liquidationPx ? money(parseFloat(p.liquidationPx)) : "&mdash;"}</td>
+        <td class="faint">${lev}&times;</td>
+        <td class="${cls(fd)}">${money(fd, 2)}</td>
+        <td class="${cls(pnl)}">${money(pnl, 2)}</td>
+        <td class="${cls(roe)}">${pct(roe)}</td></tr>`;
+    }).join("");
+    $("pos-cards").innerHTML = pos.map(p => {
+      const sz = parseFloat(p.szi);
+      const pnl = parseFloat(p.unrealizedPnl || 0);
+      const roe = parseFloat(p.returnOnEquity || 0);
+      return `<div class="card">
+        <div class="row1"><span class="sym">${p.coin}</span>
+          <span class="badge ${sz > 0 ? "long" : "short"}">${sz > 0 ? "long" : "short"}</span>
+          <span class="px ${cls(pnl)}">${money(pnl, 2)}</span></div>
+        <div class="row2"><span>size <b>${n2(Math.abs(sz), 4)}</b></span>
+          <span>entry <b>${money(parseFloat(p.entryPx || 0))}</b></span>
+          <span>return <b class="${cls(roe)}">${pct(roe)}</b></span>
+          <span>liq <b>${p.liquidationPx ? money(parseFloat(p.liquidationPx)) : "—"}</b></span>
+        </div></div>`;
+    }).join("");
+  }
+
+  const ratio = value > 0 ? used / value : 0;
+  $("margin-body").innerHTML = `
+    <div class="kv"><span>Equity</span><b>${money(value, 2)}</b></div>
+    <div class="kv"><span>Margin used</span><b>${money(used, 2)}</b></div>
+    <div class="kv"><span>Maintenance</span><b>${money(parseFloat(a.crossMaintenanceMarginUsed || 0), 2)}</b></div>
+    <div class="kv"><span>Free collateral</span><b>${money(free, 2)}</b></div>
+    <div style="margin-top:13px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;
+           color:var(--dim);margin-bottom:6px">
+        <span>margin utilisation</span><b class="num ${ratio > .6 ? "neg" : ratio > .3 ? "warn" : "pos"}">${n2(ratio * 100, 1)}%</b></div>
+      <div class="bar"><i style="width:${Math.min(100, ratio * 100)}%;
+        background:${ratio > .6 ? "var(--bad)" : ratio > .3 ? "var(--warn)" : "var(--acc)"}"></i></div>
+    </div>
+    <div class="note" style="margin:14px -14px -14px;border-radius:0">
+      Neither candidate strategy needs high utilisation. The breakout deploys about
+      <b>16%</b> of the account on an average day and the carry is hedged, so a reading
+      above 60% means something other than these rules is driving the account.
+    </div>`;
+
+  $("fill-rows").innerHTML = S.fills.slice(0, 50).map(f => `<tr>
+    <td class="faint">${new Date(f.time).toISOString().slice(5, 16).replace("T", " ")}</td>
+    <td>${f.coin}</td>
+    <td><span class="badge ${f.side === "B" ? "long" : "short"}">${f.side === "B" ? "buy" : "sell"}</span></td>
+    <td>${n2(parseFloat(f.sz), 4)}</td>
+    <td>${money(parseFloat(f.px))}</td>
+    <td class="faint">${money(parseFloat(f.fee || 0), 4)}</td>
+    <td class="${cls(parseFloat(f.closedPnl || 0))}">${money(parseFloat(f.closedPnl || 0), 2)}</td>
+    </tr>`).join("") || `<tr><td colspan="7" class="empty">No fills.</td></tr>`;
+
+  $("fund-net").innerHTML = "30d net " +
+    `<span class="${cls(fundNet)}">${money(fundNet, 2)}</span>`;
+  $("fund-rows").innerHTML = S.funding.slice(0, 80).map(f => {
+    const d = f.delta || {};
+    const amt = -parseFloat(d.usdc || 0);
+    return `<tr>
+      <td class="faint">${new Date(f.time).toISOString().slice(5, 16).replace("T", " ")}</td>
+      <td>${d.coin || ""}</td>
+      <td>${n2(parseFloat(d.szi || 0), 4)}</td>
+      <td class="faint">${pct(parseFloat(d.fundingRate || 0), 4)}</td>
+      <td class="${cls(amt)}">${money(amt, 4)}</td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="empty">No funding in the last 30 days.</td></tr>`;
+}
+
+/* ------------------------------------------------------------ sizing */
+function sizeBook() {
+  const eq = parseFloat($("equity").value) || 0;
+  const lev = parseFloat($("lev").value) || 1;
+  $("levout").textContent = n2(lev, 1) + "×";
+
+  const dep = S.book8.reduce((a, b) => a + b.weight, 0) * eq * lev;
+  const per = S.book8.length ? dep / S.book8.length : 0;
+  const carry = S.book9.length ? eq * lev : 0;
+  const total = dep + carry * 2;
+
+  $("sz-b").innerHTML = money(dep, 0) + ` <span class="faint">(${S.book8.length} names)</span>`;
+  $("sz-p").innerHTML = money(per, 0);
+  $("sz-c").innerHTML = money(carry, 0) + ` <span class="faint">short</span>`;
+  $("sz-s").innerHTML = money(carry, 0) + ` <span class="faint">long spot</span>`;
+  $("sz-t").innerHTML = money(total, 0) +
+    (eq > 0 ? ` <span class="faint">(${n2(total / eq, 2)}× equity)</span>` : "");
+  $("sz-dd").innerHTML = "&minus;" + n2(11 * lev, 0) + "%";
+  // 4.5 bps taker on the perp legs, 10 bps assumed on the spot leg.
+  $("sz-fee").innerHTML = money(dep * 0.00045 + carry * (0.00045 + 0.0010), 2);
+}
+["equity", "lev"].forEach(id => $(id).addEventListener("input", sizeBook));
+
+$("gen").addEventListener("click", () => {
+  const cfg = {
+    version: 1,
+    generatedUtc: new Date().toISOString(),
+    venue: "hyperliquid",
+    walletType: "agent",
+    keySource: "env:LONA_HL_AGENT_KEY",
+    mode: $("l-arm").value === "0" ? "dryRun" : "live",
+    armedForDays: Number($("l-arm").value),
+    equityUsdc: Number($("equity").value) || 0,
+    notionalMultiplier: Number($("lev").value) || 1,
+    limits: {
+      maxSinglePositionPctEquity: Number($("l-pos").value),
+      maxGrossNotionalPctEquity: Number($("l-gross").value),
+      dailyLossKillPctEquity: Number($("l-day").value),
+      totalDrawdownKillPct: Number($("l-dd").value),
+    },
+    strategies: {
+      breakout008: { universe: UNIVERSE, lookback: LOOKBACK, holdDays: HOLD,
+        weightPerName: 1 / UNIVERSE, side: "long" },
+      carry009: { rankPool: CARRY_UNI, positions: CARRY_N, rebalanceDays: 30,
+        side: "shortPerpLongSpot", requiresSpotLeg: true },
+    },
+  };
+  const box = $("svc-json");
+  box.style.display = "";
+  box.innerHTML = `<label>lona-execution.json &mdash; save next to the service</label>
+    <pre class="mono" style="background:var(--bg);border:1px solid var(--line2);
+      border-radius:8px;padding:13px;overflow-x:auto;font-size:11.5px;
+      line-height:1.6;margin:0">${JSON.stringify(cfg, null, 2)}</pre>`;
+  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+$("panic").addEventListener("click", () => {
+  const b = $("panic");
+  b.textContent = "Nothing to flatten — no execution service is connected";
+  b.disabled = true;
+  setTimeout(() => { b.textContent = "Panic — flatten everything"; b.disabled = false; }, 3200);
+});
+
+/* ------------------------------------------------------------ research */
+function renderResearch() {
+  const t = $("res-tiles"); t.innerHTML = "";
+  [["Universe", "232", "perps, 55 delisted", "acc"],
+   ["Funding records", "1.92M", "hourly, 156 markets", "acc2"],
+   ["Backtest span", "1,096d", "2023-08 → 2026-08", ""],
+   ["Candidates", "2", "of 9 findings", "acc"],
+   ["Forward record", "live", "appended daily, never revised", "warn"],
+   ["Orders placed", "0", "and that is deliberate", "dim"],
+  ].forEach(([k, v, s, c]) => {
+    const d = el("div", "tile");
+    d.appendChild(el("div", "k", k));
+    d.appendChild(el("div", "v " + (c || ""), v));
+    d.appendChild(el("div", "s", s));
+    t.appendChild(d);
+  });
+}
+
+/* ------------------------------------------------------------- lifecycle */
+function tickClock() {
+  $("clock").textContent = new Date().toISOString().slice(11, 19) + " UTC";
+}
+
+async function boot() {
+  tickClock();
+  setInterval(tickClock, 1000);
+  renderResearch();
+
+  const hash = location.hash.replace("#", "").trim();
+  if (/^0x[0-9a-fA-F]{40}$/.test(hash)) { $("addr").value = hash; setAddr(hash); }
+
+  try {
+    $("live").className = "dot";
+    await Promise.all([loadMarkets(), loadSpot()]);
+    $("live").className = "dot on";
+    await loadSignals(true);
+  } catch (e) {
+    S.error = "boot: " + (e.stack || e);
+    $("live").className = "dot err";
+    $("sig-status").className = "alert bad";
+    $("sig-status").querySelector(".t").innerHTML = "&#9888; Hyperliquid unreachable";
+    $("sig-status").querySelector(".b").innerHTML =
+      `<b>${e.message}</b>. Nothing on this page is cached, so rather than show you a
+       stale book it shows you nothing. Pull to refresh, or press the refresh button.`;
+  }
+
+  setInterval(async () => {
+    try {
+      await loadMarkets();
+      if (S.addr) loadAccount();
+      await loadSignals(false);
+      $("live").className = "dot on";
+    } catch (e) { $("live").className = "dot err"; }
+  }, REFRESH_MS);
+}
+
+$("refresh").addEventListener("click", async () => {
+  $("live").className = "dot";
+  try {
+    await loadMarkets();
+    await loadSignals(true);
+    if (S.addr) await loadAccount();
+    $("live").className = "dot on";
+  } catch (e) { $("live").className = "dot err"; }
+});
+
+boot();
+</script>
+</body>
+</html>
