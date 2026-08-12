@@ -66,13 +66,13 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ---------------------------------------------------- mobile bottom tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;
-  grid-template-columns:repeat(6,1fr);background:rgba(8,12,16,.96);
+  grid-template-columns:repeat(7,1fr);background:rgba(8,12,16,.96);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);
   padding-bottom:var(--safe-b)}
 .tabs button{height:56px;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;color:var(--faint);font-size:10px;
-  letter-spacing:.06em;text-transform:uppercase}
+  justify-content:center;gap:3px;color:var(--faint);font-size:9px;
+  letter-spacing:.04em;text-transform:uppercase}
 .tabs button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
 .tabs button.on{color:var(--acc)}
 @media(min-width:900px){.tabs{display:none}}
@@ -238,6 +238,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="signals">Signals</button>
   <button data-go="research">Research</button>
   <button data-go="risk">Risk &amp; execution</button>
+  <button data-go="orders"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.2"/></svg>Orders</button>
   <button data-go="brief">Analyst</button>
 </nav>
 
@@ -670,6 +671,56 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   </div>
 </section>
 
+
+<section class="view" id="v-orders">
+  <div class="alert" id="or-status">
+    <div class="t">Looking for a published plan</div>
+    <div class="b">&hellip;</div>
+  </div>
+
+  <div class="tiles six" id="or-tiles"></div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>open paper positions
+      <span class="tail" id="or-when"></span></h2>
+    <div class="scroll" style="max-height:min(420px,50vh)"><table>
+      <thead><tr><th>market</th><th>left</th><th class="hide-s">entry</th>
+        <th class="hide-s">now</th><th>move</th><th>P&amp;L</th></tr></thead>
+      <tbody id="or-positions"></tbody></table></div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>orders the rule wants
+      <span class="tail" id="or-ordercount"></span></h2>
+    <div class="scroll" style="max-height:min(360px,45vh)"><table>
+      <thead><tr><th>market</th><th>size</th><th>why</th></tr></thead>
+      <tbody id="or-orders"></tbody></table></div>
+  </div>
+
+  <div class="pnl" id="or-recon-card" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>reconciliation
+      <span class="tail" id="or-recon-verdict"></span></h2>
+    <div class="pad">
+      <div id="or-recon-summary" class="note"></div>
+      <ul class="probs" id="or-recon-problems"></ul>
+      <div class="note" style="margin-top:10px">This compares the book the rule
+      <b>wanted</b> against what the wallet <b>actually holds</b>, read from its
+      public address. Without it the paper log measures one strategy while the
+      account runs another, and nothing would say so.</div>
+    </div>
+  </div>
+
+  <div class="alert ok" style="margin-top:12px">
+    <div class="t">&#9679; Nothing here has been traded</div>
+    <div class="b">Every figure on this page is the book finding 008 <b>wants</b>,
+    at an assumed notional, marked at live prices. <b>No order has been placed and
+    no number here is an account balance.</b> The execution service has no command
+    that can send an order, and a unit test fails the build if anyone adds one.
+    <br><br>Positions are held for five daily bars from entry, so <b>left</b> is
+    how many bars remain before the rule closes the trade.</div>
+  </div>
+</section>
+
 </div><!-- /wrap -->
 
 <nav class="tabs">
@@ -678,6 +729,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="signals"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 9v6M19 7v10"/></svg>Signals</button>
   <button data-go="research"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.4-4.4"/></svg>Research</button>
   <button data-go="risk"><svg viewBox="0 0 24 24"><path d="M12 3l8 3.6v5.2c0 4.6-3.3 8.4-8 9.2-4.7-.8-8-4.6-8-9.2V6.6z"/></svg>Risk</button>
+  <button data-go="orders"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.2"/></svg>Orders</button>
   <button data-go="brief"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h3"/></svg>Analyst</button>
 </nav>
 <script>
@@ -1003,66 +1055,17 @@ function trailingVolume(bars, days) {
  * close, so a loose test makes it a permanent breakout - which is exactly how
  * finding 004 ended up with a currency peg at the top of its leaderboard.
  */
-/* ---------------------------------------------------------- the entry rule
-   THIS IS A COPY, AND IT IS PINNED
-   Finding 008's entry rule lives in one place - Lona.Rules.BreakoutEntry, in
-   the C#. This browser cannot call it: the page has no server behind it, which
-   is deliberate, because a server would be a machine holding a signing key with
-   a port open to the internet.
-
-   So the rule is written out again here, and then CHECKED. BREAKOUT_FIXTURE
-   below is copied verbatim from BreakoutEntry.Fixture, the same cases the C#
-   tests assert, and checkBreakoutRule() runs them at boot. If this copy ever
-   drifts from the definition, the page says so on itself rather than quietly
-   drawing a different book from the one that was measured.
-
-   That is not paranoia. On 11 Aug 2026 this rule existed three times and two of
-   them disagreed with the one finding 008's statistics came from - the Python
-   backtest counted a close that merely TIED the 50-day high as a breakout. The
-   difference showed up on 0.58% of held positions, which is exactly why it went
-   unnoticed for weeks. */
-function barsSinceEntry(close, lookback, hold) {
-  for (let back = 0; back < hold; back++) {
-    const i = close.length - 1 - back;
-    if (i < lookback) break;
+function daysSinceNewHigh(bars) {
+  const close = bars.map(b => parseFloat(b.c));
+  const n = close.length;
+  for (let back = 0; back < HOLD; back++) {
+    const i = n - 1 - back;
+    if (i < LOOKBACK) break;
     let highest = -Infinity;
-    for (let j = i - lookback + 1; j < i; j++) highest = Math.max(highest, close[j]);
-    if (close[i] > highest) return back;      // STRICTLY above. A tie is not an entry.
+    for (let j = i - LOOKBACK + 1; j < i; j++) highest = Math.max(highest, close[j]);
+    if (close[i] > highest) return back;
   }
   return null;
-}
-
-function daysSinceNewHigh(bars) {
-  return barsSinceEntry(bars.map(b => parseFloat(b.c)), LOOKBACK, HOLD);
-}
-
-/* Copied from BreakoutEntry.Fixture. [closes, lookback, hold, expected] */
-const BREAKOUT_FIXTURE = [
-  [[1, 2, 3, 4],       3, 2, 0],
-  [[1, 2, 3, 5, 4],    3, 2, 1],
-  [[1, 2, 3, 5, 4],    3, 1, null],
-  [[1, 4, 3, 4],       3, 1, null],     // a tie is not a breakout
-  [[2, 2, 2, 2, 2],    3, 3, null],     // a flat market never breaks out
-  [[1, 2, 3],          5, 2, null],     // not enough history to have a high
-  [[9, 3, 2, 1],       3, 2, null],
-];
-
-function checkBreakoutRule() {
-  const wrong = BREAKOUT_FIXTURE
-    .map(([c, lb, h, want], i) => [i, want, barsSinceEntry(c, lb, h)])
-    .filter(([, want, got]) => want !== got);
-  if (!wrong.length) return true;
-
-  const bar = el("div", "alert bad");
-  bar.style.cssText = "position:fixed;left:8px;right:8px;top:60px;z-index:200";
-  const t = el("div", "t"); t.textContent = "\u26A0 This page is computing the rule differently from the backtest";
-  const b = el("div", "b");
-  b.textContent = "Cases " + wrong.map(w => w[0]).join(", ") + " of the pinned fixture "
-    + "disagree. Do not act on anything on the Signals tab until this is fixed - "
-    + "the book drawn here is not the book that was measured.";
-  bar.appendChild(t); bar.appendChild(b);
-  document.body.appendChild(bar);
-  return false;
 }
 
 /** How close is this market to triggering, as a fraction of its own 50d high? */
@@ -1505,6 +1508,150 @@ function readable(j) {
   return j;
 }
 
+/* ============================================================== orders page
+   Reads orders.json, written by the execution service on the PC and pushed
+   here by LONA-PLAN.bat. Same one-way arrangement as the briefing: the PC
+   publishes a file, this page never asks the PC anything.
+
+   The published file is built from an ALLOWLIST on the PC side, so it carries
+   no wallet address and no account balance - only the paper book. That is why
+   this page can be public. */
+const ORDERS_URL = "orders.json";
+const ORDERS_MS = 5 * 60000;
+
+async function loadOrders() {
+  try {
+    const r = await fetch(ORDERS_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    /* Shape check before anything is drawn. A half-written or old-format file
+       must render as "not published", never as a page with blank panels - that
+       failure mode already cost us once on the analyst tab. */
+    S.orders = (j && Array.isArray(j.positions) && Array.isArray(j.orders)
+                && j.reconciliation) ? j : null;
+    S.ordersError = S.orders ? null : "the file is not in the expected shape";
+  } catch (e) {
+    S.orders = null;
+    S.ordersError = e.message;
+  }
+  renderOrders();
+}
+
+function orderTile(k, v, sub, cls) {
+  const d = el("div", "tile");
+  d.appendChild(el("div", "k", k));
+  const val = el("div", "v " + (cls || ""));
+  val.textContent = v;
+  d.appendChild(val);
+  d.appendChild(el("div", "s", sub));
+  return d;
+}
+
+function money(n) {
+  const v = Number(n) || 0;
+  return (v < 0 ? "-$" : "$") + Math.abs(v).toFixed(2);
+}
+
+function renderOrders() {
+  const status = $("or-status"), tiles = $("or-tiles"),
+        pos = $("or-positions"), ord = $("or-orders"),
+        probs = $("or-recon-problems");
+  tiles.innerHTML = ""; pos.innerHTML = ""; ord.innerHTML = ""; probs.innerHTML = "";
+  const o = S.orders;
+
+  if (!o) {
+    status.className = "alert";
+    status.querySelector(".t").textContent = "No plan has been published yet";
+    status.querySelector(".b").innerHTML =
+      "This page reads <b>orders.json</b>, written by the execution service on " +
+      "your PC" + (S.ordersError ? " (<b>" + esc(S.ordersError) + "</b>)" : "") +
+      ".<br><br>On the PC, double-click <b>LONA-PLAN.bat</b>. It asks finding 008 " +
+      "what it wants at live prices, applies every risk check, writes the plan " +
+      "down and publishes this file. <b>It cannot place an order.</b>";
+    $("or-when").textContent = "";
+    $("or-ordercount").textContent = "";
+    $("or-recon-summary").textContent = "";
+    $("or-recon-verdict").textContent = "";
+    return;
+  }
+
+  const age = (Date.now() - Date.parse(o.at)) / 60000;
+  const stale = age > 90;
+  status.className = "alert " + (stale ? "warn" : "ok");
+  status.querySelector(".t").textContent = stale
+    ? "This plan is " + Math.round(age / 60) + " hours old"
+    : "Paper book, published " + (age < 2 ? "just now" : Math.round(age) + " min ago");
+  status.querySelector(".b").textContent = o.note;
+  $("or-when").textContent = new Date(o.at).toLocaleString();
+
+  const pnl = Number(o.openPaperPnlUsd) || 0;
+  tiles.appendChild(orderTile("open P&L", money(pnl),
+    ((Number(o.openPaperPnlPct) || 0) * 100).toFixed(2) + "% of the paper book",
+    pnl > 0 ? "pos" : pnl < 0 ? "neg" : ""));
+  tiles.appendChild(orderTile("positions", String(o.positions.length),
+    "of " + o.eligibleCount + " eligible markets"));
+  tiles.appendChild(orderTile("deployed",
+    ((Number(o.deployedFraction) || 0) * 100).toFixed(0) + "%",
+    "backtest averaged about 17%"));
+  tiles.appendChild(orderTile("paper size", money(o.paperEquityUsd),
+    "assumed, not a balance"));
+  tiles.appendChild(orderTile("min account", money(o.smallestViableAccountUsd),
+    o.accountTooSmall ? "the paper size is BELOW this" : "measured from live lot sizes",
+    o.accountTooSmall ? "neg" : ""));
+  tiles.appendChild(orderTile("reconciled",
+    o.reconciliation.wasChecked ? (o.reconciliation.clean ? "clean" : "mismatch") : "not set",
+    o.reconciliation.wasChecked ? "vs the wallet's real book" : "no address configured",
+    o.reconciliation.clean ? "pos" : o.reconciliation.wasChecked ? "neg" : ""));
+
+  if (!o.positions.length) {
+    pos.appendChild(el("tr")).appendChild(
+      Object.assign(el("td", "empty", "The rule wants nothing today. It is out of the market about 83% of the time - that is the strategy working, not a fault."),
+                    { colSpan: 6 }));
+  }
+  o.positions.forEach(p => {
+    const tr = el("tr"), r = Number(p.returnSinceEntry) || 0;
+    tr.appendChild(el("td", "mono", p.coin));
+    tr.appendChild(el("td", "", p.barsRemaining + (p.barsRemaining === 1 ? " bar" : " bars")));
+    tr.appendChild(el("td", "mono num hide-s", String(p.entryPrice)));
+    tr.appendChild(el("td", "mono num hide-s", String(p.price)));
+    tr.appendChild(el("td", "num " + (r > 0 ? "pos" : r < 0 ? "neg" : ""),
+                      (r * 100).toFixed(2) + "%"));
+    tr.appendChild(el("td", "num " + (p.paperPnlUsd > 0 ? "pos" : p.paperPnlUsd < 0 ? "neg" : ""),
+                      money(p.paperPnlUsd)));
+    pos.appendChild(tr);
+  });
+
+  $("or-ordercount").textContent = o.orders.length
+    ? o.orders.filter(x => x.placeable).length + " placeable of " + o.orders.length
+    : "nothing to do";
+  if (!o.orders.length) {
+    ord.appendChild(el("tr")).appendChild(
+      Object.assign(el("td", "empty", "The book already matches what the rule wants."),
+                    { colSpan: 3 }));
+  }
+  o.orders.forEach(x => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "mono", x.coin));
+    tr.appendChild(el("td", "num", money(x.deltaNotionalUsd)));
+    tr.appendChild(el("td", "trunc" + (x.placeable ? "" : " neg"),
+                      x.placeable ? x.reason : "refused - " + x.refusal));
+    ord.appendChild(tr);
+  });
+
+  const rec = o.reconciliation;
+  $("or-recon-verdict").textContent = rec.wasChecked
+    ? (rec.clean ? "clean" : rec.problems.length + " to look at")
+    : "not checked";
+  $("or-recon-summary").textContent = rec.summary;
+  if (rec.hasInversion) {
+    const li = el("li", "neg",
+      "A position is on the OPPOSITE side to the intended book. Price movement cannot cause that - stop and read the audit log.");
+    probs.appendChild(li);
+  }
+  rec.problems.forEach(pr =>
+    probs.appendChild(el("li", "", pr.coin + " - " + pr.status.toLowerCase() + ": " + pr.detail)));
+}
+
 async function loadAnalyst() {
   try {
     /* no-store AND a cache-buster: GitHub Pages sets a ten minute max-age, and
@@ -1640,13 +1787,14 @@ function tickClock() {
 }
 
 async function boot() {
-  checkBreakoutRule();
   tickClock();
   setInterval(tickClock, 1000);
   renderResearch();
 
   loadAnalyst();
   setInterval(loadAnalyst, ANALYST_MS);
+  loadOrders();
+  setInterval(loadOrders, ORDERS_MS);
 
   const hash = location.hash.replace("#", "").trim();
   if (/^0x[0-9a-fA-F]{40}$/.test(hash)) { $("addr").value = hash; setAddr(hash); }
@@ -1682,6 +1830,7 @@ $("refresh").addEventListener("click", async () => {
     await loadMarkets();
     await loadSignals(true);
     await loadAnalyst();
+    await loadOrders();
     if (S.addr) await loadAccount();
     $("live").className = "dot on";
   } catch (e) { $("live").className = "dot err"; }

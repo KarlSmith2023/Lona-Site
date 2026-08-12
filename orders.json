@@ -1,0 +1,94 @@
+{
+  "at": "2026-08-12T21:58:06.5065098+00:00",
+  "mode": "DryRun",
+  "paper": true,
+  "note": "Paper book only. No order has been placed and nothing here is an account balance.",
+  "paperEquityUsd": 1000,
+  "eligibleCount": 20,
+  "eligible": [
+    "BTC",
+    "ETH",
+    "HYPE",
+    "SOL",
+    "ZEC",
+    "PUMP",
+    "XRP",
+    "LIT",
+    "KAITO",
+    "NEAR",
+    "WLD",
+    "ONDO",
+    "AAVE",
+    "UNI",
+    "DOGE",
+    "FARTCOIN",
+    "SUI",
+    "ENA",
+    "XMR",
+    "kPEPE"
+  ],
+  "weightPerLeg": 0.05,
+  "deployedFraction": 0.10,
+  "excludedNonCrypto": [
+    "SPX"
+  ],
+  "accountTooSmall": false,
+  "smallestViableAccountUsd": 300,
+  "minimumOrderValueUsd": 10,
+  "openPaperPnlUsd": 0.66,
+  "openPaperPnlPct": 0.000655,
+  "positions": [
+    {
+      "coin": "XMR",
+      "barsSinceEntry": 1,
+      "barsRemaining": 4,
+      "entryPrice": 378.25,
+      "price": 390.97,
+      "returnSinceEntry": 0.033629,
+      "notionalUsd": 50.00,
+      "paperPnlUsd": 1.68
+    },
+    {
+      "coin": "PUMP",
+      "barsSinceEntry": 1,
+      "barsRemaining": 4,
+      "entryPrice": 0.002728,
+      "price": 0.002672,
+      "returnSinceEntry": -0.020528,
+      "notionalUsd": 50.00,
+      "paperPnlUsd": -1.03
+    }
+  ],
+  "orders": [
+    {
+      "coin": "PUMP",
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 50.00,
+      "placeable": true
+    },
+    {
+      "coin": "XMR",
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 50.00,
+      "placeable": true
+    }
+  ],
+  "reconciliation": {
+    "wasChecked": true,
+    "clean": true,
+    "hasInversion": false,
+    "summary": "paper only - the rule wants 2 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "problems": [
+      {
+        "coin": "PUMP",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "XMR",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      }
+    ]
+  }
+}
