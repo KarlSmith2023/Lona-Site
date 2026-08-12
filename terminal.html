@@ -66,7 +66,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ---------------------------------------------------- mobile bottom tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;
-  grid-template-columns:repeat(5,1fr);background:rgba(8,12,16,.96);
+  grid-template-columns:repeat(6,1fr);background:rgba(8,12,16,.96);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);
   padding-bottom:var(--safe-b)}
@@ -199,6 +199,12 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
 .kv:last-child{border-bottom:none}
 .kv span{color:var(--dim)} .kv b{font-family:var(--mono);font-weight:500}
 .mono{font-family:var(--mono)}
+/* The briefing itself. pre-wrap because the analyst lays it out with spaces and
+   a phone is 380px wide - hard wrapping would shred it. */
+.brief{font-family:var(--mono);font-size:12px;line-height:1.68;margin:0;
+  white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.probs{margin:0;padding-left:18px;font-size:12.5px;line-height:1.8;color:var(--dim)}
+.probs li{font-family:var(--mono);font-size:11.5px}
 .trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:639px){
   .hide-s{display:none}
@@ -206,6 +212,10 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
      page is focusable, so this is the only place it can happen. */
   input,select{font-size:16px}
   th,td{padding:8px 9px;font-size:12px}
+  /* The analyst lays the briefing out in fixed-width columns 62 characters
+     wide. At 12px that is wider than a phone and every line wraps; at 10.5px
+     it fits, so the layout the analyst intended survives the trip. */
+  .brief{font-size:10.5px;line-height:1.6}
 }
 </style>
 </head>
@@ -228,6 +238,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="signals">Signals</button>
   <button data-go="research">Research</button>
   <button data-go="risk">Risk &amp; execution</button>
+  <button data-go="brief">Analyst</button>
 </nav>
 
 <div class="wrap">
@@ -607,6 +618,58 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   </div>
 </section>
 
+<!-- ============================================================== ANALYST -->
+<section class="view" id="v-brief">
+  <div class="alert" id="an-status">
+    <div class="t">Looking for a published briefing</div>
+    <div class="b">&hellip;</div>
+  </div>
+
+  <div class="tiles six" id="an-tiles"></div>
+
+  <div id="an-alerts"></div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>the briefing
+      <span class="tail" id="an-when"></span></h2>
+    <div class="pad"><pre class="brief" id="an-brief"></pre></div>
+  </div>
+
+  <div class="pnl" id="an-problems-card" style="margin-top:12px;display:none">
+    <h2><span class="car">&#9656;</span>what it could not measure</h2>
+    <div class="pad">
+      <ul class="probs" id="an-problems"></ul>
+      <div class="note" style="margin-top:10px">A source that failed leaves its
+      numbers <b>absent</b> rather than zero, and every rule that needed one
+      simply did not run. That is why this list exists: a briefing that quietly
+      reports a number nobody measured is worse than one that admits it could
+      not look.</div>
+    </div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>every measurement behind it
+      <span class="tail" id="an-count"></span></h2>
+    <div class="scroll" style="max-height:min(520px,60vh)"><table>
+      <thead><tr><th>measurement</th><th>value</th><th class="hide-s">source</th></tr></thead>
+      <tbody id="an-rows"></tbody></table></div>
+  </div>
+
+  <div class="alert ok" style="margin-top:12px">
+    <div class="t">&#9679; Why this is a file and not a live connection</div>
+    <div class="b">The analyst runs on the PC at home. This page does not ask it
+    anything &mdash; the PC writes a small JSON file and pushes it here, and never
+    accepts a connection. That machine will one day hold a signing key, and a
+    listener on it would be reachable from the whole internet so that a phone
+    could see a number. <b>The blast radius of a bug on this page is a wrong
+    number. The blast radius of a bug in a listener is the wallet.</b><br><br>
+    It also means everything here is a <b>snapshot</b>, so its age is the first
+    thing shown rather than a footnote. Only allowlisted market measurements are
+    ever written to the public file; anything about the account or a planned
+    order stays on the PC, in a second file this site never sees.</div>
+  </div>
+</section>
+
 </div><!-- /wrap -->
 
 <nav class="tabs">
@@ -615,6 +678,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="signals"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 9v6M19 7v10"/></svg>Signals</button>
   <button data-go="research"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.4-4.4"/></svg>Research</button>
   <button data-go="risk"><svg viewBox="0 0 24 24"><path d="M12 3l8 3.6v5.2c0 4.6-3.3 8.4-8 9.2-4.7-.8-8-4.6-8-9.2V6.6z"/></svg>Risk</button>
+  <button data-go="brief"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h3"/></svg>Analyst</button>
 </nav>
 <script>
 "use strict";
@@ -644,6 +708,7 @@ const S = {                    // everything the page knows, in one place
   universe20: [], universe40: [],
   book8: [], book9: [], near: [],
   account: null, fills: [], funding: [],
+  analyst: null, analystError: null,
   sort: "vol", filter: null,
   lastSignal: 0,
   error: null,
@@ -938,17 +1003,66 @@ function trailingVolume(bars, days) {
  * close, so a loose test makes it a permanent breakout - which is exactly how
  * finding 004 ended up with a currency peg at the top of its leaderboard.
  */
-function daysSinceNewHigh(bars) {
-  const close = bars.map(b => parseFloat(b.c));
-  const n = close.length;
-  for (let back = 0; back < HOLD; back++) {
-    const i = n - 1 - back;
-    if (i < LOOKBACK) break;
+/* ---------------------------------------------------------- the entry rule
+   THIS IS A COPY, AND IT IS PINNED
+   Finding 008's entry rule lives in one place - Lona.Rules.BreakoutEntry, in
+   the C#. This browser cannot call it: the page has no server behind it, which
+   is deliberate, because a server would be a machine holding a signing key with
+   a port open to the internet.
+
+   So the rule is written out again here, and then CHECKED. BREAKOUT_FIXTURE
+   below is copied verbatim from BreakoutEntry.Fixture, the same cases the C#
+   tests assert, and checkBreakoutRule() runs them at boot. If this copy ever
+   drifts from the definition, the page says so on itself rather than quietly
+   drawing a different book from the one that was measured.
+
+   That is not paranoia. On 11 Aug 2026 this rule existed three times and two of
+   them disagreed with the one finding 008's statistics came from - the Python
+   backtest counted a close that merely TIED the 50-day high as a breakout. The
+   difference showed up on 0.58% of held positions, which is exactly why it went
+   unnoticed for weeks. */
+function barsSinceEntry(close, lookback, hold) {
+  for (let back = 0; back < hold; back++) {
+    const i = close.length - 1 - back;
+    if (i < lookback) break;
     let highest = -Infinity;
-    for (let j = i - LOOKBACK + 1; j < i; j++) highest = Math.max(highest, close[j]);
-    if (close[i] > highest) return back;
+    for (let j = i - lookback + 1; j < i; j++) highest = Math.max(highest, close[j]);
+    if (close[i] > highest) return back;      // STRICTLY above. A tie is not an entry.
   }
   return null;
+}
+
+function daysSinceNewHigh(bars) {
+  return barsSinceEntry(bars.map(b => parseFloat(b.c)), LOOKBACK, HOLD);
+}
+
+/* Copied from BreakoutEntry.Fixture. [closes, lookback, hold, expected] */
+const BREAKOUT_FIXTURE = [
+  [[1, 2, 3, 4],       3, 2, 0],
+  [[1, 2, 3, 5, 4],    3, 2, 1],
+  [[1, 2, 3, 5, 4],    3, 1, null],
+  [[1, 4, 3, 4],       3, 1, null],     // a tie is not a breakout
+  [[2, 2, 2, 2, 2],    3, 3, null],     // a flat market never breaks out
+  [[1, 2, 3],          5, 2, null],     // not enough history to have a high
+  [[9, 3, 2, 1],       3, 2, null],
+];
+
+function checkBreakoutRule() {
+  const wrong = BREAKOUT_FIXTURE
+    .map(([c, lb, h, want], i) => [i, want, barsSinceEntry(c, lb, h)])
+    .filter(([, want, got]) => want !== got);
+  if (!wrong.length) return true;
+
+  const bar = el("div", "alert bad");
+  bar.style.cssText = "position:fixed;left:8px;right:8px;top:60px;z-index:200";
+  const t = el("div", "t"); t.textContent = "\u26A0 This page is computing the rule differently from the backtest";
+  const b = el("div", "b");
+  b.textContent = "Cases " + wrong.map(w => w[0]).join(", ") + " of the pinned fixture "
+    + "disagree. Do not act on anything on the Signals tab until this is fixed - "
+    + "the book drawn here is not the book that was measured.";
+  bar.appendChild(t); bar.appendChild(b);
+  document.body.appendChild(bar);
+  return false;
 }
 
 /** How close is this market to triggering, as a fraction of its own 50d high? */
@@ -1358,15 +1472,181 @@ function renderResearch() {
   });
 }
 
+/* --------------------------------------------------------------- analyst */
+/* The analyst is a program on Karl's PC. It measures the venue, the tape and one
+   sentiment index, runs its rules, and writes what it found to analyst.json,
+   which is pushed to this site. Nothing here talks to it.
+
+   Everything below is therefore a SNAPSHOT. Its age is treated as the headline
+   number, because a briefing that is presented as current when it is six hours
+   old is worse than no briefing: it converts "I do not know" into a confident
+   wrong answer, which is the one failure this whole project exists to prevent. */
+const ANALYST_URL = "analyst.json";
+const ANALYST_MS  = 60000;
+const STALE_MIN   = 75;   // published hourly, so 75 minutes means a run was missed
+
+const esc = (s) => String(s).replace(/[&<>"]/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* A snapshot written by an older analyst than this page expects is the one case
+   that must NOT half-render: fields go missing, the parts that survive still
+   draw, and the result is a panel that looks like a briefing but is missing the
+   half that mattered. So the shape is checked once, up front, and anything that
+   fails is treated exactly like a file that was never published. */
+function readable(j) {
+  const ok = j
+    && typeof j.asOf === "string"
+    && typeof j.brief === "string"
+    && Array.isArray(j.facts)
+    && Array.isArray(j.observations)
+    && Array.isArray(j.problems)
+    && isFinite(Date.parse(j.asOf));
+  if (!ok) throw new Error("the published file is not in a shape this page understands");
+  return j;
+}
+
+async function loadAnalyst() {
+  try {
+    /* no-store AND a cache-buster: GitHub Pages sets a ten minute max-age, and
+       a ten minute old briefing shown as live is exactly the failure above. */
+    const r = await fetch(ANALYST_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    S.analyst = readable(await r.json());
+    S.analystError = null;
+  } catch (e) {
+    S.analyst = null;
+    S.analystError = e.message;
+  }
+  renderAnalyst();
+}
+
+function analystTile(k, v, s, c) {
+  const d = el("div", "tile");
+  d.appendChild(el("div", "k", k));
+  const val = el("div", "v " + (c || ""));
+  val.textContent = v;                       // never innerHTML: this is file data
+  d.appendChild(val);
+  d.appendChild(el("div", "s", s));
+  return d;
+}
+
+function renderAnalyst() {
+  const status = $("an-status"), tiles = $("an-tiles"), rows = $("an-rows"),
+        alerts = $("an-alerts");
+  tiles.innerHTML = ""; rows.innerHTML = ""; alerts.innerHTML = "";
+  const a = S.analyst;
+
+  if (!a) {
+    status.className = "alert";
+    status.querySelector(".t").textContent = "No briefing has been published yet";
+    status.querySelector(".b").innerHTML =
+      "This page reads <b>analyst.json</b>, written by the analyst on your PC. " +
+      "Nothing has been pushed to this site yet" +
+      (S.analystError ? " (<b>" + esc(S.analystError) + "</b>)" : "") + ".<br><br>" +
+      "On the PC, run <b>LONA-BRIEF.bat</b>. It measures the market, writes the " +
+      "file and pushes it here. Everything else on this terminal is computed live " +
+      "in your browser and works without it.";
+    $("an-brief").textContent = "";
+    $("an-when").textContent = "";
+    $("an-count").textContent = "";
+    $("an-problems-card").style.display = "none";
+    return;
+  }
+
+  const ageMin = (Date.now() - Date.parse(a.asOf)) / 60000;
+  const stale  = ageMin > STALE_MIN;
+  const ageTxt = ageMin < 1 ? "just now"
+               : ageMin < 90 ? Math.round(ageMin) + " min ago"
+               : (ageMin / 60).toFixed(1) + " hours ago";
+
+  status.className = "alert " + (stale ? "bad" : a.alarms > 0 ? "" : "ok");
+  status.querySelector(".t").textContent = stale
+    ? "This briefing is stale"
+    : a.alarms > 0 ? "The analyst wants your attention"
+    : "Briefing is current";
+  status.querySelector(".b").innerHTML = stale
+    ? "Written <b>" + esc(ageTxt) + "</b>, and it is published hourly &mdash; so the " +
+      "publisher on your PC has missed at least one run. <b>Treat every number " +
+      "below as history, not as the market.</b>"
+    : "Measured <b>" + esc(ageTxt) + "</b> on your PC and pushed here. " +
+      esc(String(a.facts.length)) + " measurements, " +
+      esc(String(a.observations.length)) + " observations.";
+
+  const F = {};
+  a.facts.forEach(f => { F[f.key] = f; });
+  const show = (k) => F[k] ? F[k].display : "—";
+  const val  = (k) => F[k] ? Number(F[k].value) : null;
+
+  const gap = val("recorder.minutes_since_write");
+  tiles.appendChild(analystTile("Briefing age", ageTxt, "published hourly",
+    stale ? "bad" : "acc"));
+  tiles.appendChild(analystTile("Alarms", String(a.alarms),
+    a.warnings + " warning(s)", a.alarms > 0 ? "bad" : "acc"));
+  tiles.appendChild(analystTile("Recorder silent",
+    gap === null ? "—" : Math.round(gap) + " min",
+    "order book cannot be backfilled",
+    gap === null ? "dim" : gap > 30 ? "bad" : gap > 10 ? "warn" : "acc"));
+  tiles.appendChild(analystTile("Tape today",
+    val("recorder.mb_today") === null ? "—"
+      : Math.round(val("recorder.mb_today")) + " MB",
+    F["recorder.files"] ? show("recorder.files") + " files on disk"
+                        : "the analyst could not see the tape", ""));
+  tiles.appendChild(analystTile("Breakout book", show("breakout.deployed"),
+    show("breakout.count") + " of " + show("universe.size") + " deployed", "acc"));
+  tiles.appendChild(analystTile("Carry book", show("carry.mean_yield"),
+    show("carry.legs") + " legs, hedged", "acc2"));
+
+  a.observations
+   .filter(o => o.severity === "alarm" || o.severity === "warning")
+   .forEach(o => {
+      const box = el("div", "alert " + (o.severity === "alarm" ? "bad" : ""));
+      box.style.marginTop = "12px";
+      const t = el("div", "t");
+      t.textContent = (o.severity === "alarm" ? "⚠ " : "! ") + o.topic;
+      const b = el("div", "b");
+      b.textContent = o.headline + (o.detail ? " " + o.detail : "");
+      if (o.evidence.length) {
+        const ev = el("div", "b");
+        ev.style.cssText = "margin-top:6px;font-family:var(--mono);font-size:11.5px";
+        ev.textContent = o.evidence.join("   ·   ");
+        box.appendChild(t); box.appendChild(b); box.appendChild(ev);
+      } else { box.appendChild(t); box.appendChild(b); }
+      alerts.appendChild(box);
+   });
+
+  $("an-brief").textContent = a.brief;
+  $("an-when").textContent  = a.asOf.slice(0, 16).replace("T", " ") + " UTC";
+  $("an-count").textContent = a.facts.length + " measurements";
+
+  const probs = $("an-problems");
+  probs.innerHTML = "";
+  a.problems.forEach(p => { const li = document.createElement("li");
+                            li.textContent = p; probs.appendChild(li); });
+  $("an-problems-card").style.display = a.problems.length ? "" : "none";
+
+  a.facts.forEach(f => {
+    const tr = document.createElement("tr");
+    const k = document.createElement("td"); k.className = "mono"; k.textContent = f.key;
+    const v = document.createElement("td"); v.className = "mono"; v.textContent = f.display;
+    const s = document.createElement("td"); s.className = "hide-s dim"; s.textContent = f.source;
+    tr.appendChild(k); tr.appendChild(v); tr.appendChild(s);
+    rows.appendChild(tr);
+  });
+}
+
 /* ------------------------------------------------------------- lifecycle */
 function tickClock() {
   $("clock").textContent = new Date().toISOString().slice(11, 19) + " UTC";
 }
 
 async function boot() {
+  checkBreakoutRule();
   tickClock();
   setInterval(tickClock, 1000);
   renderResearch();
+
+  loadAnalyst();
+  setInterval(loadAnalyst, ANALYST_MS);
 
   const hash = location.hash.replace("#", "").trim();
   if (/^0x[0-9a-fA-F]{40}$/.test(hash)) { $("addr").value = hash; setAddr(hash); }
@@ -1401,6 +1681,7 @@ $("refresh").addEventListener("click", async () => {
   try {
     await loadMarkets();
     await loadSignals(true);
+    await loadAnalyst();
     if (S.addr) await loadAccount();
     $("live").className = "dot on";
   } catch (e) { $("live").className = "dot err"; }
