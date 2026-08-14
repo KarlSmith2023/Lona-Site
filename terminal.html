@@ -217,6 +217,38 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
      it fits, so the layout the analyst intended survives the trip. */
   .brief{font-size:10.5px;line-height:1.6}
 }
+
+/* ---- the drawdown band -------------------------------------------------
+   Finding 019's 5th percentile of one-year drawdowns. It is drawn as a
+   FILLED SPAN rather than a warning colour on purpose: everything inside it
+   is a bad year behaving normally, and a red number with no context is how
+   somebody stops a strategy in an ordinary drawdown. */
+.band{position:relative;height:22px;margin:12px 14px 6px;border:1px solid var(--line);
+  border-radius:3px;background:linear-gradient(90deg,
+    color-mix(in srgb,var(--dim) 12%,transparent),
+    color-mix(in srgb,var(--dim) 26%,transparent));overflow:hidden}
+.band-fill{position:absolute;inset:0 auto 0 0;width:0;
+  background:color-mix(in srgb,var(--dim) 45%,transparent);transition:width .3s}
+.band-fill.over{background:color-mix(in srgb,#c0392b 55%,transparent)}
+.band-mark{position:absolute;top:-2px;bottom:-2px;width:2px;left:0;
+  background:var(--fg);transition:left .3s}
+.band-scale{display:flex;justify-content:space-between;margin:0 14px 12px;
+  font-size:11px;color:var(--dim);letter-spacing:.04em}
+
+/* ---- the health strip --------------------------------------------------
+   First thing on the page because "is it still running" is the first thing
+   anyone asks. Its own AGE is the alarm: the recorder rewrites status.json
+   every minute, so a stale file means the recorder stopped, and there is no
+   "alive" flag that could be wrong instead. */
+.health{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:12px;
+  border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.health .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;
+  background:var(--dim);box-shadow:0 0 0 3px color-mix(in srgb,var(--dim) 22%,transparent)}
+.health.ok .dot{background:#2e9e5b;box-shadow:0 0 0 3px color-mix(in srgb,#2e9e5b 22%,transparent)}
+.health.bad .dot{background:#c0392b;box-shadow:0 0 0 3px color-mix(in srgb,#c0392b 22%,transparent)}
+.health .msg{flex:1;line-height:1.4}
+.health .msg b{display:block;font-size:13px;letter-spacing:.02em}
+.health .msg span{color:var(--dim);font-size:12px}
 </style>
 </head>
 <body>
@@ -673,12 +705,32 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
 
 
 <section class="view" id="v-orders">
+  <div class="health" id="or-health">
+    <div class="dot"></div>
+    <div class="msg"><b id="or-health-verdict">Checking&hellip;</b>
+      <span id="or-health-detail"></span></div>
+  </div>
+
   <div class="alert" id="or-status">
     <div class="t">Looking for a published plan</div>
     <div class="b">&hellip;</div>
   </div>
 
   <div class="tiles six" id="or-tiles"></div>
+
+  <div class="pnl" id="or-forward-card" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>forward record vs the expected band
+      <span class="tail" id="or-fwd-tail"></span></h2>
+    <div class="pad" id="or-fwd-line"></div>
+    <div class="band" id="or-fwd-band">
+      <div class="band-fill" id="or-fwd-fill"></div>
+      <div class="band-mark" id="or-fwd-mark"></div>
+    </div>
+    <div class="band-scale">
+      <span>peak</span><span id="or-fwd-mid"></span><span id="or-fwd-edge"></span>
+    </div>
+    <div class="note" id="or-fwd-note"></div>
+  </div>
 
   <div class="pnl" style="margin-top:12px">
     <h2><span class="car">&#9656;</span>open paper positions
@@ -1335,18 +1387,54 @@ function renderAccount() {
         <td class="${cls(pnl)}">${money(pnl, 2)}</td>
         <td class="${cls(roe)}">${pct(roe)}</td></tr>`;
     }).join("");
+    // THE PHONE CARD CARRIES WHAT THE VENUE'S OWN CARD CARRIES.
+    //
+    // It used to show four fields against Hyperliquid's ten, and the desktop
+    // table beside it already had the rest - so the one screen actually read on
+    // a phone was the thinnest. Mark price, position value, margin, leverage and
+    // funding are all in the same payload; leaving them out was an oversight
+    // rather than a decision.
+    //
+    // Distance to liquidation is computed rather than shown raw. "liq 0.004207"
+    // means nothing without the mark beside it; "45% away" is the number a
+    // person actually needs, and it is the difference between glancing at a
+    // position and understanding it.
     $("pos-cards").innerHTML = pos.map(p => {
       const sz = parseFloat(p.szi);
       const pnl = parseFloat(p.unrealizedPnl || 0);
       const roe = parseFloat(p.returnOnEquity || 0);
+      const entry = parseFloat(p.entryPx || 0);
+      const mk = markets().find(x => x.name === p.coin);
+      const mark = mk ? mk.mark : entry;
+      const value = parseFloat(p.positionValue || 0);
+      const marg = parseFloat(p.marginUsed || 0);
+      const liq = p.liquidationPx ? parseFloat(p.liquidationPx) : null;
+      const lev = p.leverage ? p.leverage.value : null;
+      const cross = p.leverage && p.leverage.type === "cross";
+      const fund = p.cumFunding ? -parseFloat(p.cumFunding.sinceOpen || 0) : null;
+
+      // How far the price has to travel before the position is closed for us.
+      const away = (liq && mark > 0) ? Math.abs(liq - mark) / mark : null;
+
       return `<div class="card">
         <div class="row1"><span class="sym">${p.coin}</span>
           <span class="badge ${sz > 0 ? "long" : "short"}">${sz > 0 ? "long" : "short"}</span>
+          ${lev ? `<span class="faint" style="font-size:11px">${lev}&times; ${cross ? "cross" : "isolated"}</span>` : ""}
           <span class="px ${cls(pnl)}">${money(pnl, 2)}</span></div>
-        <div class="row2"><span>size <b>${n2(Math.abs(sz), 4)}</b></span>
-          <span>entry <b>${money(parseFloat(p.entryPx || 0))}</b></span>
+        <div class="row2">
+          <span>size <b>${n2(Math.abs(sz), 4)}</b></span>
+          <span>entry <b>${money(entry)}</b></span>
+          <span>mark <b>${money(mark)}</b></span>
           <span>return <b class="${cls(roe)}">${pct(roe)}</b></span>
-          <span>liq <b>${p.liquidationPx ? money(parseFloat(p.liquidationPx)) : "—"}</b></span>
+        </div>
+        <div class="row2">
+          <span>value <b>${money(value, 2)}</b></span>
+          <span>margin <b>${money(marg, 2)}</b></span>
+          ${fund !== null ? `<span>funding <b class="${cls(fund)}">${money(fund, 2)}</b></span>` : ""}
+        </div>
+        <div class="row2">
+          <span>liq <b>${liq ? money(liq) : "&mdash;"}</b></span>
+          ${away !== null ? `<span>distance <b class="${away < 0.10 ? "neg" : ""}">${pct(away)}</b></span>` : ""}
         </div></div>`;
     }).join("");
   }
@@ -1535,6 +1623,7 @@ async function loadOrders() {
     S.ordersError = e.message;
   }
   renderOrders();
+  loadHealth();
 }
 
 function orderTile(k, v, sub, cls) {
@@ -1547,9 +1636,139 @@ function orderTile(k, v, sub, cls) {
   return d;
 }
 
-function money(n) {
+/* Named usd(), NOT money(). This used to be a second top-level function
+   called money(), which silently replaced the terminal's own money(v, d)
+   for the WHOLE page - so every call that passed a decimal count (fees at
+   4 places, notionals at 0) quietly got 2, and the em-dash fallback for a
+   missing value disappeared. Two files, one page, one global scope. */
+function usd(n) {
   const v = Number(n) || 0;
   return (v < 0 ? "-$" : "$") + Math.abs(v).toFixed(2);
+}
+
+/* THE BAND IS PUBLISHED WITH THE DRAWDOWN, NEVER WITHOUT IT.
+   Finding 019 measured a 5th-percentile one-year drawdown of -27% and a 12%
+   chance of a losing year, and only 47% of first bars are positive - so a live
+   book shows red most days while still earning its published return. A drawdown
+   figure on its own invites exactly the wrong reaction; the band is the context
+   that makes it readable. */
+function renderForward(o) {
+  const card = $("or-forward-card"), f = o && o.forward, b = o && o.band;
+  if (!card) return;
+  if (!f || !b) { card.style.display = "none"; return; }
+  card.style.display = "";
+
+  const edge = Number(b.normalDrawdown) || -0.27;     // -0.27
+  const mid  = Number(b.medianDrawdown) || -0.15;
+  const dd   = Number(f.drawdown) || 0;               // <= 0
+  const used = Math.max(0, Math.min(1.25, dd / edge));
+
+  $("or-fwd-mid").textContent  = pct(mid) + " typical bad year";
+  $("or-fwd-edge").textContent = pct(edge) + " edge of normal";
+
+  $("or-fwd-fill").style.width = (used * 100 / 1.25) + "%";
+  $("or-fwd-fill").className = "band-fill" + (f.outsideNormalBand ? " over" : "");
+  $("or-fwd-mark").style.left = (used * 100 / 1.25) + "%";
+
+  if (!f.hasHistory) {
+    $("or-fwd-tail").textContent = "not started";
+    $("or-fwd-line").innerHTML =
+      "<b>The forward record needs a second run before it can have a curve.</b> " +
+      "One published plan is a starting point, not a history.";
+    $("or-fwd-note").innerHTML = bandNote(b);
+    return;
+  }
+
+  $("or-fwd-tail").textContent = f.runs + (f.runs === 1 ? " run" : " runs");
+  const ret = Number(f.returnSinceStart) || 0;
+  $("or-fwd-line").innerHTML =
+    "<b>" + usd(f.currentUsd) + "</b> from " + usd(f.startUsd) +
+    " &mdash; <span class='" + (ret > 0 ? "pos" : ret < 0 ? "neg" : "") + "'>" +
+    pct(ret) + "</span> since the record opened. " +
+    "Now <b>" + pct(dd) + "</b> below its peak of " + usd(f.peakUsd) +
+    "; worst so far " + pct(Number(f.worstDrawdown) || 0) + ".";
+
+  $("or-fwd-note").innerHTML = (f.outsideNormalBand
+    ? "<b>This is past the edge of a normal year.</b> That is evidence worth " +
+      "looking at, not an instruction on its own. "
+    : "<b>This is inside a normal bad year and is not a signal.</b> ") + bandNote(b);
+}
+
+function bandNote(b) {
+  return "Finding 019 bootstrapped 5,000 one-year histories: the median bad year " +
+    "drops " + pct(Number(b.medianDrawdown) || -0.15) + " from its peak, one year in " +
+    "twenty reaches " + pct(Number(b.normalDrawdown) || -0.27) + ", and <b>" +
+    Math.round((Number(b.chanceOfLosingYear) || 0.12) * 100) + "% of years lose money</b>. " +
+    "Only " + Math.round((Number(b.positiveFirstBars) || 0.47) * 100) + "% of trades are up " +
+    "after their first day &mdash; the edge is in the size of the wins, not how often " +
+    "they come, so a live book shows red on most days while behaving exactly as measured.";
+}
+
+function pct(x) { return (x * 100).toFixed(1).replace(/\.0$/, "") + "%"; }
+
+/* STALENESS IS THE ALARM.
+   status.json is rewritten by the recorder every minute. So the check here is
+   not "does the file say it is alive" - it is "how old is the file". A recorder
+   that has stopped cannot update a flag to say so, but it also cannot stop the
+   clock. The AGE OF THIS FILE is therefore the only trustworthy signal on the
+   page, and it is the one the colour is driven by. */
+const STATUS_URL = "status.json";
+
+async function loadHealth() {
+  try {
+    const r = await fetch(STATUS_URL + "?t=" + Date.now(), { cache: "no-store" });
+    S.health = r.ok ? await r.json() : null;
+    S.healthError = r.ok ? null : "HTTP " + r.status;
+  } catch (e) {
+    S.health = null;
+    S.healthError = String(e.message || e);
+  }
+  renderHealth();
+}
+
+function renderHealth() {
+  const box = $("or-health");
+  if (!box) return;
+  const h = S.health;
+
+  if (!h) {
+    box.className = "health";
+    $("or-health-verdict").textContent = "No status file published yet";
+    $("or-health-detail").textContent =
+      "The recorder writes status.json every minute; LONA-PLAN.bat publishes it."
+      + (S.healthError ? " (" + esc(S.healthError) + ")" : "");
+    return;
+  }
+
+  // Age of the FILE, not of anything it claims about itself.
+  const ageMin = (Date.now() - Date.parse(h.at)) / 60000;
+  const limit = Number(h.staleAfterMinutes) || 5;
+  const stale = ageMin > limit;
+  const wellNow = Boolean(h.allWell) && !stale;
+
+  box.className = "health " + (wellNow ? "ok" : "bad");
+  $("or-health-verdict").textContent = stale
+    ? "This status is " + ageWords(ageMin) + " old"
+    : (h.verdict || (wellNow ? "All well" : "Attention needed"));
+
+  const t = h.tape || {};
+  const bits = [];
+  if (stale) {
+    bits.push("The recorder rewrites this every minute, so an old file means it "
+      + "has stopped. Last said: " + (h.verdict || "-"));
+  } else {
+    bits.push("as of " + ageWords(ageMin) + " ago");
+  }
+  if (t.days != null) bits.push(t.days + " day" + (t.days === 1 ? "" : "s") + " of tape");
+  if (t.gigabytes != null) bits.push(Number(t.gigabytes).toFixed(1) + " GB");
+  if (h.plan && h.plan.runs != null) bits.push(h.plan.runs + " paper run" + (h.plan.runs === 1 ? "" : "s"));
+  $("or-health-detail").textContent = bits.join(" · ");
+}
+
+function ageWords(min) {
+  if (min < 2) return "under a minute";
+  if (min < 90) return Math.round(min) + " minutes";
+  return (min / 60).toFixed(1) + " hours";
 }
 
 function renderOrders() {
@@ -1572,6 +1791,7 @@ function renderOrders() {
     $("or-ordercount").textContent = "";
     $("or-recon-summary").textContent = "";
     $("or-recon-verdict").textContent = "";
+    renderForward(null);
     return;
   }
 
@@ -1585,7 +1805,7 @@ function renderOrders() {
   $("or-when").textContent = new Date(o.at).toLocaleString();
 
   const pnl = Number(o.openPaperPnlUsd) || 0;
-  tiles.appendChild(orderTile("open P&L", money(pnl),
+  tiles.appendChild(orderTile("open P&L", usd(pnl),
     ((Number(o.openPaperPnlPct) || 0) * 100).toFixed(2) + "% of the paper book",
     pnl > 0 ? "pos" : pnl < 0 ? "neg" : ""));
   tiles.appendChild(orderTile("positions", String(o.positions.length),
@@ -1593,15 +1813,17 @@ function renderOrders() {
   tiles.appendChild(orderTile("deployed",
     ((Number(o.deployedFraction) || 0) * 100).toFixed(0) + "%",
     "backtest averaged about 17%"));
-  tiles.appendChild(orderTile("paper size", money(o.paperEquityUsd),
+  tiles.appendChild(orderTile("paper size", usd(o.paperEquityUsd),
     "assumed, not a balance"));
-  tiles.appendChild(orderTile("min account", money(o.smallestViableAccountUsd),
+  tiles.appendChild(orderTile("min account", usd(o.smallestViableAccountUsd),
     o.accountTooSmall ? "the paper size is BELOW this" : "measured from live lot sizes",
     o.accountTooSmall ? "neg" : ""));
   tiles.appendChild(orderTile("reconciled",
     o.reconciliation.wasChecked ? (o.reconciliation.clean ? "clean" : "mismatch") : "not set",
     o.reconciliation.wasChecked ? "vs the wallet's real book" : "no address configured",
     o.reconciliation.clean ? "pos" : o.reconciliation.wasChecked ? "neg" : ""));
+
+  renderForward(o);
 
   if (!o.positions.length) {
     pos.appendChild(el("tr")).appendChild(
@@ -1617,7 +1839,7 @@ function renderOrders() {
     tr.appendChild(el("td", "num " + (r > 0 ? "pos" : r < 0 ? "neg" : ""),
                       (r * 100).toFixed(2) + "%"));
     tr.appendChild(el("td", "num " + (p.paperPnlUsd > 0 ? "pos" : p.paperPnlUsd < 0 ? "neg" : ""),
-                      money(p.paperPnlUsd)));
+                      usd(p.paperPnlUsd)));
     pos.appendChild(tr);
   });
 
@@ -1632,7 +1854,7 @@ function renderOrders() {
   o.orders.forEach(x => {
     const tr = el("tr");
     tr.appendChild(el("td", "mono", x.coin));
-    tr.appendChild(el("td", "num", money(x.deltaNotionalUsd)));
+    tr.appendChild(el("td", "num", usd(x.deltaNotionalUsd)));
     tr.appendChild(el("td", "trunc" + (x.placeable ? "" : " neg"),
                       x.placeable ? x.reason : "refused - " + x.refusal));
     ord.appendChild(tr);

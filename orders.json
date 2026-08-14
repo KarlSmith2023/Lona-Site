@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-13T23:52:46.9587696+00:00",
+  "at": "2026-08-14T05:08:12.4134309+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
@@ -35,15 +35,15 @@
   "accountTooSmall": false,
   "smallestViableAccountUsd": 300,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": 0.55,
-  "openPaperPnlPct": 0.001830,
+  "openPaperPnlUsd": -0.01,
+  "openPaperPnlPct": -0.000041,
   "forward": {
     "hasHistory": true,
-    "runs": 7,
+    "runs": 8,
     "startUsd": 1000,
-    "currentUsd": 1002.90,
-    "peakUsd": 1002.90,
-    "returnSinceStart": 0.002905,
+    "currentUsd": 1003.03,
+    "peakUsd": 1003.03,
+    "returnSinceStart": 0.003033,
     "drawdown": 0,
     "worstDrawdown": 0,
     "bandUsed": 0,
@@ -83,6 +83,11 @@
         "at": "2026-08-13T23:52:46.9587696+00:00",
         "equityUsd": 1002.90,
         "drawdown": 0
+      },
+      {
+        "at": "2026-08-14T05:08:12.4134309+00:00",
+        "equityUsd": 1003.03,
+        "drawdown": 0
       }
     ]
   },
@@ -96,49 +101,49 @@
   "positions": [
     {
       "coin": "PUMP",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 0.002781,
-      "price": 0.002904,
-      "returnSinceEntry": 0.044229,
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 0.002909,
+      "price": 0.00293,
+      "returnSinceEntry": 0.007219,
       "notionalUsd": 15.00,
-      "paperPnlUsd": 0.66
+      "paperPnlUsd": 0.11
     },
     {
       "coin": "XMR",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
       "entryPrice": 398.04,
-      "price": 395.0,
-      "returnSinceEntry": -0.007637,
+      "price": 394.84,
+      "returnSinceEntry": -0.008039,
       "notionalUsd": 15.00,
-      "paperPnlUsd": -0.11
+      "paperPnlUsd": -0.12
     }
   ],
   "orders": [
     {
       "coin": "PUMP",
-      "reason": "rebalance - drifted outside the band",
-      "deltaNotionalUsd": 152.73,
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 15.00,
       "placeable": true
     },
     {
       "coin": "XMR",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
       "deltaNotionalUsd": 15.00,
       "placeable": true
     }
   ],
   "reconciliation": {
     "wasChecked": true,
-    "clean": false,
-    "hasInversion": true,
-    "summary": "1 inverted",
+    "clean": true,
+    "hasInversion": false,
+    "summary": "paper only - the rule wants 2 position(s) and none has been placed, which is the expected state while nothing is being traded",
     "problems": [
       {
         "coin": "PUMP",
-        "status": "Inverted",
-        "detail": "held on the OPPOSITE SIDE to the intended book - price movement cannot cause this"
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
       },
       {
         "coin": "XMR",

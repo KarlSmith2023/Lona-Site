@@ -78,6 +78,7 @@ p{margin:0 0 14px;max-width:70ch}
 .tag.build{background:rgba(240,160,42,.15);color:var(--warn)}
 .tag.next{background:rgba(49,168,255,.15);color:var(--acc2)}
 .tag.dead{background:rgba(232,84,74,.13);color:var(--bad)}
+.tag.warn{background:rgba(240,160,42,.15);color:var(--warn)}
 .card p{font-size:14px;color:var(--dim);margin:0 0 10px}
 .card code{font-family:var(--mono);font-size:12px;background:var(--bg);
   border:1px solid var(--line2);border-radius:6px;padding:2px 7px;color:var(--acc);
@@ -165,10 +166,11 @@ tr.hl{background:rgba(45,224,165,.06)}
   <span class="logo">LONA<b>://</b><i>platform</i></span>
   <nav>
     <a href="#status">Status</a>
-    <a href="#works">What works</a>
-    <a href="#strategies">Strategies</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#strategy">Strategy</a>
     <a href="#findings">Findings</a>
-    <a href="#building">Building</a>
+    <a href="#method">Method</a>
+    <a href="#next">Next</a>
     <a href="#run">Run it</a>
   </nav>
   <span class="live"><span class="dot"></span>recording</span>
@@ -180,16 +182,17 @@ tr.hl{background:rgba(45,224,165,.06)}
 <section>
   <h2>Liquidity Oriented Neural Analytics</h2>
   <h1>A research platform that tries<br/>to kill its own ideas.</h1>
-  <p class="lede">Ten findings. Two candidate strategies. Zero orders placed —
-  and that last number is the point.</p>
+  <p class="lede">Twenty-seven findings. One designated strategy. Zero orders
+  placed — and that last number is still the point.</p>
 
   <div class="quote">&ldquo;Never trade because we think something works.
   Trade because the statistics prove it works.&rdquo;</div>
 
   <p class="sub">Most trading systems are built to find edges. This one is built
-  to <b>destroy</b> them, and to keep only what survives. Seven of the first
-  seven findings are dead — killed by this platform, using its own data. The two
-  that remain are the two that would not die.</p>
+  to <b>destroy</b> them and keep only what survives. Around 145 rules have been
+  tested and one is still standing. Four of the twenty-seven findings are
+  corrections to earlier findings in the same file — including two that were
+  wrong for a fortnight before this platform caught itself.</p>
 
   <p style="margin-top:22px">
     <a class="btn" href="terminal.html">Open the live terminal</a>
@@ -200,15 +203,15 @@ tr.hl{background:rgba(45,224,165,.06)}
 <!-- ============================================================== status -->
 <section id="status">
   <h2>Status</h2>
-  <h3>Where the platform is tonight</h3>
+  <h3>Where the platform is on 14 August 2026</h3>
 
   <div class="tiles" style="margin:18px 0">
     <div class="tile"><div class="k">Order-book tape</div>
-      <div class="v pos">LIVE</div><div class="s">21 markets, 8 streams</div></div>
+      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 125 subscriptions</div></div>
     <div class="tile"><div class="k">Forward record</div>
-      <div class="v warn">day 2</div><div class="s">of about 180 needed</div></div>
-    <div class="tile"><div class="k">Tests passing</div>
-      <div class="v">145</div><div class="s">across 5 suites</div></div>
+      <div class="v warn">day 5</div><div class="s">of about 180 needed</div></div>
+    <div class="tile"><div class="k">Test cases</div>
+      <div class="v">311</div><div class="s">across 6 suites</div></div>
     <div class="tile"><div class="k">Orders placed</div>
       <div class="v faint">0</div><div class="s">deliberately</div></div>
   </div>
@@ -217,17 +220,23 @@ tr.hl{background:rgba(45,224,165,.06)}
     <thead><tr><th>Component</th><th>State</th><th>Detail</th></tr></thead>
     <tbody>
       <tr><td>Order-book recorder</td><td class="pos">running</td>
-        <td>253 MB/day &middot; 46 GB per six months</td></tr>
-      <tr><td>Market archive</td><td class="pos">complete</td>
-        <td>232 perps &middot; 55 delisted &middot; 6 years</td></tr>
-      <tr><td>Funding archive</td><td class="pos">complete</td>
-        <td>1,918,768 hourly records</td></tr>
+        <td>~240 MB/day &middot; ~45 GB per six months</td></tr>
+      <tr><td>Universe rule</td><td class="pos">single definition</td>
+        <td><code>Lona.Rules</code> &middot; recorder and planner call the same code</td></tr>
+      <tr><td>Per-market watchdog</td><td class="pos">live</td>
+        <td>one silent feed out of thirty now raises an alarm</td></tr>
+      <tr><td>Status file</td><td class="pos">live</td>
+        <td><code>status.json</code> &middot; answers when nothing is running</td></tr>
+      <tr><td>Market archives</td><td class="pos">complete</td>
+        <td>Hyperliquid 3 yr &middot; OKX 6.6 &middot; Binance 6.6 &middot; BitMEX 10.25</td></tr>
+      <tr><td>Funding archives</td><td class="pos">complete</td>
+        <td>1.9M hourly (HL) &middot; 6 yr (Binance) &middot; 11,188 prints (BitMEX)</td></tr>
       <tr><td>Risk engine</td><td class="pos">tested</td>
-        <td>every limit proves it blocks something</td></tr>
+        <td>every limit ships with a case that proves it blocks something</td></tr>
+      <tr><td>Paper ledger</td><td class="pos">live</td>
+        <td>equity curve derived from the append-only plan journal</td></tr>
       <tr><td>Execution pipeline</td><td class="warn">dry run</td>
-        <td>signer built, payload unverified at the venue</td></tr>
-      <tr><td>Analyst / bot</td><td class="warn">engine built</td>
-        <td>needs the live feed wiring and a UI panel</td></tr>
+        <td>signer built &middot; payload never spoken to the venue</td></tr>
       <tr><td>Live trading</td><td class="faint">not started</td>
         <td>gated on the forward record, not on the code</td></tr>
     </tbody>
@@ -235,301 +244,481 @@ tr.hl{background:rgba(45,224,165,.06)}
 
   <div class="note">
     <div class="t">&#9888; The honest headline</div>
-    <p>The two strategies rest on <b>three years of backtest</b>, which is about
-    one and a half market cycles. The standard error of a three-year Sharpe ratio
-    is roughly &plusmn;0.7, so the breakout rule's measured 1.10 carries a
-    <b>t-statistic of about 1.5</b> — below the bar this project set for itself.</p>
-    <p>That is a hint, not a proof. No amount of re-reading the same three years
-    changes it. Only elapsed time with the decision already committed does, which
-    is what the forward record is for and why it started on 10 August 2026.</p>
+    <p>The designated strategy now reads <b>t&nbsp;=&nbsp;2.4</b> on 6.6 years of
+    Binance including its delisted contracts, and <b>t&nbsp;=&nbsp;2.39</b> on
+    10.25 years of BitMEX bitcoin. Those are the first two t-statistics above 2
+    this project has produced, and both are genuinely out of sample: the 50/5
+    parameters were fixed on Hyperliquid and no search was run on either venue.</p>
+    <p>That is much better than a hint and still not a live result. Every figure
+    on this page is a backtest. <b>The only test that cannot be searched is the
+    one that has not happened yet</b>, which is what the forward record and the
+    order-book tape are for, and they are five days old.</p>
   </div>
 </section>
 
-<!-- =============================================================== works -->
-<section id="works">
-  <h2>What works now</h2>
-  <h3>Eleven projects, built and tested</h3>
-  <p class="sub">Everything below runs today. Each one shipped with tests that
-  prove it does what it claims, because a limit with no failing case is a
-  comment.</p>
-
-  <div class="grid g2 g3" style="margin-top:20px">
-
-    <div class="card on"><h3>Order-book recorder <span class="tag live">live</span></h3>
-      <p>Tapes the full Hyperliquid depth feed — 20-level book, 5-level fast book,
-      top-of-book, every trade with <b>both counterparty addresses</b>, funding
-      context, and derived microstructure features.</p>
-      <p>The only data in the project that cannot be obtained later. Nobody sells
-      you the order book you did not record.</p>
-      <code>LONA-RECORD.bat</code></div>
-
-    <div class="card on"><h3>Market archive <span class="tag live">live</span></h3>
-      <p>All 232 Hyperliquid perpetuals as daily candles back to 2020 —
-      <b>including the 55 that have since been delisted</b>. A universe without
-      its dead names is a universe of winners.</p>
-      <p>Plus 1.9 million hourly funding payments across 156 markets.</p>
-      <code>LONA-PORTFOLIO.bat</code></div>
-
-    <div class="card on"><h3>Portfolio engine <span class="tag live">live</span></h3>
-      <p>Holds positions over time rather than measuring trades in isolation.
-      Point-in-time universe selection, correct one-day offset, fees and funding
-      charged on every position.</p>
-      <p>Ships with a strategy that <b>cheats on purpose</b> — if it stops
-      reporting an absurd number, the look-ahead guard has broken.</p>
-      <code>-- study</code></div>
-
-    <div class="card on"><h3>Risk engine <span class="tag live">live</span></h3>
-      <p>Single-market, correlated-group, gross-notional, daily-loss and
-      drawdown limits — checked in code before every order, never remembered by
-      a human.</p>
-      <p>The group limit is the important one: twenty alt-coins in a selloff is
-      one bet in twenty wrappers, and a per-position limit cannot see it.</p>
-      <code>LONA-RISK.bat</code></div>
-
-    <div class="card on"><h3>Execution pipeline <span class="tag live">dry run</span></h3>
-      <p>Agent wallet, kill switch that latches, arming that always expires, and
-      an append-only audit log that records the <b>refusals</b> as well as the
-      orders.</p>
-      <p>Dry run runs the identical code path with the last step off, so a week
-      of its log is a real prediction rather than a story about one.</p>
-      <code>-- dry-run</code></div>
-
-    <div class="card on"><h3>Hyperliquid signer <span class="tag live">built</span></h3>
-      <p>msgpack &rarr; keccak &rarr; EIP-712, every step written out rather than
-      wrapped, because each one is a place where a wrong answer still produces a
-      <i>valid</i> signature that recovers to the wrong address.</p>
-      <p>Cryptography proven by test. Payload schema not yet spoken to the venue.</p>
-      <code>HyperliquidAction</code></div>
-
-    <div class="card on"><h3>Live terminal <span class="tag live">live</span></h3>
-      <p>One file, desktop and phone. Account, markets, signals, research and
-      risk — computed in the browser from the venue's own data on every load, so
-      it cannot show you a stale book.</p>
-      <p>Read-only. It holds no key and cannot trade.</p>
-      <a href="terminal.html">Open it &rarr;</a></div>
-
-    <div class="card on"><h3>Tape verifier <span class="tag live">live</span></h3>
-      <p>Decompresses every recorded file, counts rows, reports the largest gap
-      per stream, and checks every counterparty id resolves.</p>
-      <p>It caught a real corruption on the recorder's first run — 19 trade ids
-      pointing at addresses that had never been written.</p>
-      <code>-- verify</code></div>
-
-    <div class="card on"><h3>Analyst engine <span class="tag live">built</span></h3>
-      <p>Facts are computed; only the words are generated. A model receives the
-      measurements and nothing else, and its output is <b>read back and checked</b> —
-      invent a number and the whole passage is discarded.</p>
-      <p>Asking a model not to hallucinate is not a control. Refusing to print
-      what it said is.</p>
-      <code>Lona.Analyst</code></div>
-
-  </div>
-</section>
-<!-- ========================================================== strategies -->
-<section id="strategies">
-  <h2>Strategies</h2>
-  <h3>The two that would not die</h3>
-  <p class="sub">Measured on 232 Hyperliquid perpetuals including the 55 since
-  delisted, August 2023 to August 2026, after fees <b>and after the actual hourly
-  funding paid</b>.</p>
+<!-- ============================================================ evidence -->
+<section id="evidence">
+  <h2>Evidence</h2>
+  <h3>The same rule, on four independent datasets</h3>
+  <p class="sub">One rule: rank the perpetuals by trailing 30-day dollar volume,
+  re-rank weekly, take the top 20; when one closes <b>strictly above</b> every
+  close of the preceding 49 days, hold it five days at 1/20 of capital, otherwise
+  cash. Every row below is net of fees <b>and net of the actual funding paid</b>.</p>
 
   <div class="scroll" style="margin:18px 0"><table>
-    <thead><tr><th>Strategy</th><th>CAGR</th><th>Sharpe</th><th>Worst DD</th>
-      <th>Calmar</th><th>t</th></tr></thead>
+    <thead><tr><th>Dataset</th><th>Span</th><th>Dead names</th><th>CAGR</th>
+      <th>Sharpe</th><th>Worst DD</th><th>t</th></tr></thead>
     <tbody>
-      <tr class="hl"><td>Breakout + hedged carry</td><td class="pos">+49.5%</td>
-        <td class="pos">+2.03</td><td>&minus;11%</td><td>4.52</td><td>&mdash;</td></tr>
-      <tr><td>Finding 008 &middot; breakout momentum</td><td class="pos">+22.9%</td>
-        <td class="pos">+1.10</td><td>&minus;15%</td><td>1.51</td><td class="warn">+1.5</td></tr>
-      <tr><td>Finding 009 &middot; hedged funding carry</td><td class="pos">+21.7%</td>
-        <td class="pos">+11.24</td><td>&minus;1%</td><td>30.5</td><td class="pos">+2.4</td></tr>
-      <tr><td>Buy and hold Bitcoin</td><td class="pos">+30.3%</td><td>+0.80</td>
-        <td class="neg">&minus;53%</td><td>0.57</td><td>+1.2</td></tr>
-      <tr><td>Buy and hold the same top-20 book</td><td class="neg">&minus;15.9%</td>
-        <td>+0.16</td><td class="neg">&minus;83%</td><td>&minus;0.19</td><td>+0.2</td></tr>
+      <tr class="hl"><td>Binance archive &middot; 742 perps, crypto only</td><td>6.6 yr</td>
+        <td class="pos">kept</td><td class="pos">+32.4%</td><td class="pos">+1.22</td>
+        <td>&minus;28%</td><td class="pos">+2.4</td></tr>
+      <tr class="hl"><td>BitMEX &middot; XBTUSD alone</td><td>10.25 yr</td>
+        <td>n/a</td><td class="pos">+27.7%</td><td>+0.88</td>
+        <td class="neg">&minus;54%</td><td class="pos">+2.39</td></tr>
+      <tr><td>OKX &middot; 356 perps, crypto only</td><td>6.6 yr</td>
+        <td class="neg">absent</td><td class="pos">+26.1%</td><td>+1.03</td>
+        <td class="neg">&minus;35%</td><td>+2.1</td></tr>
+      <tr><td>Hyperliquid &middot; 232 perps</td><td>3.0 yr</td>
+        <td class="pos">kept</td><td class="pos">+20.9%</td><td>+1.02</td>
+        <td>&minus;14%</td><td class="warn">+1.5</td></tr>
     </tbody>
   </table></div>
 
-  <div class="grid g2">
-    <div class="card"><h3>008 &middot; Breakout momentum</h3>
-      <p>Rank the perpetuals by trailing 30-day dollar volume, re-rank weekly,
-      take the top 20. When one closes at a <b>new 50-day high</b>, hold it five
-      days at 1/20 of capital. Otherwise cash.</p>
+  <p class="sub">Four venues, three decades of instrument history, and the four
+  Sharpe ratios land between 0.88 and 1.22. <b>More venues is not more
+  evidence</b> — the same rule on Bybit over the same years would correlate about
+  0.95 with the Binance run. Only new <i>time</i> or new <i>information</i> moves
+  a standard error, which is why BitMEX was worth pulling and Bybit was not.</p>
+
+  <h3 style="margin-top:34px">The controls, which matter more than the headline</h3>
+  <p class="sub">A backtest with no control is a story. Each row below is a
+  deliberate attempt to make the engine print something impossible.</p>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Control</th><th>Result</th><th>Reads as</th></tr></thead>
+    <tbody>
+      <tr><td>Let it see the return it is about to earn (Binance)</td>
+        <td class="pos">+164,956% &middot; Sharpe 14.79</td>
+        <td>engine sound &mdash; if this ever looks reasonable, every other row is void</td></tr>
+      <tr><td>Hold the whole top-20 book, always (Binance, 6.6 yr)</td>
+        <td class="neg">loses money &middot; &minus;94% DD</td>
+        <td>it is a <b>selection</b> rule, not a repackaged long</td></tr>
+      <tr><td>Hold the whole top-6 book, always (BitMEX, 2018&ndash;20)</td>
+        <td class="neg">&minus;40.6% &middot; &minus;76% DD</td>
+        <td>the same control replicating on a different venue in a different decade</td></tr>
+      <tr><td>200 shuffles of the same weights across the same days</td>
+        <td class="warn">10% of shuffles beat the real book</td>
+        <td>the BitMEX cross-section is <b>not</b> evidence, and is reported anyway</td></tr>
+      <tr><td>The short side &mdash; a new 50-day <i>low</i></td>
+        <td class="neg">&minus;9.5% a year</td>
+        <td>long-only is correct because it was measured, not assumed</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:34px">Year by year, on the Binance archive</h3>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Year</th><th>CAGR</th><th>Sharpe</th><th>Worst DD</th><th>Bitcoin</th></tr></thead>
+    <tbody>
+      <tr><td>2020</td><td class="pos">+33.7%</td><td>+1.40</td><td>&minus;14%</td><td class="pos">+302%</td></tr>
+      <tr><td>2021</td><td class="pos">+125.1%</td><td>+2.30</td><td>&minus;15%</td><td class="pos">+60%</td></tr>
+      <tr><td><b>2022</b></td><td class="neg">&minus;18.8%</td><td class="neg">&minus;0.92</td><td class="neg">&minus;25%</td><td class="neg">&minus;64%</td></tr>
+      <tr><td>2023</td><td class="pos">+43.2%</td><td>+1.70</td><td>&minus;19%</td><td class="pos">+156%</td></tr>
+      <tr><td>2024</td><td class="pos">+29.8%</td><td>+1.15</td><td>&minus;15%</td><td class="pos">+121%</td></tr>
+      <tr><td>2025</td><td class="pos">+21.5%</td><td>+0.97</td><td>&minus;9%</td><td class="neg">&minus;6%</td></tr>
+      <tr><td>2026 <span class="faint">(0.6 yr)</span></td><td class="pos">+37.9%</td><td>+1.42</td><td>&minus;9%</td><td class="neg">&minus;28%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub"><b>2025 and 2026 both beat a falling bitcoin</b>, so this is not
+  simply market beta wearing a rule.</p>
+
+  <h3 style="margin-top:34px">Both bear markets, finally measured</h3>
+  <p class="sub">Every other dataset in this project starts in 2020. BitMEX is
+  the only venue found that was listing crypto derivatives through the 2018 bear
+  and still serves the data.</p>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Year</th><th>Bitcoin</th><th>The rule</th><th>Its worst DD</th>
+      <th>Days in market</th><th>Entries</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><b>2018</b></td><td class="neg">&minus;73.4%</td>
+        <td class="warn">&minus;5.3%</td><td>&minus;10.4%</td><td>4%</td><td>4</td></tr>
+      <tr><td>2022</td><td class="neg">&minus;64.2%</td>
+        <td class="neg">&minus;20.9%</td><td>&minus;29.2%</td><td>6%</td><td>8</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub">In the worst year crypto has ever had, the rule lost five per
+  cent. It cut exposure to 4% and took four trades all year. <b>This corrected an
+  earlier finding on this very page</b>: finding 017 concluded from 2022 alone
+  that the rule &ldquo;loses badly in a bear market&rdquo;. With both bears
+  measured the truth is narrower than either version — <b>the loss scales with
+  how many false breakouts the bear produces</b>. 2018 was a steady grind and
+  produced four; 2022 had violent bear rallies and produced eight, for four times
+  the loss. The mechanism, not the magnitude, is what generalises.</p>
+
+  <h3 style="margin-top:34px">What a year of this actually looks like</h3>
+  <p class="sub">5,000 block-bootstrapped one-year histories, 20-day blocks,
+  because crypto clusters and single-day resampling would flatter every number.</p>
+
+  <div class="tiles" style="margin:18px 0">
+    <div class="tile"><div class="k">Median year</div>
+      <div class="v pos">+32.5%</div><div class="s">what to expect</div></div>
+    <div class="tile"><div class="k">5th percentile year</div>
+      <div class="v neg">&minus;10.2%</div><div class="s">a bad one, still normal</div></div>
+    <div class="tile"><div class="k">5th pct drawdown</div>
+      <div class="v warn">&minus;27%</div><div class="s">median is &minus;15%</div></div>
+    <div class="tile"><div class="k">Chance of a losing year</div>
+      <div class="v warn">12%</div><div class="s">about one year in eight</div></div>
+  </div>
+
+  <div class="note bad">
+    <div class="t">&#9888; The two facts that make a live book uncomfortable to watch</div>
+    <p><b>Only 47% of first bars are positive.</b> Across 3,021 historical
+    entries the median first day is &minus;0.48%. The rule loses slightly more
+    often than it wins; its entire edge is in the tail. A live book will show red
+    on most days while earning exactly its published return.</p>
+    <p><b>There is a 12% chance of a losing year</b>, and that is a property of
+    the strategy rather than a warning sign in it. A first year that loses money
+    is inside the distribution and says almost nothing about whether the edge is
+    real. Anyone who stops on a run of red days is not running finding 008; they
+    are running something that was never tested.</p>
+  </div>
+</section>
+
+<!-- ============================================================ strategy -->
+<section id="strategy">
+  <h2>Strategy</h2>
+  <h3>One designated, one shelved</h3>
+
+  <div class="grid g2" style="margin-top:20px">
+    <div class="card on"><h3>008 &middot; Breakout momentum <span class="tag live">designated</span></h3>
+      <p>Rank the perpetuals by trailing 30-day dollar volume, re-rank
+      <b>weekly</b>, take the top 20. When one closes strictly above every close
+      of the preceding 49 days, hold it five days at 1/20 of capital. Otherwise
+      cash. Average deployment 16&ndash;23%.</p>
       <p>Dividing by the size of the <i>universe</i> rather than by the number of
       signals is deliberate: a quiet market leaves you in cash instead of putting
       the whole account into one coin.</p>
-      <p><b>Character:</b> a bull-market engine with a cash brake. Positive in 4
-      of 7 years. In the last bear it returned &minus;3% at a &minus;8% drawdown
-      while Bitcoin fell 48%. It protects capital; it does not print money on
-      demand.</p></div>
+      <p><b>What it survived:</b> a 70-cell parameter surface with every cell
+      positive; fees to 30&nbsp;bps a side; the real hourly funding on every coin
+      held; the delisted names left in; fills one and two days late; and four
+      venues.</p>
+      <p><b>Character:</b> a bull-market engine with a cash brake. It systematically
+      buys what is expensive to hold — a market at a new 50-day high is a crowded
+      long, and crowded longs pay funding.</p></div>
 
-    <div class="card"><h3>009 &middot; Hedged funding carry</h3>
-      <p>Rank the top 40 by trailing 7-day funding, re-rank monthly, short the
-      ten richest payers on the perpetual and hold an equal size on <b>spot</b>,
-      so the price cancels and only the funding is kept.</p>
-      <p><b>Unhedged this loses 62% a year</b> — the coins paying the most funding
-      are the ones going up hardest, so shorting them without the spot leg is
-      shorting momentum.</p>
-      <p><b>The Sharpe of 11 is not a real Sharpe.</b> Carry income arrives in a
-      trickle and the loss arrives all at once, from something not in the sample:
-      venue failure, a delisting while short, a liquidation on a wick, a
-      collateral depeg.</p></div>
+    <div class="card"><h3>012 &middot; Hedged funding carry <span class="tag build">shelved</span></h3>
+      <p>Short the richest funding payers on the perpetual, hold an equal size on
+      spot so the price cancels, and keep the funding. On six years of real
+      Binance funding: <b>+7.1% a year, Sharpe 2.75, &minus;11% drawdown</b>, and
+      every one of six years contributes.</p>
+      <p><b>Shelved, not refuted.</b> Its Sharpe is <b>unfalsifiable in the
+      current framework</b>: the model's only price-risk term is a residual
+      multiplier, so every improvement made to the book raises the Sharpe without
+      removing any risk from the world. Requiring a live spot listing produces
+      Sharpe 5.54 — that is a symptom, not a result.</p>
+      <p><b>Unshelving requires a risk model that can represent a jump</b>, not a
+      better Sharpe. Its real failure modes — naked legs, funding regime flips
+      (2026 is running at &minus;8.2%), liquidation cascades, venue failure — are
+      not in the backtest at all.</p></div>
+  </div>
+
+  <div class="note" style="margin-top:18px">
+    <div class="t">&#9888; A correction this platform made against itself, three days ago</div>
+    <p>Finding 021 published the claim that <b>75&ndash;100% of a Hyperliquid
+    carry book is unhedgeable</b>. It was wrong. The venue returns
+    <b>324 spot pairs against 715 contexts</b>, and both the Python that produced
+    the finding and the first version of the C&#35; joined those two arrays
+    <b>by position</b> — so every market's turnover was read off some other
+    market. Re-measured on the contexts' own key: BTC's wrapper does $11.9m a day,
+    not $0; HYPE does $38.8m.</p>
+    <p>It was caught by one question — <i>why does HYPE/USDC show $0 when HYPE is
+    Hyperliquid's own token?</i> Nothing else looked wrong. Every other row was a
+    plausible number in a plausible place. <b>A join whose two sides are different
+    lengths is not a join</b>, and that is now a method rule.</p>
+    <p>Carry does not automatically unshelve — two of the three reasons are
+    untouched — but a five-name book on BTC, ETH, SOL, ZEC and HYPE is a question
+    that is open again, with a new unmeasured cost: four of those five hedges are
+    <b>bridged wrappers</b>, and nothing in this project knows what wrapper-to-perp
+    basis does in a crisis.</p>
   </div>
 
   <div class="note bad" style="margin-top:18px">
-    <div class="t">&#9888; What these numbers do not contain</div>
-    <p><b>Three years is one and a half cycles.</b> Both t-statistics are
-    borderline and the breakout's is below the bar.</p>
-    <p><b>The carry needs a second venue.</b> Hyperliquid's own spot book does
-    $61M a day against $1.14B on its BTC perp alone, so the hedge cannot live
-    there at size — it means two sets of fees, two collateral pools and transfer
-    risk between them.</p>
-    <p><b>This is research, not advice.</b> Every number above is a backtest.
-    Losses are possible and leverage makes them faster.</p>
+    <div class="t">&#9888; What none of these numbers contain</div>
+    <p><b>No survivorship correction is applied, in either direction.</b> It
+    measured +6.2 points on one three-year sample and &minus;2.9 on a 6.6-year
+    one; the spread of the estimator is about 7 points, which is larger than the
+    estimate. Two earlier findings subtracted 6.2 points on the strength of the
+    first measurement, and that subtraction was unjustified.</p>
+    <p><b>This is research, not advice.</b> Every figure here is a backtest.
+    Losses are possible and leverage makes them faster. Nothing on this page is a
+    recommendation about how much to stake — the bootstrap describes the strategy;
+    the stake is a decision about capital that only its owner can make.</p>
   </div>
 </section>
 
 <!-- ============================================================ findings -->
 <section id="findings">
   <h2>Findings</h2>
-  <h3>Ten results, seven of them dead</h3>
-  <p class="sub">The dead ones are kept on purpose. The record of being wrong is
-  what makes the record of being right worth anything.</p>
+  <h3>Twenty-seven results &mdash; and four of them kill earlier ones</h3>
+  <p class="sub">The dead entries are kept on purpose. The record of being wrong
+  is what makes the record of being right worth anything.</p>
 
   <div class="scroll" style="margin-top:18px"><table>
-    <thead><tr><th>#</th><th>What it claimed</th><th>Verdict</th></tr></thead>
+    <thead><tr><th>#</th><th>What it established</th><th>Verdict</th></tr></thead>
     <tbody>
-      <tr><td>001 &mdash; discount buys</td>
-        <td style="text-align:left;font-family:var(--sans);white-space:normal">Every
-        trend feature negative, one feature strongly positive. Exposed a ranking bug:
-        mean R rewards quiet bars.</td><td><span class="tag dead">dead</span></td></tr>
-      <tr><td>002 &mdash; the 4h timeframe</td>
+      <tr><td>001 &middot; discount buys</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Every trend
+        feature negative, one strongly positive. Exposed a ranking bug: mean R rewards
+        quiet bars.</td><td><span class="tag dead">dead</span></td></tr>
+      <tr><td>002 &middot; the 4h timeframe</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">Fees fall
         37-fold at 4h — and the edge falls with them.</td><td><span class="tag dead">dead</span></td></tr>
-      <tr><td>003 &mdash; regime</td>
+      <tr><td>003 &middot; regime</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">001 and 002
         were the same six-week regime. Positive in 4 of 10 quarters, t = &minus;0.23.</td>
         <td><span class="tag dead">dead</span></td></tr>
-      <tr><td>004 &mdash; the alphabet</td>
+      <tr><td>004 &middot; the alphabet</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">The symbols
-        had been chosen alphabetically. Ranked by volume instead, the top market turned out
-        to be a currency peg.</td><td><span class="tag dead">dead</span></td></tr>
-      <tr><td>005 &mdash; RSI extremes</td>
+        had been chosen alphabetically. Ranked by volume instead, the top USDT market turned
+        out to be a currency peg.</td><td><span class="tag dead">dead</span></td></tr>
+      <tr><td>005 &middot; RSI extremes</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">One rule
         looked net positive and failed only on sample size.</td>
         <td><span class="tag dead">dead</span></td></tr>
-      <tr><td>006 &mdash; the answer</td>
+      <tr><td>006 &middot; the answer</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal"><b>Killed
         001&ndash;005.</b> Same rule, same months, different symbols: alts +0.188,
-        BTC/ETH/SOL &minus;0.081. Every earlier finding was a measurement of illiquidity.</td>
-        <td><span class="tag dead">superseded</span></td></tr>
-      <tr><td>007 &mdash; trend following</td>
+        BTC/ETH/SOL &minus;0.081. Thin markets mean-revert because one order moves them
+        and the next moves them back.</td><td><span class="tag dead">superseded</span></td></tr>
+      <tr><td>007 &middot; trend following</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">The machinery
-        could not hold a position for more than 24 bars. A new engine found real trend
-        results — on three coins chosen with hindsight.</td>
+        could not hold a position past 24 bars. A new engine found real trend results — on
+        three coins chosen with hindsight, which is the error 006 was written about.</td>
         <td><span class="tag dead">superseded</span></td></tr>
-      <tr class="hl"><td>008 &mdash; breakout momentum</td>
-        <td style="text-align:left;font-family:var(--sans);white-space:normal">Survived a
-        32-cell parameter surface, fees to 30 bps, real funding, dead coins, execution lag
-        and years it was never fitted to.</td><td><span class="tag live">candidate</span></td></tr>
-      <tr class="hl"><td>009 &mdash; hedged carry</td>
-        <td style="text-align:left;font-family:var(--sans);white-space:normal">Survived
-        7-day-stale data, monthly rebalancing, no ranking at all, and a hedge leaking 25%
-        of the price move. Dies at 50 bps a leg.</td><td><span class="tag live">candidate</span></td></tr>
-      <tr><td>010 &mdash; the venues</td>
+      <tr class="hl"><td>008 &middot; breakout momentum</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The rule that
+        would not die. Now measured on four venues; best estimate +32.4% at Sharpe 1.22,
+        t 2.4.</td><td><span class="tag live">designated</span></td></tr>
+      <tr><td>009 &middot; funding carry</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">1.9M hourly
+        funding records. Reported Sharpe 8.2 — and a Sharpe of 8 is not a real Sharpe.
+        Superseded by 012.</td><td><span class="tag dead">superseded</span></td></tr>
+      <tr><td>010 &middot; the venues</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">The hedge leg
-        exists: 19 of 20 markets covered, basis within 2 bp on the majors. Cross-venue
-        funding spreads are real but too thin to stand alone.</td>
+        exists off-venue. Symbol collisions are a live hazard — XMR read +23,169 bps against
+        Binance, because it is a different token wearing the same ticker.</td>
         <td><span class="tag next">standing</span></td></tr>
+      <tr><td>011 &middot; the hunt for a third edge</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal"><b>Failed, and
+        the reason is the finding.</b> 26 candidates; best scored +0.94. Best-of-26 on pure
+        noise has a median of +1.11 — our best was <i>below</i> what noise typically
+        manages.</td><td><span class="tag dead">no edge</span></td></tr>
+      <tr><td>012 &middot; carry, honestly costed</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Turnover was
+        44.8&times; book value a year. Fixed, it makes +7.1%. Shelved because its risk model
+        cannot represent a jump.</td><td><span class="tag build">shelved</span></td></tr>
+      <tr><td>013 &middot; the residual delta</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Measured at
+        1.5%, two independent spot venues agreeing to 0.5pp. Found a timezone bug that
+        would have killed the carry book over an eight-hour offset.</td>
+        <td><span class="tag next">standing</span></td></tr>
+      <tr><td>014 &middot; execution cost</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">37&nbsp;bp
+        round trip at $10k, of which <b>29&nbsp;bp is fees</b>. The way to become insensitive
+        to a cost you cannot control is to stop paying it so often.</td>
+        <td><span class="tag next">standing</span></td></tr>
+      <tr><td>015 &middot; survivorship</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Measured
+        +6.2pp on three years — then 019 measured &minus;2.9pp on 6.6. Both are ordinary
+        draws. The error was ever treating it as a constant.</td>
+        <td><span class="tag dead">superseded</span></td></tr>
+      <tr><td>016 &middot; the parameter surface</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">70 cells, all
+        70 positive, smooth and single-peaked. <b>The maximum is meaningless</b> — noise on
+        the same grid produces a better best cell than ours.</td>
+        <td><span class="tag next">standing</span></td></tr>
+      <tr><td>017 &middot; six years instead of three</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The drawdown
+        is 2.5&times; what three years suggested. Its bear-market conclusion was later
+        narrowed by 024.</td><td><span class="tag warn">corrected</span></td></tr>
+      <tr><td>018 &middot; funding is structural</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Funding costs
+        the book 8.3 points a year. Also caught a six-year carry result that was pure
+        missing data — <b>a leg returning exactly nothing for five years is a data problem,
+        not a result.</b></td><td><span class="tag next">standing</span></td></tr>
+      <tr class="hl"><td>019 &middot; the Binance archive</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">6.6 years,
+        742 perps, <b>148 of them delisted and kept</b>. The first t above 2. Found that the
+        archive pads dead contracts with frozen prices, which deflates every volatility
+        estimate downstream.</td><td><span class="tag live">landmark</span></td></tr>
+      <tr><td>020 &middot; the hedge over six years</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">1.02% on the
+        book's legs — better than assumed — but SOL lost <b>25.13% of its hedge in one
+        day</b> during FTX. And 11 legs were never hedgeable at all.</td>
+        <td><span class="tag next">standing</span></td></tr>
+      <tr><td>021 &middot; cleanup</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Dissolved the
+        venue &ldquo;contradiction&rdquo; and measured tokenised-equity contamination at 16%
+        of 2026 slots. <b>Its spot-volume section is retracted</b> — see 027.</td>
+        <td><span class="tag warn">part retracted</span></td></tr>
+      <tr><td>022 &middot; implementation drift</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The live book
+        was not the tested rule. Daily instead of weekly re-rank; an off-by-one that
+        published XMR at +3.91% when it was &minus;1.38%; a launcher overriding a measured
+        account floor.</td><td><span class="tag next">standing</span></td></tr>
+      <tr><td>023 &middot; the tape was aimed wrong</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The recorder
+        was taping a different universe from the one the book trades. <b>The only mistake in
+        this file that could not be recalculated</b> — nobody sells you the order book of a
+        day that has passed.</td><td><span class="tag next">standing</span></td></tr>
+      <tr class="hl"><td>024 &middot; the 2018 bear</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">10.25 years of
+        BitMEX. <b>The rule lost 5.3% while bitcoin fell 73.4%.</b> And it replicated 018's
+        funding cost to two significant figures on unrelated data.</td>
+        <td><span class="tag live">landmark</span></td></tr>
+      <tr><td>025 &middot; sizing and exits</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Three ideas
+        pre-registered in writing, <b>none adopted</b>. Volatility is where the returns are:
+        the most volatile quarter pays +0.744%/day against +0.348% for the quietest.</td>
+        <td><span class="tag dead">not adopted</span></td></tr>
+      <tr><td>026 &middot; the order book, pilot</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">158,517 rows
+        on BTC are worth <b>4,723 independent observations</b>. A t computed on raw ticks
+        would be five times too large. The spread is 4% of the fee.</td>
+        <td><span class="tag build">pilot</span></td></tr>
+      <tr><td>027 &middot; the join that was not a join</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">324 pairs
+        joined to 715 contexts by position, wrong for a fortnight, every number plausible.
+        Retracts 021's headline claim.</td><td><span class="tag warn">correction</span></td></tr>
     </tbody>
   </table></div>
-
-  <div class="note ok" style="margin-top:18px">
-    <div class="t">&#10003; The method, where every rule was earned by a death</div>
-    <p><b>1.</b> Rank on volatility-adjusted lift, so the do-nothing baseline is
-    exactly zero. &nbsp;<b>2.</b> Count only independent observations. &nbsp;<b>3.</b>
-    Require stability across periods, not one lucky split. &nbsp;<b>4.</b> Record
-    both directions, or the baseline is the market. &nbsp;<b>5.</b> Check how the
-    sample was chosen before believing anything measured on it.</p>
-    <p><b>6.</b> Re-cost at every fee tier. &nbsp;<b>7.</b> Model the carry, not
-    just the price. &nbsp;<b>8.</b> Include what died. &nbsp;<b>9.</b> Run a
-    broken-shift control — deliberately let the strategy see the return it is
-    about to earn, and if that does not produce an absurd number, nothing else in
-    the run means anything. &nbsp;<b>10.</b> No order placement until the
-    statistics justify it.</p>
-  </div>
 </section>
-<!-- ============================================================ building -->
-<section id="building">
-  <h2>In progress</h2>
-  <h3>What is being built next</h3>
+
+<!-- ============================================================== method -->
+<section id="method">
+  <h2>Method</h2>
+  <h3>Twenty-one rules, every one of them earned by a death</h3>
+  <p class="sub">This is the part of the platform that is actually worth
+  something. None of it was designed in advance; each rule exists because a
+  result died on it.</p>
+
+  <div class="scroll" style="margin-top:18px"><table>
+    <thead><tr><th>Rule</th><th>The death that earned it</th></tr></thead>
+    <tbody>
+      <tr><td style="min-width:300px">Rank on volatility-adjusted lift, so the do-nothing
+        baseline is exactly 0.000</td><td style="text-align:left;font-family:var(--sans);white-space:normal">001</td></tr>
+      <tr><td>Count only independent observations</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">003, and again at 026 — a day of tick data is the same mistake wearing a bigger number</td></tr>
+      <tr><td>Require stability across periods, not one in/out split</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">003</td></tr>
+      <tr><td>Record both directions, or the baseline is the market</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">002, 006</td></tr>
+      <tr><td>Check how the sample was chosen before believing anything measured on it</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">004, 006, 008</td></tr>
+      <tr><td>Re-cost at every fee tier</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">001</td></tr>
+      <tr><td>Model the carry, not just the price</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">008</td></tr>
+      <tr><td>Include what died</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">008</td></tr>
+      <tr><td>Run a broken-shift control</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">008</td></tr>
+      <tr class="hl"><td>Correct for the search itself</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">011 — a 0.94 found by testing one idea and a 0.94 found by testing twenty-six are completely different pieces of evidence</td></tr>
+      <tr class="hl"><td>No order placement until the statistics justify it</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">standing — absent code cannot fire by accident; disabled code can</td></tr>
+      <tr><td>Decompose any total before believing it</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">018</td></tr>
+      <tr><td>A correction is not a constant — measure its dispersion first</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">019, 021</td></tr>
+      <tr><td>Match the horizon to the question</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">019 — reporting a 6.6-year drawdown as a one-year one printed &ldquo;0% chance of a losing year&rdquo; three times</td></tr>
+      <tr><td>The live book and the backtest must be the same rule, and that has to be
+        <i>checked</i></td><td style="text-align:left;font-family:var(--sans);white-space:normal">008, 022, 023 — four separate drifts found this way, none catchable by inspection</td></tr>
+      <tr><td>A rule that exists in two programs will eventually be two rules</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">023 — the fix is not vigilance, it is a single definition both programs call</td></tr>
+      <tr><td>A variant must reduce to the incumbent when its new feature is switched off,
+        and that has to be asserted</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">025 — one assertion found a silent change to the re-entry rule that nothing in the output looked wrong about</td></tr>
+      <tr><td>A total cannot see one missing part</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">the tape, 13 Aug — one dead market out of twenty-four moved no number the recorder printed, for four hours</td></tr>
+      <tr><td>A control must be able to fail, and one draw is not a control</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">024 — one shuffle read as a pass; two hundred showed 10% of them beating the real book</td></tr>
+      <tr><td>Data that cannot be re-collected is collected wider than it is needed</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">023 — the tape covers thirty markets so a name entering the traded twenty already has weeks of history</td></tr>
+      <tr class="hl"><td>A join whose two sides are different lengths is not a join</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">027 — both arrays came back, both parsed, every downstream number was plausible, and it was nonsense for a fortnight</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================================================================ next -->
+<section id="next">
+  <h2>Open experiments</h2>
+  <h3>In priority order</h3>
 
   <div class="grid g2 g3" style="margin:20px 0">
-    <div class="card soon"><h3>Analyst UI panel <span class="tag build">building</span></h3>
-      <p>The engine exists and is tested. What is missing is the wiring to the
-      live feed and a panel in the terminal, so the observations appear where you
-      already look.</p></div>
+    <div class="card on"><h3>The forward record <span class="tag live">running</span></h3>
+      <p>Everything else on this page is a backtest. This is the only test that
+      cannot be searched, because it has not happened yet.</p>
+      <p>Day 5. It needs months, not analysis.</p></div>
 
-    <div class="card soon"><h3>Daily briefing <span class="tag build">building</span></h3>
-      <p>One written summary a day, appended to the permanent paper log: what the
-      rules did, what the market did, how the forward record is tracking, and
-      anything needing attention.</p></div>
+    <div class="card on"><h3>The order book <span class="tag live">recording</span></h3>
+      <p>Recording since 10 August, correctly aimed since 13 August, and now
+      <b>pre-registered</b>: four hypotheses, Bonferroni at the 1.25th percentile,
+      and a <b>30-day minimum</b> before any of them is run.</p>
+      <p>The adoption bar is set at <b>execution timing</b>, not alpha — the
+      measured effect is a fifth of a taker round trip, so it cannot be a strategy
+      at these fees, but improving a trade already decided only needs to beat
+      zero.</p>
+      <code>lab/prereg_book.md</code></div>
 
-    <div class="card soon"><h3>Language model hookup <span class="tag build">building</span></h3>
-      <p>The checked narrator takes any function from prompt to text, so any
-      provider works. The key lives in an environment variable on your machine —
-      never in the repo, the UI, or a chat.</p></div>
+    <div class="card soon"><h3>Confirm H2 on Binance <span class="tag next">next</span></h3>
+      <p>Volatility targeting was finding 025's only near miss: +0.154 Sharpe and
+      a drawdown cut from &minus;15% to &minus;12%, on three years — which is not
+      enough data to adopt on.</p>
+      <p>A pre-registered confirmation of one hypothesis on 6.6 years, so it
+      carries no further multiple-testing cost.</p></div>
 
-    <div class="card soon"><h3>Watch and alert <span class="tag next">next</span></h3>
-      <p>Continuous monitoring rather than a daily snapshot: a breakout fires,
-      funding spikes, the recorder drops out, a limit would have blocked
-      something.</p></div>
+    <div class="card soon"><h3>A risk model for carry <span class="tag next">or shelve it permanently</span></h3>
+      <p>It needs something that can represent a jump. A better Sharpe is not
+      evidence, and in this framework it never can be.</p></div>
 
-    <div class="card soon"><h3>Order verification <span class="tag next">next</span></h3>
-      <p>One hand-placed minimum-size order to prove the payload schema, then a
-      command capped at a few dollars. This is the only gap the tests cannot
-      close.</p></div>
+    <div class="card soon"><h3>Wrapper-to-perp basis <span class="tag next">unmeasured</span></h3>
+      <p>Four of the five hedgeable Hyperliquid markets hedge through
+      <b>bridged wrappers</b>. UBTC is not BTC. Finding 013 measured perp against
+      Gate and OKX spot, never against the venue's own wrapper.</p></div>
 
-    <div class="card soon"><h3>Spot venue account <span class="tag next">next</span></h3>
-      <p>Finding 009 needs a second venue for the hedge leg. Real-world lead time
-      — KYC and funding take days — and it does not depend on any code.</p></div>
-
-    <div class="card soon"><h3>Order-book research <span class="tag next">waiting</span></h3>
-      <p>Nothing to analyse until there is a month of tape. First questions: does
-      touch imbalance predict the next second net of the spread, and do the same
-      counterparty addresses appear before moves?</p></div>
-
-    <div class="card soon"><h3>Cross-venue funding basket <span class="tag next">waiting</span></h3>
-      <p>Hyperliquid pays 4&ndash;7% a year more than Gate, on the same side, 77&ndash;95%
-      of days. Too thin alone; a basket of ten might not be. Needs months, not the
-      22 days the venues will serve.</p></div>
-
-    <div class="card soon"><h3>A third edge <span class="tag next">waiting</span></h3>
-      <p>Two strategies is a thin book. Cross-sectional momentum, tail mean
-      reversion, seasonality, and the Asian-range sweep from the LCE script are
-      all untested on the survivorship-free archive.</p></div>
+    <div class="card soon"><h3>Cross-venue funding <span class="tag next">waiting</span></h3>
+      <p>Hyperliquid pays persistently more than Gate — UNI +7.3%, NEAR +7.2% —
+      worth about 2.8% a year net. Finding 010 had 22 days, which is all the
+      venues will serve. It has to be recorded forward.</p></div>
   </div>
 
   <h3 style="margin-top:34px">The road to live</h3>
   <p class="sub">Two different dates, and conflating them is how people lose money.</p>
 
   <div class="rail" style="margin-top:20px">
-    <div class="it done"><div class="when">done &middot; 10 Aug 2026</div>
-      <h4>Research, archive, risk and execution built</h4>
-      <p>Eleven projects, 145 tests. Both candidates measured on a
-      survivorship-free universe with real funding charged.</p></div>
+    <div class="it done"><div class="when">done &middot; 10&ndash;13 Aug 2026</div>
+      <h4>Research, archives, risk, execution and monitoring built</h4>
+      <p>311 test cases across six suites. The designated strategy measured on
+      four venues spanning 2016 to 2026, with the delisted contracts kept in and
+      real funding charged.</p></div>
 
     <div class="it now"><div class="when">now</div>
       <h4>Forward recording</h4>
-      <p>The order-book tape and the paper log both started 10 August. Day 2 of
+      <p>The order-book tape and the paper log both started 10 August. Day 5 of
       roughly 180. This is the only thing that moves the t-statistic.</p></div>
 
     <div class="it"><div class="when">about a week &middot; mostly your time</div>
       <h4>Plumbing proven</h4>
       <p>Create an agent wallet, place one minimum-size order by hand, then let
-      LONA place one behind a command that refuses to exceed a few dollars. Proves
-      the payload, the fills, the fee accounting and the funding maths. Cost of
-      being wrong: a few dollars.</p></div>
+      LONA place one behind a command that refuses to exceed a few dollars.
+      Proves the payload, the fills, the fee accounting and the funding maths.
+      Cost of being wrong: a few dollars.</p></div>
 
     <div class="it"><div class="when">about two weeks</div>
       <h4>Live at 1&ndash;2% of intended capital</h4>
@@ -541,7 +730,7 @@ tr.hl{background:rgba(45,224,165,.06)}
       <h4>Size up, or do not</h4>
       <p>Three months gives about 90 forward observations. Six is what I would
       want before sizing up. If the forward record disagrees with the backtest,
-      that is the answer and the strategies get retired like the other seven.</p></div>
+      that is the answer and finding 008 gets retired like the other twenty-six.</p></div>
   </div>
 </section>
 
@@ -552,29 +741,39 @@ tr.hl{background:rgba(45,224,165,.06)}
 
   <ol class="steps" style="margin-top:18px">
     <li><b>Start the recorder</b> — <code>LONA-RECORD.bat</code>. Leave the window
-      open. Every day it is not running is order-book data that is gone
-      permanently. Watch that <b>dropped</b>, <b>bad</b> and <b>reconnects</b>
-      all stay at zero.</li>
+      open and do not click into it (Windows console QuickEdit freezes the
+      process on a click). Every day it is not running is order-book data that is
+      gone permanently.</li>
+    <li><b>Ask whether it is running</b> — <code>LONA-STATUS.bat</code>. Reads the
+      answer off the files, so it works when nothing is running at all, which is
+      the case worth getting right. It also names any single market that has gone
+      silent while the rest are fine.</li>
     <li><b>Build the archive</b> — <code>LONA-PORTFOLIO.bat</code>. Downloads the
-      candles and 1.9M funding records, then prints the study. The funding step
+      candles and the funding records, then prints the study. The funding step
       loops until complete because the venue rate-limits it.</li>
     <li><b>Check the two rows that matter</b> — the <b>control</b> line must print
-      something absurd like +96,853%, and the <b>t</b> column should read about
-      +1.5 for the breakout. If the control ever looks reasonable, the look-ahead
-      guard has broken and every other row is void.</li>
+      something absurd, and the <b>t</b> column should read about +2.4. If the
+      control ever looks reasonable, the look-ahead guard has broken and every
+      other row is void.</li>
     <li><b>Run the risk dry run</b> — <code>LONA-RISK.bat</code>. Pushes a sample
       book through every limit so you can watch each one fire. Nothing is sent.</li>
-    <li><b>Verify the tape</b> — <code>Lona.Recorder -- verify</code> on yesterday,
+    <li><b>Verify the tape</b> — <code>LONA-VERIFY-TAPE.bat</code> on yesterday,
       every day. Reports the largest gap per stream and checks every counterparty
       id resolves.</li>
+    <li><b>Publish the plan and the page</b> — <code>LONA-PLAN.bat</code>. Writes
+      today's book to the append-only journal and pushes the terminal and status
+      file to the phone.</li>
   </ol>
 
   <div class="note" style="margin-top:20px">
-    <div class="t">&#9888; Two things not to do yet</div>
+    <div class="t">&#9888; Three things not to do yet</div>
     <p><b>Do not create the Hyperliquid agent wallet</b> until it is about to be
     used. A key sitting unused for a fortnight is a key you have stopped thinking
     about.</p>
-    <p><b>Do not put money anywhere near this.</b> The forward record is two days
+    <p><b>Do not let the machine sleep.</b> Night one captured 46 minutes out of
+    eight hours because it suspended, and a suspended process cannot notice
+    anything, including that it has stopped.</p>
+    <p><b>Do not put money anywhere near this.</b> The forward record is five days
     old.</p>
   </div>
 </section>
@@ -582,7 +781,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 <div class="foot">
   <span>LONA &middot; research only, not advice &middot; every figure here is a
   backtest unless marked live</span>
-  <span>built 10&ndash;11 August 2026</span>
+  <span>rebuilt from the research log &middot; 14 August 2026</span>
 </div>
 
 </div>
