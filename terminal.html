@@ -1434,7 +1434,7 @@ function renderAccount() {
         </div>
         <div class="row2">
           <span>liq <b>${liq ? money(liq) : "&mdash;"}</b></span>
-          ${away !== null ? `<span>distance <b class="${away < 0.10 ? "neg" : ""}">${pct(away)}</b></span>` : ""}
+          ${away !== null ? `<span>distance <b class="${away < 0.10 ? "neg" : ""}">${pct(away, 1).replace("+", "")}</b></span>` : ""}
         </div></div>`;
     }).join("");
   }
@@ -1663,8 +1663,8 @@ function renderForward(o) {
   const dd   = Number(f.drawdown) || 0;               // <= 0
   const used = Math.max(0, Math.min(1.25, dd / edge));
 
-  $("or-fwd-mid").textContent  = pct(mid) + " typical bad year";
-  $("or-fwd-edge").textContent = pct(edge) + " edge of normal";
+  $("or-fwd-mid").textContent  = pct(mid, 0) + " typical bad year";
+  $("or-fwd-edge").textContent = pct(edge, 0) + " edge of normal";
 
   $("or-fwd-fill").style.width = (used * 100 / 1.25) + "%";
   $("or-fwd-fill").className = "band-fill" + (f.outsideNormalBand ? " over" : "");
@@ -1685,8 +1685,8 @@ function renderForward(o) {
     "<b>" + usd(f.currentUsd) + "</b> from " + usd(f.startUsd) +
     " &mdash; <span class='" + (ret > 0 ? "pos" : ret < 0 ? "neg" : "") + "'>" +
     pct(ret) + "</span> since the record opened. " +
-    "Now <b>" + pct(dd) + "</b> below its peak of " + usd(f.peakUsd) +
-    "; worst so far " + pct(Number(f.worstDrawdown) || 0) + ".";
+    "Now <b>" + pct(dd, 1) + "</b> below its peak of " + usd(f.peakUsd) +
+    "; worst so far " + pct(Number(f.worstDrawdown) || 0, 1) + ".";
 
   $("or-fwd-note").innerHTML = (f.outsideNormalBand
     ? "<b>This is past the edge of a normal year.</b> That is evidence worth " +
@@ -1696,15 +1696,28 @@ function renderForward(o) {
 
 function bandNote(b) {
   return "Finding 019 bootstrapped 5,000 one-year histories: the median bad year " +
-    "drops " + pct(Number(b.medianDrawdown) || -0.15) + " from its peak, one year in " +
-    "twenty reaches " + pct(Number(b.normalDrawdown) || -0.27) + ", and <b>" +
+    "drops " + pct(Number(b.medianDrawdown) || -0.15, 0) + " from its peak, one year in " +
+    "twenty reaches " + pct(Number(b.normalDrawdown) || -0.27, 0) + ", and <b>" +
     Math.round((Number(b.chanceOfLosingYear) || 0.12) * 100) + "% of years lose money</b>. " +
     "Only " + Math.round((Number(b.positiveFirstBars) || 0.47) * 100) + "% of trades are up " +
     "after their first day &mdash; the edge is in the size of the wins, not how often " +
     "they come, so a live book shows red on most days while behaving exactly as measured.";
 }
 
-function pct(x) { return (x * 100).toFixed(1).replace(/\.0$/, "") + "%"; }
+/* THERE IS NO pct() HERE ON PURPOSE - DO NOT ADD ONE BACK.
+   A second top-level pct() lived on this line from 13 to 14 August and took the
+   whole page down. `const pct` is declared in the first script block; a
+   `function pct` here is a redeclaration in the same global lexical scope, which
+   is a SyntaxError - and a SyntaxError does not fail one function, it discards
+   THIS ENTIRE SCRIPT BLOCK. Everything below line 1276 stopped existing: the
+   clock, the boot sequence, the orders and analyst tabs, and the Connect button's
+   listener. The button rendered perfectly and did nothing when pressed.
+
+   This is the second time one page with one global name space has cost us. The
+   first was a duplicate money(), which was gentler only by accident - it
+   silently returned the wrong number of decimals instead of killing the page.
+   Use the pct() declared at the top of the file, with an explicit decimal
+   count. */
 
 /* STALENESS IS THE ALARM.
    status.json is rewritten by the recorder every minute. So the check here is
