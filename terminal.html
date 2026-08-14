@@ -855,19 +855,37 @@ const pct = (v, d = 2) => (v === null || !isFinite(v))
 const cls = (v) => v > 0 ? "pos" : v < 0 ? "neg" : "dim";
 const sgn = (v, d = 2) => `<span class="${cls(v)}">${pct(v, d)}</span>`;
 
-async function post(body, tries = 3) {
+/* A 429 IS NOT AN OUTAGE AND MUST NOT BE RETRIED LIKE ONE.
+   On 14 August the phone showed "HTTP 429 - could not reach Hyperliquid". We
+   reached it perfectly; it told us to slow down, and we answered by trying
+   again 500ms later, twice, which is the one response guaranteed to keep it
+   saying no. The message was wrong too - "could not reach" sends you looking at
+   your signal instead of at the request rate.
+
+   Some of that rate is mine: update 17 added spotClearinghouseState and
+   spotMetaAndAssetCtxs to the account load to fix the account value, taking it
+   from three requests to five. */
+async function post(body, tries = 4) {
   for (let i = 0; i < tries; i++) {
     try {
       const r = await fetch(API, { method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body) });
+      if (r.status === 429) throw new RateLimited();
       if (!r.ok) throw new Error("HTTP " + r.status);
       return await r.json();
     } catch (e) {
       if (i === tries - 1) throw e;
-      await new Promise(z => setTimeout(z, 500 * (i + 1)));
+      // Seconds for a rate limit, milliseconds for a blip. Backing off in
+      // hundreds of milliseconds from a 429 is just a faster way to fail.
+      const wait = e instanceof RateLimited ? 2000 * Math.pow(2, i) : 500 * (i + 1);
+      await new Promise(z => setTimeout(z, wait));
     }
   }
+}
+
+class RateLimited extends Error {
+  constructor() { super("HTTP 429"); this.name = "RateLimited"; }
 }
 
 /** Run `jobs` with a concurrency cap. The venue rate-limits hard above ~6. */
@@ -1339,7 +1357,14 @@ const SPOT_STABLES = new Set(["USDC", "USDT0", "USDE", "USDH", "USD"]);
     this project a fortnight of wrong hedge figures. */
 async function spotMarks() {
   const marks = new Map();
-  const root = await post({ type: "spotMetaAndAssetCtxs" });
+
+  // Global market data, not per-user, so re-fetching it on every account
+  // refresh was one request per refresh spent learning nothing. Ten minutes is
+  // far finer than the accuracy this is used for - pricing a spot balance.
+  const fresh = S.spotMetaAt && (Date.now() - S.spotMetaAt) < 600000;
+  const root = fresh ? S.spotMetaRaw : await post({ type: "spotMetaAndAssetCtxs" });
+  S.spotMetaRaw = root;
+  S.spotMetaAt = Date.now();
   if (!Array.isArray(root) || root.length < 2) return marks;
 
   const byCoin = new Map();
@@ -1393,10 +1418,14 @@ async function loadAccount() {
     S.funding = Array.isArray(funding) ? funding : [];
     renderAccount();
   } catch (e) {
+    const limited = e instanceof RateLimited || /429/.test(e.message || "");
     $("acct-tiles").innerHTML =
-      `<div class="tile" style="grid-column:1/-1"><div class="k">Error</div>
-       <div class="v neg" style="font-size:14px">${e.message}</div>
-       <div class="s">Could not reach Hyperliquid for this address.</div></div>`;
+      `<div class="tile" style="grid-column:1/-1"><div class="k">${limited ? "Rate limited" : "Error"}</div>
+       <div class="v ${limited ? "warn" : "neg"}" style="font-size:14px">${e.message}</div>
+       <div class="s">${limited
+         ? "The venue is throttling us, not refusing us - the account below may be a "
+           + "few minutes old. Wait a moment and pull to refresh."
+         : "Could not reach Hyperliquid for this address."}</div></div>`;
   }
 }
 
@@ -1519,7 +1548,38 @@ function renderAccount() {
   }
 
   const ratio = value > 0 ? used / value : 0;
-  $("margin-body").innerHTML = `
+
+  /* THE COMFORTING NUMBER MUST NOT OUTRANK THE DANGEROUS ONE.
+     14 August, on the phone: a 40x isolated BTC long sitting 1.3% from its
+     liquidation price, with zero free collateral - and directly underneath it a
+     green bar reading "margin utilisation 27.2%" and a note saying anything
+     under 60% is fine. Both numbers were correct. The reassuring one was bigger,
+     greener and lower down the page, so it was the one you read last.
+
+     Utilisation is the wrong risk measure for an isolated position. It compares
+     margin to equity; what actually ends the position is the distance from the
+     mark to the liquidation price, and at 40x that distance is 2.5%. So compute
+     the tightest one across the book and, when it is close, say so ABOVE the
+     bar rather than below it. */
+  let tightest = null, tightestCoin = "";
+  pos.forEach(p => {
+    const liq = p.liquidationPx ? parseFloat(p.liquidationPx) : null;
+    const mk = parseFloat((p.markPx ?? p.entryPx) || 0);
+    if (!liq || !(mk > 0)) return;
+    const d = Math.abs(liq - mk) / mk;
+    if (tightest === null || d < tightest) { tightest = d; tightestCoin = p.coin; }
+  });
+
+  const liqWarning = (tightest !== null && tightest < 0.10) ? `
+    <div class="note" style="margin:0 -14px 12px;border-radius:0;
+         border-left:3px solid var(--${tightest < 0.03 ? "bad" : "warn"})">
+      <b class="${tightest < 0.03 ? "neg" : "warn"}">${tightestCoin} is ${pct(tightest, 1).replace("+", "")}
+      from liquidation.</b> That is the number that ends this position, not the
+      utilisation below. A move of that size against you closes it and the margin
+      committed to it is gone.${free <= 0 ? " There is <b>no free collateral</b> to absorb it." : ""}
+    </div>` : "";
+
+  $("margin-body").innerHTML = liqWarning + `
     <div class="kv"><span>Equity</span><b>${money(value, 2)}</b></div>
     <div class="kv"><span>Margin used</span><b>${money(used, 2)}</b></div>
     <div class="kv"><span>Maintenance</span><b>${money(parseFloat(a.crossMaintenanceMarginUsed || 0), 2)}</b></div>
