@@ -61,6 +61,14 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .rail button{padding:11px 18px;font-size:12.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent}
   .rail button.on{color:var(--acc);border-bottom-color:var(--acc)}
+  /* THE DESKTOP RAIL IS TEXT ONLY. An icon copied down from the mobile tab bar
+     lived in the Orders button until 14 August: an <svg> with a viewBox and no
+     width, height, stroke or fill. Unstyled it took its own line inside the
+     button, pushed the word ORDERS onto a second row, and rendered as a small
+     black blob because the default fill is black. Both are fixed - the icon is
+     gone, and this rule means the next one to be pasted in behaves. */
+  .rail button svg{width:14px;height:14px;stroke:currentColor;fill:none;
+    stroke-width:1.8;vertical-align:-2px;margin-right:7px;display:inline-block}
   .rail button:hover{color:var(--ink)}
 }
 
@@ -270,7 +278,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="signals">Signals</button>
   <button data-go="research">Research</button>
   <button data-go="risk">Risk &amp; execution</button>
-  <button data-go="orders"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.2"/></svg>Orders</button>
+  <button data-go="orders">Orders</button>
   <button data-go="brief">Analyst</button>
 </nav>
 
@@ -812,6 +820,7 @@ const S = {                    // everything the page knows, in one place
   universe20: [], universe40: [],
   book8: [], book9: [], near: [],
   account: null, fills: [], funding: [],
+  spotValue: 0,                // the WHOLE unified account, priced. See below.
   analyst: null, analystError: null,
   sort: "vol", filter: null,
   lastSignal: 0,
@@ -1305,16 +1314,81 @@ $("connect").addEventListener("click", () => {
 $("demo").addEventListener("click", () =>
   setAddr("0x31ca8395cf837de08b24da3f660e77761dfb974b"));
 
+/* ---------------------------------------------------------------------------
+   ACCOUNT VALUE IS THE SPOT BALANCE, NOT clearinghouseState.accountValue.
+
+   Karl corrected this on 13 August: this page reported $17.93 against a real
+   account of $71.04. Hyperliquid runs a UNIFIED account - the USDC sitting in
+   spot IS the perps collateral, and marginSummary.accountValue reports only the
+   slice currently HELD against open positions. The perps figure is a SUBSET of
+   the spot figure, not a second pot, so adding them double-counts to $88.98.
+
+   Getting it wrong overstated leverage FOURFOLD on the analyst's own line -
+   39.60x against a true 10.0x - because notional was divided by the held slice
+   instead of by the account. It also made margin utilisation meaningless.
+
+   Lona.Analyst.AccountFactBuilder was fixed on 13 August and this page was not,
+   so the same account had two values in two programs for a day. Method rule 16
+   again: this mirrors the C# exactly, fallback included.
+   --------------------------------------------------------------------------- */
+const SPOT_STABLES = new Set(["USDC", "USDT0", "USDE", "USDH", "USD"]);
+
+/** Spot marks, joined on each context's OWN coin field - NEVER by position.
+    The venue returns 324 pairs against 715 contexts, so a positional join reads
+    every market's price off some other market. That is finding 027, and it cost
+    this project a fortnight of wrong hedge figures. */
+async function spotMarks() {
+  const marks = new Map();
+  const root = await post({ type: "spotMetaAndAssetCtxs" });
+  if (!Array.isArray(root) || root.length < 2) return marks;
+
+  const byCoin = new Map();
+  (root[1] || []).forEach(c => { if (c && c.coin) byCoin.set(c.coin, c); });
+
+  const meta = root[0] || {};
+  const tokens = (meta.tokens || []).map(t => (t && t.name) || "");
+  (meta.universe || []).forEach(pair => {
+    const idx = pair && pair.tokens;
+    if (!Array.isArray(idx) || idx.length !== 2) return;
+    const base = tokens[idx[0]], quote = tokens[idx[1]];
+    if (!base || String(quote).toUpperCase() !== "USDC") return;
+    const ctx = byCoin.get(base + "/USDC") || byCoin.get(pair.name || "");
+    if (ctx) marks.set(base, parseFloat(ctx.markPx || 0));
+  });
+  return marks;
+}
+
+/** The whole unified account, priced. Returns 0 when the venue serves no spot
+    state, which the caller REPORTS rather than hides - a silent fallback is how
+    the wrong number got believed for a day in the first place. */
+async function spotAccountValue() {
+  const state = await post({ type: "spotClearinghouseState", user: S.addr });
+  const balances = (state && state.balances) || [];
+  if (!balances.length) return 0;
+
+  const marks = await spotMarks();
+  return balances.reduce((total, b) => {
+    const amount = parseFloat(b.total || 0);
+    if (!amount) return total;
+    return total + (SPOT_STABLES.has(String(b.coin).toUpperCase())
+      ? amount
+      : amount * (marks.get(b.coin) || 0));
+  }, 0);
+}
+
 async function loadAccount() {
   if (!S.addr) return;
   try {
-    const [state, fills, funding] = await Promise.all([
+    const [state, fills, funding, spotValue] = await Promise.all([
       post({ type: "clearinghouseState", user: S.addr }),
       post({ type: "userFills", user: S.addr }),
       post({ type: "userFunding", user: S.addr,
         startTime: Date.now() - 30 * 86400000 }),
+      // Never let the account value take the rest of the panel down with it.
+      spotAccountValue().catch(() => 0),
     ]);
     S.account = state;
+    S.spotValue = spotValue;
     S.fills = Array.isArray(fills) ? fills : [];
     S.funding = Array.isArray(funding) ? funding : [];
     renderAccount();
@@ -1330,7 +1404,12 @@ function renderAccount() {
   const a = S.account;
   if (!a) return;
   const m = a.marginSummary || {};
-  const value = parseFloat(m.accountValue || 0);
+  const perpsHeld = parseFloat(m.accountValue || 0);
+  const spotValue = Number(S.spotValue) || 0;
+  const value = spotValue > 0 ? spotValue : perpsHeld;
+  const valueNote = spotValue > 0
+    ? "incl. " + money(perpsHeld, 2) + " held as perps margin"
+    : "PERPS ONLY - no spot state returned";
   const ntl = parseFloat(m.totalNtlPos || 0);
   const used = parseFloat(m.totalMarginUsed || 0);
   const free = parseFloat(a.withdrawable || 0);
@@ -1340,7 +1419,7 @@ function renderAccount() {
     s - parseFloat((f.delta && f.delta.usdc) || 0), 0);
 
   const t = $("acct-tiles"); t.innerHTML = "";
-  [["Account value", money(value, 2), S.addr.slice(0, 6) + "…" + S.addr.slice(-4), ""],
+  [["Account value", money(value, 2), valueNote, ""],
    ["Unrealised", money(upnl, 2), pos.length + " open", cls(upnl)],
    ["Notional", money(ntl, 0), ntl > 0 ? n2(ntl / Math.max(value, 1e-9), 2) + "× equity" : "flat", ""],
    ["Margin used", money(used, 2), value > 0 ? n2(used / value * 100, 1) + "% of equity" : "", ""],
