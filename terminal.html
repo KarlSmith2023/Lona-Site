@@ -74,7 +74,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ---------------------------------------------------- mobile bottom tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;
-  grid-template-columns:repeat(7,1fr);background:rgba(8,12,16,.96);
+  grid-template-columns:repeat(8,1fr);background:rgba(8,12,16,.96);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);
   padding-bottom:var(--safe-b)}
@@ -82,6 +82,10 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   justify-content:center;gap:3px;color:var(--faint);font-size:9px;
   letter-spacing:.04em;text-transform:uppercase}
 .tabs button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+/* EIGHT TABS ON A 390px PHONE IS 48px EACH. The labels have to give way
+   before the icons do, or they wrap and the bar grows a second row. */
+@media(max-width:430px){.tabs button{font-size:8px;letter-spacing:0}
+  .tabs button svg{width:18px;height:18px}}
 .tabs button.on{color:var(--acc)}
 @media(min-width:900px){.tabs{display:none}}
 
@@ -254,6 +258,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   background:var(--dim);box-shadow:0 0 0 3px color-mix(in srgb,var(--dim) 22%,transparent)}
 .health.ok .dot{background:#2e9e5b;box-shadow:0 0 0 3px color-mix(in srgb,#2e9e5b 22%,transparent)}
 .health.bad .dot{background:#c0392b;box-shadow:0 0 0 3px color-mix(in srgb,#c0392b 22%,transparent)}
+.health.late .dot{background:#c8912a;box-shadow:0 0 0 3px color-mix(in srgb,#c8912a 22%,transparent)}
 .health .msg{flex:1;line-height:1.4}
 .health .msg b{display:block;font-size:13px;letter-spacing:.02em}
 .health .msg span{color:var(--dim);font-size:12px}
@@ -279,6 +284,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="research">Research</button>
   <button data-go="risk">Risk &amp; execution</button>
   <button data-go="orders">Orders</button>
+  <button data-go="funding">Funding</button>
   <button data-go="brief">Analyst</button>
 </nav>
 
@@ -325,6 +331,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
             <th>return</th></tr></thead>
           <tbody id="pos-rows"></tbody></table></div>
         <div class="cards" id="pos-cards"></div>
+        <div class="pad" id="pos-notes" style="display:none;border-top:1px solid var(--line)"></div>
       </div>
 
       <div class="pnl">
@@ -712,6 +719,33 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
 </section>
 
 
+<!-- ============================================================== FUNDING -->
+<section class="view" id="v-funding">
+  <div class="alert" id="fd-status">
+    <div class="t">Looking for a published leaderboard</div>
+    <div class="b">&hellip;</div>
+  </div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>funding leaderboard
+      <span class="tail" id="fd-count"></span></h2>
+    <div class="chips" id="fd-chips">
+      <button class="chip on" data-sort="vol">Volume</button>
+      <button class="chip" data-sort="mean">30-day mean</button>
+      <button class="chip" data-sort="now">Right now</button>
+      <button class="chip" data-sort="gap">Furthest from its mean</button>
+      <button class="chip" data-filt="hedge">Hedgeable only</button>
+    </div>
+    <div class="scroll desk" style="max-height:72vh"><table>
+      <thead><tr><th>market</th><th>now, annualised</th><th>30-day mean</th>
+        <th>hours positive</th><th>24h volume</th><th>open interest</th>
+        <th>spot hedge</th></tr></thead>
+      <tbody id="fd-rows"></tbody></table></div>
+    <div class="cards" id="fd-cards"></div>
+    <div class="note" id="fd-caution"></div>
+  </div>
+</section>
+
 <section class="view" id="v-orders">
   <div class="health" id="or-health">
     <div class="dot"></div>
@@ -738,6 +772,18 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
       <span>peak</span><span id="or-fwd-mid"></span><span id="or-fwd-edge"></span>
     </div>
     <div class="note" id="or-fwd-note"></div>
+  </div>
+
+  <!-- THE SECOND BOOK. Scored, never traded. Finding 029.
+       Deliberately BELOW the forward record and deliberately not a tile: a
+       number in the tile row reads as something the account is doing. This is
+       not. -->
+  <div class="pnl" id="or-shadow-card" style="margin-top:12px;display:none">
+    <h2><span class="car">&#9656;</span>the second book, watched not traded
+      <span class="tail" id="or-sh-tail"></span></h2>
+    <div class="pad" id="or-sh-line"></div>
+    <div class="pad" id="or-sh-rows"></div>
+    <div class="note" id="or-sh-note"></div>
   </div>
 
   <div class="pnl" style="margin-top:12px">
@@ -790,6 +836,7 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="research"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.4-4.4"/></svg>Research</button>
   <button data-go="risk"><svg viewBox="0 0 24 24"><path d="M12 3l8 3.6v5.2c0 4.6-3.3 8.4-8 9.2-4.7-.8-8-4.6-8-9.2V6.6z"/></svg>Risk</button>
   <button data-go="orders"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.2"/></svg>Orders</button>
+  <button data-go="funding"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16 7.5c0-1.9-1.8-3-4-3s-4 1-4 2.8c0 4 8 2.2 8 6.2 0 1.9-1.8 3-4 3s-4-1.1-4-3"/></svg>Carry</button>
   <button data-go="brief"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h3"/></svg>Analyst</button>
 </nav>
 <script>
@@ -821,7 +868,13 @@ const S = {                    // everything the page knows, in one place
   book8: [], book9: [], near: [],
   account: null, fills: [], funding: [],
   spotValue: 0,                // the WHOLE unified account, priced. See below.
+  spotMetaRaw: null, spotMetaAt: 0,   // global spot data, cached 10 min
   analyst: null, analystError: null,
+  /* board, NOT funding: S.funding above is the ACCOUNT's funding payments and
+     renderAccount reduces over it. One page, one global name space - the same
+     rule that took the whole terminal down on 14 August. */
+  board: null, boardError: null,
+  boardSort: "vol", boardHedgeOnly: false,
   sort: "vol", filter: null,
   lastSignal: 0,
   error: null,
@@ -1429,6 +1482,106 @@ async function loadAccount() {
   }
 }
 
+/* ===========================================================================
+   WHAT THE POSITIONS ACTUALLY SAY - COMPUTED HERE, PUBLISHED NOWHERE
+   ===========================================================================
+   The analyst on the C# side deliberately cannot say any of this. analyst.json
+   goes to a PUBLIC repository that keeps its git history forever, and
+   Snapshot.cs allowlists every field precisely so that an account fact cannot
+   leave the machine by accident. Adding account.value or account.liquidation to
+   that allowlist would put a balance and a liquidation price on the open
+   internet, permanently - so it was not done, and this exists instead.
+
+   Everything below is derived in the browser from data this page already
+   fetched using the address in your own URL. Nothing is sent anywhere, nothing
+   is stored, and nothing is published.
+
+   SAME RULE AS THE ANALYST: every sentence owns a number that is on the screen
+   beside it. Where a number is not known, it says so rather than rounding an
+   assumption into prose.
+   =========================================================================== */
+function positionNotes(pos, value, free) {
+  const out = [];
+  const signal = new Set(S.book8.map(b => b.coin));
+  const uni = new Set(S.universe20);
+
+  if (!pos.length) {
+    return [{ k: "ok", t: "Flat - nothing is open.",
+      b: "LONA has not placed an order and cannot: there is no order-placement "
+       + "code in this build. Anything that ever appears here is yours." }];
+  }
+
+  const ntl = pos.reduce((a, p) => a + Math.abs(parseFloat(p.positionValue || 0)), 0);
+  const lev = value > 0 ? ntl / value : 0;
+
+  pos.forEach(p => {
+    const liq = p.liquidationPx ? parseFloat(p.liquidationPx) : null;
+    const mk = parseFloat((p.markPx !== undefined ? p.markPx : p.entryPx) || 0);
+    if (!liq || !(mk > 0)) return;
+    const away = Math.abs(liq - mk) / mk;
+    if (away >= 0.10) return;
+    out.push({ k: away < 0.03 ? "bad" : "warn",
+      t: p.coin + " is " + pct(away, 1).replace("+", "") + " from liquidation.",
+      b: "A move that size against you closes it and the "
+       + money(parseFloat(p.marginUsed || 0), 2) + " committed to it is gone."
+       + (free <= 0 ? " There is no free collateral to absorb it." : "") });
+  });
+
+  if (lev > 1.5) {
+    out.push({ k: lev > 5 ? "warn" : "note",
+      t: "This book is " + n2(lev, 1) + "x the account.",
+      b: "Finding 008 deploys about 16% of the account unlevered and finding 012 is "
+       + "hedged, so nothing in this project asks for leverage. A reading like this "
+       + "is a decision somebody made by hand." });
+  }
+
+  const outside = pos.map(p => p.coin).filter(c => !uni.has(c));
+  if (outside.length && S.universe20.length) {
+    out.push({ k: "note",
+      t: outside.join(", ") + (outside.length > 1 ? " are" : " is")
+       + " outside today's traded universe.",
+      b: "The rule ranks the twenty deepest markets and only ever buys from that "
+       + "list, so this is not a position any LONA rule would hold." });
+  }
+
+  const both = pos.map(p => p.coin).filter(c => signal.has(c));
+  if (both.length) {
+    out.push({ k: "ok",
+      t: both.join(", ") + " also has a live breakout signal today.",
+      b: "A coincidence of direction, not a LONA position - the paper book on the "
+       + "Orders tab is the only thing this project holds an opinion about." });
+  }
+
+  const paid = pos.reduce((a, p) => a + parseFloat(
+    (p.cumFunding && p.cumFunding.sinceOpen) || 0), 0);
+  if (Math.abs(paid) > 0.005) {
+    out.push({ k: "note",
+      t: (paid > 0 ? "Paying " : "Receiving ") + money(Math.abs(paid), 2)
+       + " of funding since these opened.",
+      b: "Finding 024 measured the structural rate on two venues across two decades: "
+       + "budget about half a point of funding a year for every point of average "
+       + "deployment. A crowded long pays." });
+  }
+
+  if (!out.length) {
+    out.push({ k: "ok", t: "Nothing worth flagging.",
+      b: "No position is within 10% of liquidation, leverage is under 1.5x, and "
+       + "everything held is inside today's traded universe." });
+  }
+  return out;
+}
+
+function renderPositionNotes(pos, value, free) {
+  const box = $("pos-notes");
+  const tone = { bad: "neg", warn: "warn", ok: "pos", note: "dim" };
+  box.style.display = "";
+  box.innerHTML = positionNotes(pos, value, free).map(n =>
+    '<div style="padding:7px 0">'
+    + '<b class="' + (tone[n.k] || "dim") + '">' + n.t + "</b>"
+    + '<div class="faint" style="font-size:12px;line-height:1.55">' + n.b + "</div>"
+    + "</div>").join("");
+}
+
 function renderAccount() {
   const a = S.account;
   if (!a) return;
@@ -1597,6 +1750,8 @@ function renderAccount() {
       above 60% means something other than these rules is driving the account.
     </div>`;
 
+  renderPositionNotes(pos, value, free);
+
   $("fill-rows").innerHTML = S.fills.slice(0, 50).map(f => `<tr>
     <td class="faint">${new Date(f.time).toISOString().slice(5, 16).replace("T", " ")}</td>
     <td>${f.coin}</td>
@@ -1711,6 +1866,147 @@ function renderResearch() {
    number, because a briefing that is presented as current when it is six hours
    old is worse than no briefing: it converts "I do not know" into a confident
    wrong answer, which is the one failure this whole project exists to prevent. */
+/* ===========================================================================
+   THE FUNDING LEADERBOARD
+   ===========================================================================
+   Keel publishes one of these. Ours carries a column theirs does not: whether
+   the position can actually be HEDGED. Finding 009 measured the unhedged version
+   of this trade losing 62% a year - the coins paying the most funding are the
+   ones going up hardest, so shorting them without a spot leg is shorting
+   momentum. A funding rate with no tradeable spot is not carry, it is a naked
+   short with a coupon.
+
+   RANKED BY VOLUME, NEVER BY RATE.
+   Ranking on the current hourly rate ranks on whatever spiked in the last sixty
+   minutes. XMR read +189.9% on the hour this was built against a 30-day mean of
+   +23.5%; a board sorted on the left-hand column would have put it top and been
+   describing an hour. The distance between "now" and "30-day mean" is the most
+   useful thing here, so both are always shown together.
+   =========================================================================== */
+const BOARD_URL = "funding.json";
+const BOARD_MS = 10 * 60 * 1000;
+
+async function loadBoard() {
+  try {
+    const r = await fetch(BOARD_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    S.board = await r.json();
+    S.boardError = null;
+  } catch (e) {
+    S.board = null;
+    S.boardError = e.message;
+  }
+  renderBoard();
+}
+
+function boardRows() {
+  const d = S.board;
+  if (!d || !Array.isArray(d.rows)) return [];
+  let rows = d.rows.slice();
+  if (S.boardHedgeOnly) rows = rows.filter(r => r.hedgeable);
+  const num = v => (v === null || v === undefined || !isFinite(v)) ? -Infinity : v;
+  const gap = r => (r.meanAnnual === null || r.meanAnnual === undefined)
+    ? -Infinity : Math.abs(r.nowAnnual - r.meanAnnual);
+  return rows.sort({
+    vol:  (a, b) => num(b.dailyVolumeUsd) - num(a.dailyVolumeUsd),
+    mean: (a, b) => num(b.meanAnnual) - num(a.meanAnnual),
+    now:  (a, b) => num(b.nowAnnual) - num(a.nowAnnual),
+    gap:  (a, b) => gap(b) - gap(a),
+  }[S.boardSort]);
+}
+
+/* A rate a long way from its own 30-day mean is an hour, not a level. */
+function boardSpike(r) {
+  if (r.meanAnnual === null || r.meanAnnual === undefined || r.meanAnnual === 0) return "";
+  const ratio = Math.abs(r.nowAnnual / r.meanAnnual);
+  if (ratio < 3 || Math.abs(r.nowAnnual) < 0.25) return "";
+  return '<span class="badge short" title="the current hour is ' + n2(ratio, 1)
+       + 'x its own 30-day mean">spike</span>';
+}
+
+function renderBoard() {
+  const st = $("fd-status");
+  const d = S.board;
+  const dash = '<span class="faint">&mdash;</span>';
+
+  if (!d) {
+    st.className = "alert warn";
+    st.innerHTML = '<div class="t">No leaderboard published yet</div><div class="b">'
+      + (S.boardError === "HTTP 404"
+          ? "funding.json is not on the site. Run LONA-FUNDING.bat, then LONA-PLAN.bat."
+          : "Could not read funding.json"
+            + (S.boardError ? " - " + S.boardError : "") + ".")
+      + "</div>";
+    $("fd-rows").innerHTML = '<tr><td colspan="7" class="empty">Nothing published.</td></tr>';
+    $("fd-cards").innerHTML = "";
+    $("fd-count").textContent = "";
+    $("fd-caution").textContent = "";
+    return;
+  }
+
+  const age = (Date.now() - new Date(d.at).getTime()) / 60000;
+  const stale = age > 24 * 60;
+  st.className = "alert" + (stale ? " warn" : "");
+  st.innerHTML = '<div class="t">' + d.hedgeable + " of " + d.markets
+    + ' markets have a spot market worth hedging in</div><div class="b">Built '
+    + (age < 90 ? Math.round(age) + " minutes" : n2(age / 60, 1) + " hours")
+    + " ago. A pair counts as hedgeable at " + compact(d.usableSpotVolumeUsd || 1e6)
+    + " a day or more, bridged wrappers included &mdash; "
+    + (stale ? "<b>and this file is over a day old.</b>" : "public venue data only.")
+    + "</div>";
+
+  $("fd-caution").innerHTML = (d.caution || "")
+    + " The board is ranked by <b>dollar volume</b>, never by the current rate:"
+    + " ranking on the hour ranks on whatever spiked in the last sixty minutes.";
+
+  const rows = boardRows();
+  $("fd-count").textContent = rows.length + " markets"
+    + (S.boardHedgeOnly ? ", hedgeable only" : "") + " \u00b7 " + d.trailingDays + "d mean";
+
+  const meanCell = r => (r.meanAnnual === null || r.meanAnnual === undefined)
+    ? dash : '<span class="' + cls(r.meanAnnual) + '">' + pct(r.meanAnnual, 1) + "</span>";
+  const hoursCell = r => (r.shareHoursPositive === null || r.shareHoursPositive === undefined)
+    ? dash : n2(r.shareHoursPositive * 100, 0) + "%";
+
+  $("fd-rows").innerHTML = rows.map(r => '<tr>'
+    + "<td><b>" + r.coin + "</b> " + boardSpike(r) + "</td>"
+    + '<td class="' + cls(r.nowAnnual) + '">' + pct(r.nowAnnual, 1) + "</td>"
+    + "<td>" + meanCell(r) + "</td><td>" + hoursCell(r) + "</td>"
+    + "<td>" + compact(r.dailyVolumeUsd) + "</td>"
+    + "<td>" + compact(r.openInterestUsd) + "</td>"
+    + '<td class="' + (r.hedgeable ? "pos" : "faint")
+    + '" style="text-align:left;font-family:var(--sans);white-space:normal">'
+    + (r.hedge || "") + "</td></tr>").join("")
+    || '<tr><td colspan="7" class="empty">Nothing matches.</td></tr>';
+
+  $("fd-cards").innerHTML = rows.map(r => '<div class="card">'
+    + '<div class="row1"><span class="sym">' + r.coin + "</span>"
+    + (r.hedgeable ? '<span class="badge long">hedgeable</span>'
+                   : '<span class="badge short">no hedge</span>')
+    + boardSpike(r)
+    + '<span style="margin-left:auto" class="' + cls(r.nowAnnual) + '">'
+    + pct(r.nowAnnual, 1) + "</span></div>"
+    + '<div class="row2"><span>30d mean <b>' + meanCell(r) + "</b></span>"
+    + "<span>hours + <b>" + hoursCell(r) + "</b></span></div>"
+    + '<div class="row2"><span>volume <b>' + compact(r.dailyVolumeUsd) + "</b></span>"
+    + "<span>OI <b>" + compact(r.openInterestUsd) + "</b></span></div>"
+    + '<div class="row2"><span class="faint">' + (r.hedge || "") + "</span></div></div>").join("");
+}
+
+document.querySelectorAll("#fd-chips [data-sort]").forEach(b =>
+  b.addEventListener("click", () => {
+    S.boardSort = b.dataset.sort;
+    document.querySelectorAll("#fd-chips [data-sort]").forEach(x =>
+      x.classList.toggle("on", x === b));
+    renderBoard();
+  }));
+$("fd-chips").querySelector("[data-filt=hedge]").addEventListener("click", function () {
+  S.boardHedgeOnly = !S.boardHedgeOnly;
+  this.classList.toggle("on", S.boardHedgeOnly);
+  renderBoard();
+});
+
+
 const ANALYST_URL = "analyst.json";
 const ANALYST_MS  = 60000;
 const STALE_MIN   = 75;   // published hourly, so 75 minutes means a run was missed
@@ -1843,6 +2139,74 @@ function bandNote(b) {
     "they come, so a live book shows red on most days while behaving exactly as measured.";
 }
 
+function renderShadow(o) {
+  /* THE SECOND BOOK - finding 029's shorter hold, scored beside the designated
+     rule and traded by nobody.
+
+     THE JOB OF THIS PANEL IS TO BE READ CORRECTLY, NOT TO BE READ OFTEN.
+     A second equity number on a phone screen is exactly the sort of thing that
+     turns into a decision on a bad afternoon, so the panel leads with the sample
+     size and the words "not readable yet", and shows the two curves after that.
+     The count that matters is days the two books DIFFERED - on every other day
+     they are the same book and the day says nothing about which is better. */
+  const card = $("or-shadow-card"), sh = o && o.shadow;
+  if (!card) return;
+  if (!sh) { card.style.display = "none"; return; }
+  card.style.display = "";
+
+  const f = sh.forward;
+  const n = f ? Number(f.daysDiffered) || 0 : 0;
+
+  $("or-sh-tail").textContent = sh.holdDays + "-day hold";
+
+  $("or-sh-line").innerHTML =
+    "<b>Not adopted, and not ready to read.</b> " + esc(sh.why || "") +
+    (f
+      ? " So far: <b>" + f.daysRecorded + "</b> runs recorded, and the two books " +
+        "actually differed on <b>" + n + "</b> of them. " +
+        "<span class=\"dim\">That second number is the sample size - on the other " +
+        "days they held the same thing.</span>"
+      : " No paired history yet.");
+
+  const rows = [];
+  const row = (k, v, cls) =>
+    rows.push('<div class="kv"><span>' + esc(k) + '</span><b class="' +
+              (cls || "") + '">' + v + "</b></div>");
+
+  row("holds now", (sh.heldCount == null ? "-" : sh.heldCount) +
+      " of the same universe", "");
+  if (sh.deployedFraction != null) {
+    /* A LEVEL, NOT A CHANGE - so no signed pct() here. "+5.0% deployed" reads
+       as a move; deployment is a share of the account and never has a sign. */
+    const dep = x => (Number(x) * 100).toFixed(0) + "%";
+    row("deployed", dep(sh.deployedFraction) +
+        " against the traded book's " + dep(o.deployedFraction || 0), "");
+  }
+  if (sh.releasedEarly && sh.releasedEarly.length) {
+    row("already let go of", esc(sh.releasedEarly.join(", ")), "");
+  }
+  if (sh.givenUpUsd != null) {
+    /* Sign discipline. POSITIVE givenUp means the shadow released something
+       currently in profit - a point against it today, and nothing at all about
+       tomorrow. Colouring it as though it were P&L would invite the opposite
+       reading. */
+    const g = Number(sh.givenUpUsd);
+    row("open P&L on what it released", money(g, 2),
+        g > 0 ? "neg" : g < 0 ? "pos" : "");
+  }
+
+  if (f) {
+    row("traded book, forward", money(Number(f.incumbentUsd), 2), "");
+    row("second book, forward", money(Number(f.shadowUsd), 2), "");
+    row("gap", pct(Number(f.returnGap), 2), "");
+    row("worst fall, traded", pct(Number(f.incumbentWorstDrawdown), 1), "");
+    row("worst fall, second", pct(Number(f.shadowWorstDrawdown), 1), "");
+  }
+
+  $("or-sh-rows").innerHTML = rows.join("");
+  $("or-sh-note").textContent = sh.verdict || "";
+}
+
 /* THERE IS NO pct() HERE ON PURPOSE - DO NOT ADD ONE BACK.
    A second top-level pct() lived on this line from 13 to 14 August and took the
    whole page down. `const pct` is declared in the first script block; a
@@ -1892,24 +2256,71 @@ function renderHealth() {
     return;
   }
 
-  // Age of the FILE, not of anything it claims about itself.
+  // -------------------------------------------------------------------------
+  //  TWO QUESTIONS, NOT ONE. This block used to ask only "how old is the file"
+  //  and compare it against `staleAfterMinutes`, which is 5. That is how often
+  //  the recorder rewrites status.json ON THE PC. It is NOT how often the file
+  //  reaches this page - the guard publishes it every thirty cycles, so the
+  //  copy your phone holds is ALWAYS between 0 and 30 minutes old and the strip
+  //  showed red for five sixths of every cycle while everything was fine.
+  //
+  //  Karl saw exactly that on 15 August: a red dot reading "this status is 14
+  //  minutes old" while the recorder was writing every minute, all 30 markets
+  //  up and the tape still growing.
+  //
+  //  So the two questions are separated:
+  //
+  //    1. WAS THE RECORDER WELL when the snapshot was taken?  The recorder
+  //       answers that itself, in the file - allWell and secondsSinceWrite.
+  //       The snapshot is a witness statement, and a witness statement does not
+  //       become false because it is half an hour old.
+  //    2. IS THE MACHINE STILL PUBLISHING?  That is what file age measures, and
+  //       it has to be judged against the PUBLISH cadence, not the write one.
+  //
+  //  Amber is the honest middle: publishing is late, and the last thing we
+  //  heard was good.
+  // -------------------------------------------------------------------------
+  const PUBLISH_EVERY = 30;         // guard cycles, one a minute
+  const LATE = PUBLISH_EVERY * 1.5; // 45 min - one missed publish plus slack
+  const GONE = PUBLISH_EVERY * 3;   // 90 min - two missed, the PC is off
+
   const ageMin = (Date.now() - Date.parse(h.at)) / 60000;
-  const limit = Number(h.staleAfterMinutes) || 5;
-  const stale = ageMin > limit;
-  const wellNow = Boolean(h.allWell) && !stale;
-
-  box.className = "health " + (wellNow ? "ok" : "bad");
-  $("or-health-verdict").textContent = stale
-    ? "This status is " + ageWords(ageMin) + " old"
-    : (h.verdict || (wellNow ? "All well" : "Attention needed"));
-
   const t = h.tape || {};
+  const writeGapMin = Number(t.secondsSinceWrite || 0) / 60;
+  const wellWhenSeen = Boolean(h.allWell)
+    && writeGapMin <= (Number(h.staleAfterMinutes) || 5);
+
+  const state = !wellWhenSeen ? "bad"
+              : ageMin > GONE  ? "bad"
+              : ageMin > LATE  ? "late"
+              : "ok";
+
+  box.className = "health " + state;
+  // A stalled recorder and an unhappy recorder are different failures and must
+  // not share a headline. If allWell is false the file's own verdict already
+  // describes the problem; if the WRITE GAP is what failed, the verdict is the
+  // last cheerful thing it said before going quiet and would read as a lie.
+  $("or-health-verdict").textContent =
+      state === "ok"      ? (h.verdict || "All well")
+    : state === "late"    ? "Nothing published for " + ageWords(ageMin)
+    : h.allWell === false ? (h.verdict || "Attention needed")
+    : !wellWhenSeen       ? "The recorder had stopped writing "
+                            + ageWords(writeGapMin) + " before this snapshot"
+    :                       "Nothing published for " + ageWords(ageMin);
+
   const bits = [];
-  if (stale) {
-    bits.push("The recorder rewrites this every minute, so an old file means it "
-      + "has stopped. Last said: " + (h.verdict || "-"));
+  if (state === "ok") {
+    bits.push("recorder checked in " + ageWords(ageMin) + " ago");
+  } else if (state === "late") {
+    bits.push("The page is published every " + PUBLISH_EVERY + " minutes, so a "
+      + "gap this size is late rather than dead. When last heard from: "
+      + (h.verdict || "-"));
+  } else if (!wellWhenSeen) {
+    bits.push("This is the recorder's own report, not a publishing delay. "
+      + "The snapshot itself was taken " + ageWords(ageMin) + " ago.");
   } else {
-    bits.push("as of " + ageWords(ageMin) + " ago");
+    bits.push("Two publishes missed. The PC is most likely off or offline. "
+      + "When last heard from: " + (h.verdict || "-"));
   }
   if (t.days != null) bits.push(t.days + " day" + (t.days === 1 ? "" : "s") + " of tape");
   if (t.gigabytes != null) bits.push(Number(t.gigabytes).toFixed(1) + " GB");
@@ -1944,15 +2355,26 @@ function renderOrders() {
     $("or-recon-summary").textContent = "";
     $("or-recon-verdict").textContent = "";
     renderForward(null);
+    renderShadow(null);
     return;
   }
 
+  // The 90-minute bar below was set when the plan was run BY HAND. LONA-PLAN-AUTO
+  // now runs it once a day, so the plan is legitimately 0-24 hours old and the
+  // old threshold painted it amber for 22 of every 24 hours - the same mistake
+  // the health strip made with `staleAfterMinutes`. A cadence-aware bar: fine
+  // inside a day, amber past a day and a bit, red past two.
+  const DAILY = 60 * 24;
   const age = (Date.now() - Date.parse(o.at)) / 60000;
-  const stale = age > 90;
-  status.className = "alert " + (stale ? "warn" : "ok");
-  status.querySelector(".t").textContent = stale
-    ? "This plan is " + Math.round(age / 60) + " hours old"
-    : "Paper book, published " + (age < 2 ? "just now" : Math.round(age) + " min ago");
+  const late = age > DAILY * 1.25;              // a run was missed
+  const dead = age > DAILY * 2;
+  status.className = "alert " + (dead || late ? "warn" : "ok");
+  status.querySelector(".t").textContent =
+      dead ? "No plan for " + Math.round(age / DAILY) + " days - the daily run has stopped"
+    : late ? "This plan is " + Math.round(age / 60) + " hours old, so a daily run was missed"
+    : age < 2   ? "Paper book, published just now"
+    : age < 90  ? "Paper book, published " + Math.round(age) + " min ago"
+    :             "Paper book, from the daily run " + Math.round(age / 60) + " hours ago";
   status.querySelector(".b").textContent = o.note;
   $("or-when").textContent = new Date(o.at).toLocaleString();
 
@@ -1976,6 +2398,7 @@ function renderOrders() {
     o.reconciliation.clean ? "pos" : o.reconciliation.wasChecked ? "neg" : ""));
 
   renderForward(o);
+  renderShadow(o);
 
   if (!o.positions.length) {
     pos.appendChild(el("tr")).appendChild(
@@ -2167,6 +2590,8 @@ async function boot() {
 
   loadAnalyst();
   setInterval(loadAnalyst, ANALYST_MS);
+  loadBoard();
+  setInterval(loadBoard, BOARD_MS);
   loadOrders();
   setInterval(loadOrders, ORDERS_MS);
 

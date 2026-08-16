@@ -172,6 +172,7 @@ tr.hl{background:rgba(45,224,165,.06)}
     <a href="#method">Method</a>
     <a href="#next">Next</a>
     <a href="#run">Run it</a>
+    <a href="learn.html">Learn</a>
   </nav>
   <span class="live"><span class="dot"></span>recording</span>
 </div></header>
@@ -196,6 +197,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 
   <p style="margin-top:22px">
     <a class="btn" href="terminal.html">Open the live terminal</a>
+    <a class="btn ghost" href="learn.html">Learn the method</a>
     <a class="btn ghost" href="#run">How to run everything</a>
   </p>
 </section>
@@ -289,6 +291,86 @@ tr.hl{background:rgba(45,224,165,.06)}
   evidence</b> — the same rule on Bybit over the same years would correlate about
   0.95 with the Binance run. Only new <i>time</i> or new <i>information</i> moves
   a standard error, which is why BitMEX was worth pulling and Bybit was not.</p>
+
+  <h3 style="margin-top:34px">Why there is no fifth dataset with more history</h3>
+  <p class="sub">The obvious next move is to find a venue that goes back further,
+  and we went looking. <b>Bitfinex serves daily bars from March 2013 and still
+  serves its delisted pairs — 50 of 50 tested.</b> It is the best-preserved
+  archive in crypto. And it is no use for this, because of what is <i>in</i>
+  those years:</p>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Year</th><th>Bitfinex markets clearing $1m a day</th>
+      <th>Coins clearing $1m a day, whole market</th></tr></thead>
+    <tbody>
+      <tr><td>2014</td><td class="neg">1</td><td>—</td></tr>
+      <tr><td>2015</td><td class="neg">1</td><td>—</td></tr>
+      <tr class="hl"><td>Jan 2016</td><td class="neg">1</td><td class="neg">2</td></tr>
+      <tr><td>Jul 2016</td><td class="neg">1</td><td class="neg">5</td></tr>
+      <tr><td>Jan 2017</td><td class="warn">7</td><td class="warn">13</td></tr>
+      <tr class="hl"><td>Jul 2017</td><td class="warn">7</td><td class="pos">20+</td></tr>
+      <tr><td>2018</td><td class="pos">14</td><td class="pos">far more</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub">The rule ranks a cross-section and holds the top twenty.
+  <b>You cannot pick twenty out of one.</b> On 3 January 2016 exactly two coins
+  on earth traded a million dollars a day; twenty was not reached anywhere until
+  around the middle of 2017, and our Binance spot archive starts that August.
+  <b>This project's data begins within weeks of the earliest date the test can
+  exist at all.</b> The ceiling is the market's, not ours.</p>
+
+  <p class="sub">One venue is worse than useless. Poloniex had the deepest
+  altcoin cross-section of 2016–2017 and has since <b>deleted 29 of the 30
+  delisted markets we tested</b> — no listing, no candles, nothing. A backtest on
+  it would look beautiful and would be measuring only which coins are still alive
+  in 2026. <i>Finding 032.</i></p>
+
+  <h3 style="margin-top:34px">What Bitfinex <i>was</i> good for</h3>
+  <p class="sub">One stretch of this project had only ever been seen through a
+  single venue: <b>August 2017 to 2019</b>, which contains the entire 2018 bear
+  and is the most informative period we hold. If the result there were an
+  artifact of one exchange's fee schedule or listing policy, nothing here would
+  have detected it. So Bitfinex was pulled anyway — not for its history, for its
+  independence. Its whole ticker space was enumerated by brute force,
+  <b>17,576 probes</b>, because the venue's own listings contain none of its
+  dead: <b>268 pairs found, 204 of them delisted</b>, carrying 192,160 days of
+  price.</p>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Same period, two venues</th><th>Net CAGR</th><th>Sharpe</th>
+      <th>Hold all 20 instead</th><th>Its drawdown</th></tr></thead>
+    <tbody>
+      <tr><td>Binance spot &middot; 2017-08 &rarr; 2020-12</td><td class="pos">+35.7%</td>
+        <td class="pos">+1.28</td><td>+2.2%</td><td class="neg">&minus;91%</td></tr>
+      <tr class="hl"><td>Bitfinex &middot; 2017-07 &rarr; 2020-12</td><td class="pos">+49.2%</td>
+        <td class="pos">+1.29</td><td class="neg">&minus;0.5%</td><td class="neg">&minus;92%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub">Two order books, two fee schedules, two customer bases, and the
+  Sharpe ratios land at <b>1.28 and 1.29</b>. The obvious objection is that it is
+  the same period and therefore the same coins — so that was measured rather than
+  argued. The two venues' traded top-twenty lists overlap by a median of
+  <b>26%</b>. Fifteen markets were eligible on Bitfinex and <i>never</i> on
+  Binance spot. <b>Three quarters of the two universes differ.</b></p>
+
+  <p class="sub">And 2018 finally counts. Binance spot's 2018 sat at a median of
+  eight eligible markets, below our own bar, and had to be reported as
+  &ldquo;cannot say&rdquo;. Bitfinex's sits at <b>fourteen</b> and clears it:
+  <b>the rule lost 4.4% net in the year bitcoin fell 71%</b>, on a 10% drawdown.
+  BitMEX, which shares no market with either, measured the same bear at
+  <b>&minus;5.3% while bitcoin fell 73.4%</b>.</p>
+
+  <p class="sub"><b>What must be said against it.</b> The headline is not
+  significant on its own — <b>t = +1.79</b> over 3.5 years; its worth is the
+  agreement, not the number. Two of its four years (2019, 2020) sit at a median
+  of nine and are marked <i>cannot say</i>. Bitfinex from 2021 is weak — Sharpe
+  +0.36 — on a median of <b>six</b> markets, too thin to be either support or
+  refutation, and it is reported here because the pre-registration named it in
+  advance so it could not be quietly dropped. <b>The independent-period count
+  stays at two.</b> This is a second view, not a second era.
+  <i>Finding 033.</i></p>
 
   <h3 style="margin-top:34px">The controls, which matter more than the headline</h3>
   <p class="sub">A backtest with no control is a story. Each row below is a
@@ -593,6 +675,44 @@ tr.hl{background:rgba(45,224,165,.06)}
         <td style="text-align:left;font-family:var(--sans);white-space:normal">324 pairs
         joined to 715 contexts by position, wrong for a fortnight, every number plausible.
         Retracts 021's headline claim.</td><td><span class="tag warn">correction</span></td></tr>
+      <tr><td>028 &middot; H2 refuted on 6.6 years</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Volatility
+        targeting: +0.154 of Sharpe on three years became <b>+0.067 on 6.6</b>, and the
+        drawdown improvement did not shrink, it <b>vanished</b>. The overlay buys insurance
+        in the good years and lapses the policy in the bad one.</td>
+        <td><span class="tag dead">refuted</span></td></tr>
+      <tr><td>029 &middot; the two-day hold</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Exiting failed
+        breakouts sooner more than halves the drawdown in every year tested. Still
+        <b>not adopted</b> &mdash; the forward record arbitrates, not another backtest.</td>
+        <td><span class="tag build">watching</span></td></tr>
+      <tr><td>030 &middot; the 2018 era, on Binance spot</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Holding the
+        whole top 20 lost <b>91%</b> while selecting from them made money &mdash; the
+        selection claim replicated on a fourth dataset. The 2018 line itself sits at a median
+        of eight eligible markets and is reported as <b>&ldquo;cannot say&rdquo;</b>.</td>
+        <td><span class="tag live">landmark</span></td></tr>
+      <tr class="hl"><td>031 &middot; two datasets, one era</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The
+        &ldquo;independent replication&rdquo; in 029 was two venues quoting <b>the same three
+        years</b>. On genuinely new time the rank correlation falls from <b>+0.95 to
+        +0.25</b>. The unit of evidence is the independent <i>period</i>, not the file.</td>
+        <td><span class="tag warn">correction</span></td></tr>
+      <tr class="hl"><td>032 &middot; there is no more history to buy</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Bitfinex goes
+        back to <b>2013</b> and keeps its dead &mdash; and those extra years hold a median of
+        <b>one</b> market a day. On 3 January 2016 exactly <b>two coins on earth</b> traded
+        $1m a day. Poloniex, the obvious alternative, has <b>deleted 29 of 30</b> delisted
+        markets and is disqualified.</td>
+        <td><span class="tag live">landmark</span></td></tr>
+      <tr class="hl"><td>033 &middot; Bitfinex, a fifth venue for 2017&ndash;2020</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">A 17,576-probe
+        census found 268 pairs, 204 of them dead. Sharpe <b>1.29 against Binance spot's
+        1.28</b> on the same years &mdash; with the two traded universes overlapping by only
+        <b>26%</b>. <b>2018 is the first bear year to clear its own depth bar:</b>
+        &minus;4.4% net while bitcoin fell 71%, matching BitMEX's independent &minus;5.3%.
+        Not significant alone (t +1.79); the worth is the agreement.</td>
+        <td><span class="tag live">landmark</span></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -600,7 +720,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 <!-- ============================================================== method -->
 <section id="method">
   <h2>Method</h2>
-  <h3>Twenty-one rules, every one of them earned by a death</h3>
+  <h3>Twenty-five rules, every one of them earned by a death</h3>
   <p class="sub">This is the part of the platform that is actually worth
   something. None of it was designed in advance; each rule exists because a
   result died on it.</p>
@@ -651,6 +771,18 @@ tr.hl{background:rgba(45,224,165,.06)}
         <td style="text-align:left;font-family:var(--sans);white-space:normal">023 — the tape covers thirty markets so a name entering the traded twenty already has weeks of history</td></tr>
       <tr class="hl"><td>A join whose two sides are different lengths is not a join</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">027 — both arrays came back, both parsed, every downstream number was plausible, and it was nonsense for a fortnight</td></tr>
+      <tr class="hl"><td>Two datasets that overlap in time are one dataset — the unit of
+        evidence is the independent period, not the file</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">031 — we checked the venues were different and never checked the years were; three files covering one era give the confidence of one era while looking like three</td></tr>
+      <tr><td>Before adding a data source, measure the cross-section depth it offers in the
+        years being bought — not the date of its first bar</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">032 — a first bar in 2013 bought us one market a day for four years; the date is marketing, the depth is the evidence</td></tr>
+      <tr><td>A venue that does not serve its delisted markets is not a weaker data source,
+        it is a disqualified one</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">032 — Poloniex has the best-looking pre-2018 cross-section anywhere and has deleted 29 of 30 dead names; a backtest on it would be measuring which coins are still alive in 2026</td></tr>
+      <tr class="hl"><td>When two datasets cover the same period, measure how much their traded
+        universes actually overlap before calling their agreement a replication</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">033 — 031 said to check the calendars; this says to check the instruments too. A 26% overlap and a 96% overlap are completely different pieces of evidence and look identical in a summary table</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -675,6 +807,19 @@ tr.hl{background:rgba(45,224,165,.06)}
       at these fees, but improving a trade already decided only needs to beat
       zero.</p>
       <code>lab/prereg_book.md</code></div>
+
+    <div class="card on"><h3>The second book <span class="tag live">scoring</span></h3>
+      <p>Finding 029's two-day hold, run <b>beside</b> the traded rule and traded
+      by nobody. Same markets, same ranking, same day &mdash; it differs only in
+      when it lets go, so the market move common to both cancels and what is left
+      is the exit alone.</p>
+      <p>No backtest can settle it: it was the best column of a 70-cell grid, and
+      finding 011 measured that the best of 70 <i>meaningless</i> variants wins by
+      about +0.6 of Sharpe on noise. <b>The pass mark was written before the first
+      day was recorded</b> &mdash; 120 days on which the two books actually
+      DIFFERED, a bootstrapped paired Sharpe whose 5th percentile clears zero, and
+      a drawdown no worse. Fail any of them and the five-day hold stands.</p>
+      <code>lab/prereg_shadow.md</code></div>
 
     <div class="card soon"><h3>Confirm H2 on Binance <span class="tag next">next</span></h3>
       <p>Volatility targeting was finding 025's only near miss: +0.154 Sharpe and
