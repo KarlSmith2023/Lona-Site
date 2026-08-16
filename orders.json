@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-16T00:41:24.1429708+00:00",
+  "at": "2026-08-16T11:55:18.1000710+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
@@ -35,18 +35,18 @@
   "accountTooSmall": false,
   "smallestViableAccountUsd": 300,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -0.85,
-  "openPaperPnlPct": -0.002833,
+  "openPaperPnlUsd": -0.74,
+  "openPaperPnlPct": -0.002482,
   "forward": {
     "hasHistory": true,
-    "runs": 15,
+    "runs": 16,
     "startUsd": 1000,
-    "currentUsd": 1002.68,
+    "currentUsd": 1002.79,
     "peakUsd": 1003.03,
-    "returnSinceStart": 0.002682,
-    "drawdown": -0.000350,
+    "returnSinceStart": 0.002786,
+    "drawdown": -0.000246,
     "worstDrawdown": -0.000429,
-    "bandUsed": 0.0013,
+    "bandUsed": 0.0009,
     "outsideNormalBand": false,
     "history": [
       {
@@ -123,6 +123,11 @@
         "at": "2026-08-16T00:41:24.1429708+00:00",
         "equityUsd": 1002.68,
         "drawdown": -0.000350
+      },
+      {
+        "at": "2026-08-16T11:55:18.1000710+00:00",
+        "equityUsd": 1002.79,
+        "drawdown": -0.000246
       }
     ]
   },
@@ -133,26 +138,39 @@
     "positiveFirstBars": 0.47,
     "source": "Finding 019 - 5,000 block-bootstrapped one-year histories. A drawdown inside this band is a bad year behaving normally, not evidence the rule has stopped working."
   },
+  "shadow": {
+    "holdDays": 2,
+    "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
+    "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
+    "heldCount": 1,
+    "deployedFraction": 0.05,
+    "releasedEarly": [
+      "PUMP"
+    ],
+    "openPaperPnlUsd": 0.05,
+    "givenUpUsd": -0.79,
+    "verdict": "Not adopted, and not readable yet. The pass mark has to be written down before this record is read, not after - and the sample that matters is days the two books DIFFERED, which grows far more slowly than the calendar."
+  },
   "positions": [
     {
       "coin": "XMR",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
       "entryPrice": 411.36,
-      "price": 408.7,
-      "returnSinceEntry": -0.006466,
+      "price": 412.72,
+      "returnSinceEntry": 0.003306,
       "notionalUsd": 15.00,
-      "paperPnlUsd": -0.10
+      "paperPnlUsd": 0.05
     },
     {
       "coin": "PUMP",
       "barsSinceEntry": 2,
       "barsRemaining": 2,
       "entryPrice": 0.002909,
-      "price": 0.002763,
-      "returnSinceEntry": -0.050189,
+      "price": 0.002755,
+      "returnSinceEntry": -0.052939,
       "notionalUsd": 15.00,
-      "paperPnlUsd": -0.75
+      "paperPnlUsd": -0.79
     }
   ],
   "orders": [
