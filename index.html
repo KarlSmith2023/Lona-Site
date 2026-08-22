@@ -17,6 +17,7 @@
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
   --r:12px; --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
@@ -29,9 +30,7 @@ a:hover{text-decoration:underline}
 .dim{color:var(--dim)} .faint{color:var(--faint)}
 
 /* ---------------------------------------------------------------- nav */
-.nav{position:sticky;top:0;z-index:80;background:rgba(5,8,11,.92);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line)}
+.nav{background:transparent;border-bottom:1px solid var(--line)}
 .nav .in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;
   align-items:center;gap:18px}
 .logo{font-family:var(--mono);font-weight:700;font-size:17px;letter-spacing:.06em;
@@ -159,9 +158,44 @@ tr.hl{background:rgba(45,224,165,.06)}
 .quote{border-left:3px solid var(--acc);padding:4px 0 4px 20px;margin:22px 0;
   font-size:17px;color:var(--ink);max-width:60ch;line-height:1.55}
 @media(min-width:800px){.quote{font-size:19px}}
+
+/* ------------------------------------------- the page switcher + safe area
+   TWO BUGS IN ONE PLACE, BOTH REPORTED FROM A PHONE ON 20 AUGUST 2026.
+
+   1  THE HEADER WAS DRAWN UNDER THE PHONE'S OWN STATUS BAR.
+      viewport-fit=cover plus apple-mobile-web-app-status-bar-style
+      black-translucent means the page owns the whole screen INCLUDING the
+      strip the clock and battery live in. There was a --safe-b for the
+      bottom notch and no --safe-t, so "LONA://account" rendered straight
+      through the 19:06 and the wifi icon. One variable, applied once, to
+      whichever element is stuck to the top.
+
+   2  THERE WAS NO WAY TO MOVE BETWEEN THE PAGES FROM A PHONE.
+      index.html's nav carries the links, but it is display:none below
+      800px because it is a desktop row of section anchors. So on a phone
+      the four pages were four separate dead ends. This bar carries the same
+      four links on every page and never collapses - it scrolls sideways.
+
+   ONE STICKY CONTAINER, NOT THREE. The header, this bar and (on the
+   terminal) the desktop rail are now children of a single sticky element.
+   That deletes terminal.html's `top:53px` magic number, which was a
+   hard-coded copy of the header's height and would have been wrong the
+   first time the header changed - which is this commit. */
+.stickytop{position:sticky;top:0;z-index:90;padding-top:var(--safe-t);
+  background:rgba(5,8,11,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pageswitch{display:flex;gap:2px;padding:0 8px;overflow-x:auto;
+  border-bottom:1px solid var(--line);scrollbar-width:none}
+.pageswitch::-webkit-scrollbar{display:none}
+.pageswitch a{flex:none;padding:8px 12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
+.pageswitch a:hover{color:var(--ink);text-decoration:none}
+.pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
 </style>
 </head>
 <body>
+<div class="stickytop">
 <header class="nav"><div class="in">
   <span class="logo">LONA<b>://</b><i>platform</i></span>
   <nav>
@@ -171,11 +205,18 @@ tr.hl{background:rgba(45,224,165,.06)}
     <a href="#findings">Findings</a>
     <a href="#method">Method</a>
     <a href="#next">Next</a>
+    <a href="#live">Live</a>
     <a href="#run">Run it</a>
-    <a href="learn.html">Learn</a>
   </nav>
   <span class="live"><span class="dot"></span>recording</span>
 </div></header>
+<nav class="pageswitch" aria-label="LONA pages">
+  <a href="index.html" aria-current="page">platform</a>
+  <a href="terminal.html">terminal</a>
+  <a href="learn.html">learn</a>
+  <a href="practice.html">practice</a>
+</nav>
+</div>
 
 <div class="wrap">
 
@@ -183,21 +224,24 @@ tr.hl{background:rgba(45,224,165,.06)}
 <section>
   <h2>Liquidity Oriented Neural Analytics</h2>
   <h1>A research platform that tries<br/>to kill its own ideas.</h1>
-  <p class="lede">Twenty-seven findings. One designated strategy. Zero orders
-  placed — and that last number is still the point.</p>
+  <p class="lede">Thirty-eight findings. Thirty-one method rules. One designated
+  strategy. Zero orders placed — and that last number is still the point.</p>
 
   <div class="quote">&ldquo;Never trade because we think something works.
   Trade because the statistics prove it works.&rdquo;</div>
 
   <p class="sub">Most trading systems are built to find edges. This one is built
   to <b>destroy</b> them and keep only what survives. Around 145 rules have been
-  tested and one is still standing. Four of the twenty-seven findings are
-  corrections to earlier findings in the same file — including two that were
-  wrong for a fortnight before this platform caught itself.</p>
+  tested and one is still standing. Four of the thirty-eight findings are
+  retractions of earlier findings in the same file — including two that were
+  wrong for a fortnight before this platform caught itself, and one where the
+  statistical null being used to reject ideas turned out to be a number the
+  analyst had simply chosen.</p>
 
   <p style="margin-top:22px">
     <a class="btn" href="terminal.html">Open the live terminal</a>
     <a class="btn ghost" href="learn.html">Learn the method</a>
+    <a class="btn ghost" href="practice.html">Practise the rule</a>
     <a class="btn ghost" href="#run">How to run everything</a>
   </p>
 </section>
@@ -205,15 +249,15 @@ tr.hl{background:rgba(45,224,165,.06)}
 <!-- ============================================================== status -->
 <section id="status">
   <h2>Status</h2>
-  <h3>Where the platform is on 14 August 2026</h3>
+  <h3>Where the platform is on 20 August 2026</h3>
 
   <div class="tiles" style="margin:18px 0">
     <div class="tile"><div class="k">Order-book tape</div>
-      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 125 subscriptions</div></div>
+      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 10 days &middot; 3.3 GB</div></div>
     <div class="tile"><div class="k">Forward record</div>
-      <div class="v warn">day 5</div><div class="s">of about 180 needed</div></div>
+      <div class="v warn">16 runs</div><div class="s">stalled since 16 Aug &mdash; see below</div></div>
     <div class="tile"><div class="k">Test cases</div>
-      <div class="v">311</div><div class="s">across 6 suites</div></div>
+      <div class="v">406</div><div class="s">across 6 suites</div></div>
     <div class="tile"><div class="k">Orders placed</div>
       <div class="v faint">0</div><div class="s">deliberately</div></div>
   </div>
@@ -237,6 +281,8 @@ tr.hl{background:rgba(45,224,165,.06)}
         <td>every limit ships with a case that proves it blocks something</td></tr>
       <tr><td>Paper ledger</td><td class="pos">live</td>
         <td>equity curve derived from the append-only plan journal</td></tr>
+      <tr><td>Daily plan (the forward record)</td><td class="warn">stalled</td>
+        <td>last run 16 Aug &middot; its scheduled task is not installed on the machine yet</td></tr>
       <tr><td>Execution pipeline</td><td class="warn">dry run</td>
         <td>signer built &middot; payload never spoken to the venue</td></tr>
       <tr><td>Live trading</td><td class="faint">not started</td>
@@ -254,7 +300,23 @@ tr.hl{background:rgba(45,224,165,.06)}
     <p>That is much better than a hint and still not a live result. Every figure
     on this page is a backtest. <b>The only test that cannot be searched is the
     one that has not happened yet</b>, which is what the forward record and the
-    order-book tape are for, and they are five days old.</p>
+    order-book tape are for, and they are ten days old.</p>
+    <p><b>And the forward record is currently stopped.</b> An update on 16 August
+    replaced a launcher script and silently deleted a hook that lived only on the
+    recording machine, so the daily plan has not run since. The order-book tape
+    never stopped and is unaffected. Those missing days are gone for good &mdash;
+    a recomputed entry is a backtest, not a forward record &mdash; and the fix is
+    to give the plan its own scheduled task so it can never again depend on a
+    script doing an unrelated job. That is written and tested; it needs someone at
+    the machine to install it.</p>
+    <p>Two of those figures have since been re-examined by their own authors.
+    Finding 036 replaced the statistical null used to reject variants &mdash; it
+    had been a number chosen by the analyst rather than derived from the data
+    &mdash; and every previous verdict survived, because the invented bar was the
+    harsher one. Finding 037 priced the survivorship tax at <b>+6.2 points of
+    CAGR</b> with an interval that never crosses zero. <b>Neither correction was
+    prompted by a bad result. Both were prompted by someone asking a question the
+    project had not asked itself.</b></p>
   </div>
 </section>
 
@@ -291,6 +353,35 @@ tr.hl{background:rgba(45,224,165,.06)}
   evidence</b> — the same rule on Bybit over the same years would correlate about
   0.95 with the Binance run. Only new <i>time</i> or new <i>information</i> moves
   a standard error, which is why BitMEX was worth pulling and Bybit was not.</p>
+
+  <h3 style="margin-top:34px">How much of this is just owning bitcoin?</h3>
+  <p class="sub">The obvious killer objection, and it went unmeasured for ten
+  days until an outside reviewer demanded the table. Daily returns of the book
+  regressed on bitcoin, on every dataset that produced a headline:</p>
+
+  <div class="scroll" style="margin:18px 0"><table>
+    <thead><tr><th>Book</th><th>Beta to BTC</th><th>R&sup2;</th><th>Alpha/yr</th><th>Avg deployment</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>finding 008, the traded rule</td><td class="pos">+0.17</td>
+        <td>16.5%</td><td class="pos">+22.4%</td><td>17%</td></tr>
+      <tr><td>hold all 20 instead</td><td class="neg">+1.145</td>
+        <td class="neg">63.1%</td><td class="neg">&minus;22.3%</td><td>97%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub"><b>Beta tracks deployment.</b> The selection does not find
+  low-beta names &mdash; it holds ordinary high-beta crypto and sits in cash 84%
+  of the time. Owning the whole universe is beta 1.14 and loses 22% a year;
+  selecting from it is beta 0.17 and makes 22%. Same markets, same days, same
+  costs. Alpha comes out at <b>+22.4%, +22.9% and +22.6%</b> on three separate
+  datasets that were not tuned to agree.</p>
+
+  <p class="sub"><b>Two things against it.</b> Against simply holding bitcoin at
+  the same 17% exposure, the rule wins on return and Sharpe on every dataset
+  &mdash; and <b>loses on drawdown on every dataset</b>, roughly 3.8&times; the
+  return for 1.4&times; the hole. And its beta is <b>higher when bitcoin falls</b>
+  (+0.206) than when it rises (+0.141): the diversification is weakest exactly
+  when it is needed. <i>Finding 034.</i></p>
 
   <h3 style="margin-top:34px">Why there is no fifth dataset with more history</h3>
   <p class="sub">The obvious next move is to find a venue that goes back further,
@@ -705,6 +796,40 @@ tr.hl{background:rgba(45,224,165,.06)}
         $1m a day. Poloniex, the obvious alternative, has <b>deleted 29 of 30</b> delisted
         markets and is disqualified.</td>
         <td><span class="tag live">landmark</span></td></tr>
+      <tr class="hl"><td>037 &middot; the survivorship tax, priced</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">The same rule,
+        the same days, two universes. Deleting the 54 delisted markets lifts CAGR from
+        <b>+22.3% to +28.6%</b> and Sharpe from <b>+1.08 to +1.28</b>. Block bootstrap:
+        <b>+1.7% to +13.3%</b> of CAGR, <b>+0.06 to +0.33</b> of Sharpe, helping in
+        <b>99%</b> of draws. The bias is a fifth of the headline &mdash; and it <b>halves at
+        top 40</b>, so it is a property of the data <i>and the position size</i> together.</td>
+        <td><span class="tag live">landmark</span></td></tr>
+      <tr class="hl"><td>036 &middot; the permutation null replaces a null I invented</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Findings 011,
+        016 and 029 measured grid-search luck against noise scaled at <b>0.15&sigma;</b>
+        &mdash; a number I chose and never checked, while finding 024 next door already used
+        a proper shuffle. Circularly shifting the return matrix destroys the signal and keeps
+        everything else. Searching 70 cells buys <b>+0.377</b> of Sharpe for free; the best
+        cell found <b>+0.303</b>. <b>The observed lift is below the null's MEDIAN</b>, and
+        every old verdict survives because the invented bar was the harsher one.</td>
+        <td><span class="tag warn">correction</span></td></tr>
+      <tr class="hl"><td>035 &middot; the two-day hold cannot be settled by waiting</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">An outside
+        reviewer asked for the power calculation nobody had done. The gate had <b>10%
+        power</b> &mdash; a test that could not pass. Worse, the metric was ambiguous and the
+        two readings have <b>opposite signs</b> (+0.273 and &minus;0.295). And the mechanism
+        was wrong: bars 3&ndash;5 earn <b>+1.117% a trade</b>, so the short hold is not cutting
+        losses, it is <b>cutting the right tail</b>. Resolving it needs ~8.7 years.
+        <b>Retracts 029's mechanism claim.</b></td>
+        <td><span class="tag warn">correction</span></td></tr>
+      <tr class="hl"><td>034 &middot; the beta question, answered</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">Beta to bitcoin
+        is <b>+0.17</b>, not the 0.8&ndash;1.2 feared &mdash; because <b>beta tracks
+        deployment</b> and the book is in cash 84% of the time. The hold-all-20 control is
+        beta <b>1.145</b> and loses 22% a year. Alpha lands at <b>+22.4 / +22.9 / +22.6%</b>
+        on three datasets. Not beta timing either &mdash; but beta is <b>higher when bitcoin
+        falls</b>, the momentum-crash profile.</td>
+        <td><span class="tag live">landmark</span></td></tr>
       <tr class="hl"><td>033 &middot; Bitfinex, a fifth venue for 2017&ndash;2020</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">A 17,576-probe
         census found 268 pairs, 204 of them dead. Sharpe <b>1.29 against Binance spot's
@@ -720,7 +845,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 <!-- ============================================================== method -->
 <section id="method">
   <h2>Method</h2>
-  <h3>Twenty-five rules, every one of them earned by a death</h3>
+  <h3>Twenty-eight rules, every one of them earned by a death</h3>
   <p class="sub">This is the part of the platform that is actually worth
   something. None of it was designed in advance; each rule exists because a
   result died on it.</p>
@@ -783,6 +908,14 @@ tr.hl{background:rgba(45,224,165,.06)}
       <tr class="hl"><td>When two datasets cover the same period, measure how much their traded
         universes actually overlap before calling their agreement a replication</td>
         <td style="text-align:left;font-family:var(--sans);white-space:normal">033 — 031 said to check the calendars; this says to check the instruments too. A 26% overlap and a 96% overlap are completely different pieces of evidence and look identical in a summary table</td></tr>
+      <tr class="hl"><td>A performance number without its beta is not a result, it is a rumour</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">034 — every headline here stood for ten days before anyone asked how much of it was simply owning the asset class. The answer was reassuring; the ten days were not</td></tr>
+      <tr class="hl"><td>A pre-registration a reasonable reader can take two ways is not a pre-registration — state the metric as a formula, not a phrase</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">035 — "the paired difference in Sharpe on the daily difference series" is two quantities, and on the same data they have opposite signs</td></tr>
+      <tr class="hl"><td>Compute the power before writing the gate</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">035 — a threshold chosen by reasoning is a guess wearing a decimal point. Mine had 10% power; a year would have been spent failing a test that could not pass</td></tr>
+      <tr class="hl"><td>A null you designed is not a null — derive it by destroying the thing under test and leaving everything else intact</td>
+        <td style="text-align:left;font-family:var(--sans);white-space:normal">036 — if you can name the number you picked (0.15, 200 shuffles, twenty draws), ask what happens at half and at double it. No answer means you have a simulation, not a test</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -877,6 +1010,62 @@ tr.hl{background:rgba(45,224,165,.06)}
       want before sizing up. If the forward record disagrees with the backtest,
       that is the answer and finding 008 gets retired like the other twenty-six.</p></div>
   </div>
+</section>
+
+<!-- ============================================================== live -->
+<section id="live">
+  <h2>Live trading</h2>
+  <h3>What it would take, and why it has not happened</h3>
+
+  <p>The honest answer to &ldquo;can this trade real money yet&rdquo; is
+  <b>no, and the reason is not the statistics.</b> The statistics are about as
+  good as this project can make them: t&nbsp;=&nbsp;2.4 on 6.6 years of Binance,
+  t&nbsp;=&nbsp;2.39 on 10.25 years of BitMEX, alpha of +22% on three datasets
+  against a traded beta of 0.17, and a permutation null saying the parameters
+  were not found by searching.</p>
+
+  <p><b>The reason is the machine.</b> On 16 August 2026 an update replaced a
+  launcher script and silently deleted a hook that lived only on the recording
+  machine. The daily plan stopped. The tape kept running, the site kept
+  publishing, the status file kept saying everything was well, and
+  <b>nobody noticed for four days.</b> With no money on, that cost four days of
+  record. With money on, it is an open book and nothing watching it.</p>
+
+  <div class="note">
+    <div class="t">&#9888; The gate, written down while it stood at zero</div>
+    <p>Four conditions, pre-registered in <code>lab/prereg_live.md</code> and
+    counted in code by <code>GoLiveGate.cs</code> from the append-only journal:</p>
+    <ol style="margin:8px 0 8px 18px;padding:0">
+      <li><b>Ninety consecutive clean days.</b> A day is clean if the plan ran and
+      no gap exceeded 26 hours. <b>Any single missed day resets it to zero</b> — no
+      percentages, no rolling averages.</li>
+      <li><b>The alarm watched to fire.</b> The recorder killed on purpose and the
+      alert seen. A monitor nobody has watched fail is decoration.</li>
+      <li><b>The risk engine refusing something real</b> on live prices, not only
+      in a unit test.</li>
+      <li><b>One minimum-size order placed by hand and watched.</b> The one thing
+      no amount of dry running can test is whether the payload is accepted.</li>
+    </ol>
+    <p><b>Clearing all four permits that single hand-placed order. It does not
+    permit automated trading</b>, and there is no order-placement code in this
+    build to permit. Method rule 11: absent code cannot fire by accident;
+    disabled code can.</p>
+  </div>
+
+  <p class="sub">The count is published on every run and shown on the
+  <a href="terminal.html">terminal</a>, including the days it is short, so the
+  gate cannot be quietly moved. On the day it was written it stood at
+  <b>zero of four</b>.</p>
+
+  <h3>What you can trade today</h3>
+  <p>The <a href="practice.html">practice page</a> runs the designated strategy
+  against <b>LONA</b>, an imaginary coin generated in your browser from a random
+  seed. There is no exchange, no account and no way to deposit anything. The
+  generator is calibrated to statistics measured on 46,779 real market-days and
+  <b>checked in a headless browser against the shipped file</b> — 7.72% daily
+  volatility, fat tails, negative autocorrelation, and the +0.90%-versus-+0.06%
+  split that is the whole edge. It has a switch that turns the edge off, and the
+  rule loses money when you do.</p>
 </section>
 
 <!-- ================================================================= run -->

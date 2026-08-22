@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#05080b"/>
+<meta name="description" content="Practise LONA's breakout rule against a simulated coin. No money, no exchange, no account."/>
+<title>LONA — practice</title>
+<style>
+:root{
+  --bg:#05080b; --panel:#0a0f14; --panel2:#0d141b; --line:#18232e; --line2:#233240;
+  --ink:#d6e2ee; --dim:#8296a9; --faint:#546779;
+  --acc:#2de0a5; --acc2:#31a8ff; --warn:#f0a02a; --bad:#e8544a;
+  /* Chart marks are their OWN validated steps, not the UI accents. Same four
+     the learn page uses; checked against this surface with the dataviz
+     validator (lightness band, chroma, CVD, normal-vision, contrast). */
+  --s1:#3a86c9; --s2:#c07d20; --s3:#1f9e76; --s4:#8b74cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  --r:12px; --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--acc2);text-decoration:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
+header.top{border-bottom:1px solid var(--line);
+  background:rgba(5,8,11,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+header.top .in{max-width:900px;margin:0 auto;padding:12px 18px;display:flex;
+  align-items:center;gap:14px;font-size:13px}
+.logo{font-family:var(--mono);font-weight:700;letter-spacing:.06em}
+.logo i{color:var(--acc);font-style:normal} .logo b{color:var(--faint);font-weight:400}
+header.top a{color:var(--dim);margin-left:auto}
+h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:34px 0 8px}
+h2{font-size:19px;margin:34px 0 8px}
+p{margin:0 0 14px;max-width:68ch}
+.sub{color:var(--dim);font-size:14px}
+.note{border:1px solid var(--line2);border-left:3px solid var(--warn);
+  background:var(--panel);border-radius:var(--r);padding:14px 16px;margin:16px 0;
+  font-size:14px;color:var(--dim)}
+.note b{color:var(--ink)}
+.note.ok{border-left-color:var(--acc)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;margin:16px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font-family:var(--sans);font-size:14px;font-weight:600;border-radius:10px;
+  padding:11px 18px;border:1px solid var(--line2);background:var(--panel2);
+  color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--acc)}
+button:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line)}
+button.buy{background:rgba(45,224,165,.14);border-color:rgba(45,224,165,.45);color:var(--acc)}
+button.sell{background:rgba(232,84,74,.12);border-color:rgba(232,84,74,.4);color:var(--bad)}
+button.go{background:rgba(49,168,255,.14);border-color:rgba(49,168,255,.45);color:var(--acc2)}
+.tiles{display:grid;gap:9px;grid-template-columns:repeat(2,1fr);margin:14px 0}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.tile .k{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
+.tile .v{font-family:var(--mono);font-size:21px;margin-top:4px;letter-spacing:-.02em}
+.tile .s{font-size:11px;color:var(--faint);margin-top:2px}
+.pos{color:var(--acc)} .neg{color:var(--bad)} .warnc{color:var(--warn)}
+svg.fig{display:block;width:100%;height:auto;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r);margin:10px 0}
+.key{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin:8px 0 0}
+.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;
+  vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+th{text-align:right;padding:9px 11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 11px;text-align:right;border-bottom:1px solid rgba(24,35,46,.5);
+  font-family:var(--mono);font-variant-numeric:tabular-nums}
+td:first-child{font-family:var(--sans)}
+tbody tr:last-child td{border-bottom:none}
+tr.hl{background:rgba(45,224,165,.06)}
+.big{font-family:var(--mono);font-size:34px;letter-spacing:-.03em;margin:6px 0}
+footer{border-top:1px solid var(--line);margin-top:44px;padding-top:18px;
+  font-size:12.5px;color:var(--faint)}
+
+/* ------------------------------------------- the page switcher + safe area
+   TWO BUGS IN ONE PLACE, BOTH REPORTED FROM A PHONE ON 20 AUGUST 2026.
+
+   1  THE HEADER WAS DRAWN UNDER THE PHONE'S OWN STATUS BAR.
+      viewport-fit=cover plus apple-mobile-web-app-status-bar-style
+      black-translucent means the page owns the whole screen INCLUDING the
+      strip the clock and battery live in. There was a --safe-b for the
+      bottom notch and no --safe-t, so "LONA://account" rendered straight
+      through the 19:06 and the wifi icon. One variable, applied once, to
+      whichever element is stuck to the top.
+
+   2  THERE WAS NO WAY TO MOVE BETWEEN THE PAGES FROM A PHONE.
+      index.html's nav carries the links, but it is display:none below
+      800px because it is a desktop row of section anchors. So on a phone
+      the four pages were four separate dead ends. This bar carries the same
+      four links on every page and never collapses - it scrolls sideways.
+
+   ONE STICKY CONTAINER, NOT THREE. The header, this bar and (on the
+   terminal) the desktop rail are now children of a single sticky element.
+   That deletes terminal.html's `top:53px` magic number, which was a
+   hard-coded copy of the header's height and would have been wrong the
+   first time the header changed - which is this commit. */
+.stickytop{position:sticky;top:0;z-index:90;padding-top:var(--safe-t);
+  background:rgba(5,8,11,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pageswitch{display:flex;gap:2px;padding:0 8px;overflow-x:auto;
+  border-bottom:1px solid var(--line);scrollbar-width:none}
+.pageswitch::-webkit-scrollbar{display:none}
+.pageswitch a{flex:none;padding:8px 12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
+.pageswitch a:hover{color:var(--ink);text-decoration:none}
+.pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="stickytop">
+<header class="top"><div class="in">
+  <span class="logo">LONA<b>://</b><i>practice</i></span>
+  <a href="index.html">&larr; back to the platform</a>
+</div></header>
+<nav class="pageswitch" aria-label="LONA pages">
+  <a href="index.html">platform</a>
+  <a href="terminal.html">terminal</a>
+  <a href="learn.html">learn</a>
+  <a href="practice.html" aria-current="page">practice</a>
+</nav>
+</div>
+
+<div class="wrap">
+
+<h1>Practise the rule on a coin that does not exist</h1>
+<p class="sub">LONA is an <b>imaginary coin</b>. Its price is generated in your
+browser from a random seed. There is no exchange, no account, no money and no
+way to deposit any &mdash; and nothing you do here is recorded anywhere.</p>
+
+<div class="note ok">
+  <b>What this is for.</b> Not to make you good at trading. To show you, with
+  your own hands, why a boring mechanical rule beats an attentive human on a
+  chart &mdash; and then to show you that <b>one run of anything proves nothing at
+  all</b>, which is the single hardest lesson in this whole project.
+</div>
+
+<h2>How it works</h2>
+<div class="note"><b>The coin is fake. The physics are not.</b> LONA's price is
+  generated from statistics measured on <b>46,779 real market-days</b> of the
+  markets this rule actually trades: 7.72% daily volatility, extreme fat tails,
+  and &mdash; surprisingly &mdash; <b>negative</b> daily autocorrelation. Returns
+  mean-revert. What the rule eats is not trend persistence but a conditional
+  effect at the breakout itself: the day after a 50-day high returns
+  <b>+0.902%</b> against <b>+0.060%</b> on every other day. Nothing here was tuned
+  until the rule looked good.</div>
+
+<p class="sub">You are shown one day at a time. On each day you may <b>buy</b>
+(if flat) or <b>sell</b> (if long). You always trade the full stake &mdash; no
+sizing decisions, so the only thing being tested is <i>timing</i>.</p>
+<p class="sub">Beside you, invisibly, <b>finding 008's rule</b> plays the same
+days: buy when the close is strictly above every one of the previous 50 closes,
+hold exactly 5 days, then out. It never changes its mind. Both of you pay the
+same 10bp round-trip fee.</p>
+
+<div class="panel">
+  <div class="row" style="margin-bottom:12px">
+    <span class="sub" style="margin-right:4px">Market:</span>
+    <button id="btn-edge" class="go">with the measured edge</button>
+    <button id="btn-noedge">no edge at all</button>
+  </div>
+  <div class="row">
+    <button id="btn-start" class="go">Deal a new season</button>
+    <button id="btn-buy" class="buy" disabled>Buy LONA</button>
+    <button id="btn-sell" class="sell" disabled>Sell</button>
+    <button id="btn-skip" disabled>Next day &rsaquo;</button>
+    <button id="btn-run" disabled>Skip to the end &raquo;</button>
+  </div>
+  <div class="note ok" id="mode-note" style="margin-top:12px"></div>
+  <div class="tiles" id="tiles"></div>
+  <div id="chart"></div>
+  <div class="key">
+    <span><i style="background:var(--s1)"></i>LONA price</span>
+    <span><i style="background:var(--s3)"></i>your position</span>
+    <span><i style="background:var(--s2)"></i>50-day high</span>
+  </div>
+</div>
+
+<h2>The honest part</h2>
+<p class="sub">Whatever happened above, <b>it was one season.</b> So when a
+season ends, this page silently replays the rule across <b>500 more</b> randomly
+generated seasons and shows you where a single run sits in that spread. That
+picture is the reason this project pre-registers everything and refuses to
+believe a good backtest.</p>
+
+<div id="verdict"></div>
+
+<footer>
+  LONA is fictional. Nothing here is a price, a quote, an offer, a
+  recommendation or a record of anything. The rule shown is finding 008 as
+  designated in the research log, and it has never traded real money.
+</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------------- rng
+     Seeded so a season is reproducible and so the 500-season replay is a
+     property of the generator, not of whatever the browser felt like. */
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function gauss(r) {
+    var u = 0, v = 0;
+    while (u === 0) u = r();
+    while (v === 0) v = r();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  /* --------------------------------------------------------- the coin
+     CALIBRATED TO MEASURED DATA, AND THEN CHECKED. NOT INVENTED.
+
+     The first version of this page used numbers I made up, and the rule lost
+     money in 54% of seasons - which would have taught the opposite of what the
+     research found. The second version copied the measured numbers straight in
+     as parameters and was still wrong, because a parameter you inject is not
+     the statistic you get out: the mean-reversion term eats part of the
+     breakout bump, and the fat-tail mixture inflates the volatility. Injecting
+     7.72% produced 9.77%, and the extra variance drag alone destroyed the edge.
+
+     So the parameters below are NOT the measured statistics. They are the
+     inputs that make the generator REPRODUCE the measured statistics, solved
+     for numerically in lab/practice_calibrate.js. The figures below come from
+     lab/verify_practice.js, which drives THIS FILE in a headless browser -
+     807,000 simulated market-days out of the shipped page, not out of a copy
+     of its maths:
+
+                                        simulated      real (46,779 days)
+       daily volatility                    7.735%          7.723%
+       days beyond 3 sd                     1.12%           1.06%
+       lag-1 autocorrelation               -4.59%          -4.50%   <- NEGATIVE
+       mean after a 50-day-high close      +0.857%         +0.902%
+       mean on every other day             +0.057%         +0.060%
+       50-day-high closes, share of days     7.17%           6.40%   <- see below
+
+     THE EDGE IS NOT TREND PERSISTENCE. Daily returns mean-revert. What the rule
+     eats is a conditional effect at the breakout event itself, and it is
+     applied here on exactly the day it was measured on - the day after a new
+     50-day high - and on no other day. The decay across the five-day hold is
+     therefore an OUTPUT of the generator rather than a second invented input.
+
+     WHERE IT DOES NOT MATCH, said plainly rather than buried: breakouts fire
+     7.17% of days here against 6.40% in the real data, so the emergent hold
+     profile runs hot (+0.80%/+0.49% for bars 1-2 and 3-5, against +0.67%/+0.37%
+     measured). The trainer is therefore mildly GENEROUS to the rule. It is not
+     tuned to be, and it is left in the open rather than corrected by a fudge
+     factor that would break one of the matched statistics above.
+
+     20,000 seasons of the shipped page:
+       with the edge   median  +1.9%   mean +21.1%   lost money in 45%
+       no edge at all  median -11.1%   mean  -5.2%   lost money in 63%
+     A median of +1.9% on a mean of +21.1% is not a disappointing edge, it is
+     the SHAPE of this edge: right-skewed, carried by a few large winners, and
+     invisible in any one season of any one coin. That is the lesson the page
+     exists to teach, so it is not smoothed away. */
+  var DAYS = 260, WARM = 60, FEE = 0.001, LOOK = 50;
+  var BASE = 0.00024, VOL = 0.0641, AC = -0.058;
+  var JUMP_P = 0.03, JUMP_M = 4.0;    // the fat-tail mixture
+  var EDGE = 0.0132;                  // solved, not measured - see above
+
+  function series(seed, edgeOn) {
+    var r = rng(seed), p = [100], prev = 0, wasHigh = false;
+    var n = DAYS + WARM;
+    for (var i = 1; i < n; i++) {
+      var z = gauss(r);
+      if (r() < JUMP_P) z *= JUMP_M;          // most days ordinary, a few enormous
+      var step = BASE + (edgeOn && wasHigh ? EDGE : 0) + AC * prev + VOL * z;
+      prev = step;
+      p.push(Math.max(0.5, p[i - 1] * (1 + step)));
+      /* did THIS close post a new 50-day high? if so, tomorrow carries the
+         conditional bump - which is the one and only place it is applied. */
+      wasHigh = false;
+      if (i >= LOOK) {
+        var hi = -Infinity;
+        for (var j = i - LOOK; j < i; j++) if (p[j] > hi) hi = p[j];
+        if (p[i] > hi) wasHigh = true;
+      }
+    }
+    return p;
+  }
+
+  /* ------------------------------------------------------------ the rule */
+  function rulePlay(p) {
+    var eq = 1, held = 0, bars = 0, trades = 0, wins = 0, entry = 0, curve = [];
+    for (var i = WARM; i < p.length; i++) {
+      if (held) {
+        eq *= p[i] / p[i - 1];
+        bars++;
+        if (bars >= 5) { eq *= (1 - FEE); held = 0; trades++; if (p[i] > entry) wins++; }
+      } else {
+        var hi = -Infinity;
+        for (var j = i - LOOK; j < i; j++) if (p[j] > hi) hi = p[j];
+        if (p[i] > hi) { held = 1; bars = 0; entry = p[i]; eq *= (1 - FEE); }
+      }
+      curve.push(eq);
+    }
+    if (held) trades++;
+    return { eq: eq, trades: trades, wins: wins, curve: curve };
+  }
+
+  function maxDD(curve) {
+    var peak = -Infinity, worst = 0;
+    for (var i = 0; i < curve.length; i++) {
+      if (curve[i] > peak) peak = curve[i];
+      var d = curve[i] / peak - 1;
+      if (d < worst) worst = d;
+    }
+    return worst;
+  }
+
+  /* ------------------------------------------------------------- state */
+  var G = null, EDGE_MODE = true;
+
+  function el(id) { return document.getElementById(id); }
+  function pc(x, d) { return (x >= 0 ? "+" : "") + (x * 100).toFixed(d === undefined ? 1 : d) + "%"; }
+
+  function start() {
+    var seed = (Math.random() * 4294967296) >>> 0;
+    var p = series(seed, EDGE_MODE);
+    G = { seed: seed, p: p, i: WARM, eq: 1, held: 0, entry: 0, trades: 0, wins: 0,
+          curve: [], marks: [], done: false };
+    el("verdict").innerHTML = "";
+    el("btn-run").disabled = false;
+    step(0);
+  }
+
+  function step(advance) {
+    if (!G || G.done) return;
+    if (advance) {
+      var prev = G.p[G.i];
+      G.i++;
+      if (G.held) G.eq *= G.p[G.i] / prev;
+      G.curve.push(G.eq);
+      if (G.i >= G.p.length - 1) return finish();
+    }
+    render();
+  }
+
+  function buy() {
+    if (!G || G.held || G.done) return;
+    G.held = 1; G.entry = G.p[G.i]; G.eq *= (1 - FEE);
+    G.marks.push({ i: G.i, k: "b" });
+    step(1);
+  }
+  function sell() {
+    if (!G || !G.held || G.done) return;
+    G.held = 0; G.eq *= (1 - FEE); G.trades++;
+    if (G.p[G.i] > G.entry) G.wins++;
+    G.marks.push({ i: G.i, k: "s" });
+    step(1);
+  }
+  function runOut() {
+    if (!G) return;
+    while (!G.done && G.i < G.p.length - 1) {
+      var prev = G.p[G.i];
+      G.i++;
+      if (G.held) G.eq *= G.p[G.i] / prev;
+      G.curve.push(G.eq);
+    }
+    finish();
+  }
+
+  /* ------------------------------------------------------------- chart */
+  function chart() {
+    var W = 860, H = 300, L = 8, R = 66, T = 14, B = 26;
+    var from = Math.max(0, G.i - 150), to = G.i;
+    var slice = G.p.slice(from, to + 1);
+    var lo = Math.min.apply(null, slice), hi = Math.max.apply(null, slice);
+    var pad = (hi - lo) * 0.12 || 1;
+    lo -= pad; hi += pad;
+    var x = function (i) { return L + (i - from) / Math.max(1, to - from) * (W - L - R); };
+    var y = function (v) { return T + (hi - v) / (hi - lo) * (H - T - B); };
+    var out = [];
+
+    // the 50-day high the rule is watching
+    var band = [];
+    for (var i = from; i <= to; i++) {
+      if (i < LOOK) continue;
+      var m = -Infinity;
+      for (var j = i - LOOK; j < i; j++) if (G.p[j] > m) m = G.p[j];
+      band.push((band.length ? "L" : "M") + x(i).toFixed(1) + "," + y(m).toFixed(1));
+    }
+    if (band.length) {
+      out.push('<path d="' + band.join(" ") + '" fill="none" stroke="var(--s2)" ' +
+               'stroke-width="1.5" stroke-dasharray="4 4" opacity="0.85"/>');
+    }
+
+    var d = [];
+    for (var k = from; k <= to; k++) d.push((d.length ? "L" : "M") + x(k).toFixed(1) + "," + y(G.p[k]).toFixed(1));
+    out.push('<path d="' + d.join(" ") + '" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round"/>');
+
+    // where you were long
+    var seg = null;
+    for (var m2 = 0; m2 < G.marks.length; m2++) {
+      var mk = G.marks[m2];
+      if (mk.k === "b") seg = mk.i;
+      else if (seg !== null) { paint(seg, mk.i); seg = null; }
+    }
+    if (G.held && seg !== null) paint(seg, G.i);
+    function paint(a, b) {
+      if (b < from) return;
+      var dd = [];
+      for (var q = Math.max(a, from); q <= b; q++) dd.push((dd.length ? "L" : "M") + x(q).toFixed(1) + "," + y(G.p[q]).toFixed(1));
+      if (dd.length > 1) out.push('<path d="' + dd.join(" ") + '" fill="none" stroke="var(--s3)" stroke-width="4" opacity="0.75" stroke-linecap="round"/>');
+    }
+
+    out.push('<circle cx="' + x(to).toFixed(1) + '" cy="' + y(G.p[to]).toFixed(1) +
+             '" r="4.5" fill="var(--s1)" stroke="#0a0f14" stroke-width="2"/>');
+    out.push('<text x="' + (W - R + 8) + '" y="' + (y(G.p[to]) + 4).toFixed(1) +
+             '" fill="var(--s1)" font-size="12" font-family="ui-monospace,monospace">' +
+             G.p[to].toFixed(2) + '</text>');
+    out.push('<text x="' + L + '" y="' + (H - 6) + '" fill="var(--faint)" font-size="11">day ' +
+             (G.i - WARM + 1) + ' of ' + DAYS + '</text>');
+
+    return '<svg class="fig" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+           'aria-label="Simulated LONA price with the fifty-day high the rule watches">' +
+           out.join("") + '</svg>';
+  }
+
+  function render() {
+    var t = [];
+    function tile(k, v, s, c) {
+      t.push('<div class="tile"><div class="k">' + k + '</div><div class="v ' + (c || "") +
+             '">' + v + '</div><div class="s">' + s + '</div></div>');
+    }
+    var pnl = G.eq - 1;
+    tile("your equity", pc(pnl), G.held ? "long from " + G.entry.toFixed(2) : "in cash",
+         pnl > 0 ? "pos" : pnl < 0 ? "neg" : "");
+    tile("position", G.held ? "LONG" : "cash", G.held ? "entry " + G.entry.toFixed(2) : "nothing at risk", G.held ? "pos" : "");
+    tile("your trades", String(G.trades), "closed so far");
+    tile("price", G.p[G.i].toFixed(2), "day " + (G.i - WARM + 1) + " of " + DAYS);
+    el("tiles").innerHTML = t.join("");
+    el("chart").innerHTML = chart();
+    el("btn-buy").disabled = G.held === 1 || G.done;
+    el("btn-sell").disabled = G.held === 0 || G.done;
+    el("btn-skip").disabled = G.done;
+  }
+
+  /* ----------------------------------------------------------- verdict */
+  function finish() {
+    G.done = true;
+    if (G.held) { G.eq *= (1 - FEE); G.trades++; if (G.p[G.i] > G.entry) G.wins++; G.held = 0; }
+    render();
+    el("btn-buy").disabled = true; el("btn-sell").disabled = true;
+    el("btn-skip").disabled = true; el("btn-run").disabled = true;
+
+    var rule = rulePlay(G.p);
+    var bh = G.p[G.p.length - 1] / G.p[WARM] - 1;
+    var yourDD = maxDD(G.curve), ruleDD = maxDD(rule.curve);
+
+    var h = [];
+    h.push('<h2>How that season went</h2>');
+    h.push('<div class="panel"><table><thead><tr><th>&nbsp;</th><th>Return</th>' +
+           '<th>Worst fall</th><th>Trades</th><th>Hit rate</th></tr></thead><tbody>');
+    h.push(row("You", G.eq - 1, yourDD, G.trades, G.trades ? G.wins / G.trades : 0, false));
+    h.push(row("Finding 008's rule", rule.eq - 1, ruleDD, rule.trades, rule.trades ? rule.wins / rule.trades : 0, true));
+    h.push(row("Just holding LONA", bh, maxDD(G.p.slice(WARM)), 1, bh > 0 ? 1 : 0, false));
+    h.push('</tbody></table></div>');
+    function row(n, r, dd, tr, hit, hl) {
+      return '<tr' + (hl ? ' class="hl"' : '') + '><td>' + n + '</td>' +
+        '<td class="' + (r > 0 ? "pos" : r < 0 ? "neg" : "") + '">' + pc(r) + '</td>' +
+        '<td class="' + (dd < -0.25 ? "neg" : "") + '">' + pc(dd, 0) + '</td>' +
+        '<td>' + tr + '</td><td>' + (tr ? (hit * 100).toFixed(0) + "%" : "&mdash;") + '</td></tr>';
+    }
+
+    var beat = (G.eq - 1) > (rule.eq - 1);
+    h.push('<div class="note' + (beat ? "" : " ok") + '"><b>' +
+      (beat ? "You beat the rule this season." : "The rule beat you this season.") +
+      '</b> ' + (beat
+        ? "Which proves nothing whatsoever, and the chart below is why. Beating a mechanical rule once is the single most common way people talk themselves into trading discretionarily."
+        : "Also proves nothing on its own &mdash; but notice how few decisions it made. You took " +
+          G.trades + " trades; it took " + rule.trades + ". Most of the difference between people and rules is not skill, it is restraint.") +
+      '</div>');
+
+    // ---- 500 replays of the rule alone
+    var res = [];
+    for (var s = 0; s < 500; s++) res.push(rulePlay(series((G.seed + 7919 * (s + 1)) >>> 0, EDGE_MODE)).eq - 1);
+    res.sort(function (a, b) { return a - b; });
+    var med = res[250], p5 = res[25], p95 = res[475];
+    var losing = res.filter(function (v) { return v < 0; }).length / res.length;
+
+    h.push('<h2>Now the part that matters</h2>');
+    h.push('<p class="sub">The same rule, replayed across <b>500 freshly generated ' +
+      'seasons</b>. Nothing changed but luck:</p>');
+    h.push(hist(res, rule.eq - 1));
+    h.push('<div class="panel"><table><tbody>' +
+      '<tr><td>Median season</td><td class="' + (med > 0 ? "pos" : "neg") + '">' + pc(med) + '</td></tr>' +
+      '<tr><td>5th percentile &mdash; a bad one</td><td class="neg">' + pc(p5) + '</td></tr>' +
+      '<tr><td>95th percentile &mdash; a lucky one</td><td class="pos">' + pc(p95) + '</td></tr>' +
+      '<tr class="hl"><td>Seasons that LOST money</td><td class="warnc">' + (losing * 100).toFixed(0) + '%</td></tr>' +
+      '<tr><td>The season you just played</td><td>' + pc(rule.eq - 1) + '</td></tr>' +
+      '</tbody></table></div>');
+    h.push('<div class="note"><b>Read the spread, not the middle.</b> The gap between ' +
+      'the 5th and 95th percentile is enormous, and the rule did not change once. ' +
+      'If a single season can land anywhere in that range, then <b>a single ' +
+      'backtest &mdash; or a single good month, or a single clever idea that ' +
+      '&ldquo;worked&rdquo; &mdash; tells you almost nothing.</b> That is the whole reason ' +
+      'this project writes its pass marks down before it looks, and why it has ' +
+      'retracted three of its own results.</div>');
+
+    h.push('<div class="note"><b>And notice how few trades that was.</b> The rule ' +
+      'took <b>' + rule.trades + '</b> trades in this season, because one coin ' +
+      'only breaks out so often. The real book runs the same rule across <b>30 ' +
+      'markets at once</b>, which is why it takes roughly two hundred trades a ' +
+      'year rather than six &mdash; and why the research needed <b>6.6 years</b> ' +
+      'of it before it was willing to say anything. <b>The count is the edge.</b> ' +
+      'A right-skewed effect carried by a few large winners is invisible at six ' +
+      'trades and unmistakable at a thousand.</div>');
+
+    el("verdict").innerHTML = h.join("");
+  }
+
+  function hist(vals, mark) {
+    var W = 860, H = 200, L = 40, R = 16, T = 14, B = 34;
+    var lo = vals[0], hi = vals[vals.length - 1];
+    var N = 30, bins = new Array(N).fill(0);
+    for (var i = 0; i < vals.length; i++) {
+      var b = Math.min(N - 1, Math.floor((vals[i] - lo) / (hi - lo || 1) * N));
+      bins[b]++;
+    }
+    var mx = Math.max.apply(null, bins);
+    var bw = (W - L - R) / N, out = [];
+    for (var k = 0; k < N; k++) {
+      var hgt = bins[k] / mx * (H - T - B);
+      var lower = lo + (hi - lo) * k / N;
+      out.push('<rect x="' + (L + k * bw + 1).toFixed(1) + '" y="' + (H - B - hgt).toFixed(1) +
+        '" width="' + (bw - 2).toFixed(1) + '" height="' + hgt.toFixed(1) +
+        '" rx="2" fill="' + (lower < 0 ? "var(--bad)" : "var(--s3)") + '" opacity="0.8">' +
+        '<title>' + (lower * 100).toFixed(0) + '% to ' + ((lo + (hi - lo) * (k + 1) / N) * 100).toFixed(0) +
+        '%: ' + bins[k] + ' seasons</title></rect>');
+    }
+    var zx = L + (0 - lo) / (hi - lo) * (W - L - R);
+    out.push('<line x1="' + zx.toFixed(1) + '" y1="' + T + '" x2="' + zx.toFixed(1) +
+      '" y2="' + (H - B) + '" stroke="var(--dim)" stroke-width="1.5"/>');
+    out.push('<text x="' + zx.toFixed(1) + '" y="' + (H - B + 15) + '" text-anchor="middle" fill="var(--dim)" font-size="11">break even</text>');
+    var mxp = L + (mark - lo) / (hi - lo) * (W - L - R);
+    out.push('<line x1="' + mxp.toFixed(1) + '" y1="' + T + '" x2="' + mxp.toFixed(1) +
+      '" y2="' + (H - B) + '" stroke="var(--s4)" stroke-width="2" stroke-dasharray="4 3"/>');
+    out.push('<text x="' + mxp.toFixed(1) + '" y="' + (T - 2) + '" text-anchor="middle" fill="var(--s4)" font-size="11">your season</text>');
+    return '<svg class="fig" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Distribution of the rule’s return across 500 simulated seasons">' + out.join("") + '</svg>';
+  }
+
+  function setMode(on) {
+    EDGE_MODE = on;
+    el("btn-edge").className = on ? "go" : "";
+    el("btn-noedge").className = on ? "" : "go";
+    el("mode-note").innerHTML = on
+      ? "<b>With the measured edge.</b> The day after a 50-day high pays " +
+        "<b>+0.90%</b> against <b>+0.06%</b> on every other day &mdash; the split " +
+        "measured on 46,779 real market-days, and the only place any edge is " +
+        "applied. Volatility (7.72%), fat tails (1.1% of days beyond three sd) " +
+        "and <i>negative</i> lag-1 autocorrelation (&minus;4.4%) all come out of " +
+        "the generator matching the real data to within a tenth of a " +
+        "percentage point &mdash; checked in a headless browser against this " +
+        "very file. Across 20,000 " +
+        "seasons the rule&rsquo;s median is <b>+1.9%</b> and its mean is " +
+        "<b>+21%</b> &mdash; and it still loses money in <b>45%</b> of them. " +
+        "That gap between median and mean is the whole character of this edge: " +
+        "it is carried by a few large winners, not by being right often."
+      : "<b>No edge at all.</b> Identical volatility, identical fat tails, " +
+        "identical autocorrelation &mdash; but the conditional bump after a " +
+        "breakout is set to zero. <b>The rule should lose here, and it does:</b> " +
+        "median <b>&minus;11%</b> across 20,000 seasons, losing in <b>63%</b> of " +
+        "them. That is the point. It is not magic, it is a machine built to eat " +
+        "one specific measured effect. Take the effect away and what is left is " +
+        "variance drag and fees.";
+    start();
+  }
+  el("btn-edge").addEventListener("click", function () { setMode(true); });
+  el("btn-noedge").addEventListener("click", function () { setMode(false); });
+  el("btn-start").addEventListener("click", start);
+  el("btn-buy").addEventListener("click", buy);
+  el("btn-sell").addEventListener("click", sell);
+  el("btn-skip").addEventListener("click", function () { step(1); });
+  el("btn-run").addEventListener("click", runOut);
+
+  /* TEST HOOK. The calibration harness (lab/practice_calibrate.js) and this
+     page hold the same generator, and method rule 16 says a rule living in two
+     programs will eventually be two rules. So the page exposes the two
+     functions the harness measures, and the verifier drives THIS file rather
+     than a copy of it. Nothing in the interface reads this. */
+  window.LONA_PRACTICE = {
+    series: series, rulePlay: rulePlay, DAYS: DAYS, WARM: WARM,
+    params: { BASE: BASE, VOL: VOL, AC: AC, JUMP_P: JUMP_P, JUMP_M: JUMP_M, EDGE: EDGE, LOOK: LOOK }
+  };
+
+  /* The page used to load with an empty chart and every button greyed out
+     until something was clicked. setMode also writes the mode note and deals
+     the first season, so this is the one call that makes the page live. */
+  setMode(true);
+})();
+</script>
+</body>
+</html>

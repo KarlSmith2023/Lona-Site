@@ -20,6 +20,7 @@
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
   --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
@@ -33,9 +34,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .warn{color:var(--warn)} .acc{color:var(--acc)} .acc2{color:var(--acc2)}
 
 /* ---------------------------------------------------------------- header */
-.top{position:sticky;top:0;z-index:60;background:rgba(5,8,11,.92);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+.top{border-bottom:1px solid var(--line);
   padding:10px 14px;display:flex;align-items:center;gap:12px}
 .brand{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.06em}
 .brand i{color:var(--acc);font-style:normal}
@@ -57,7 +56,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 @media(min-width:900px){
   body{padding-bottom:0}
   .rail{display:flex;gap:2px;padding:0 14px;background:var(--bg);
-    border-bottom:1px solid var(--line);position:sticky;top:53px;z-index:55}
+    border-bottom:1px solid var(--line)}
   .rail button{padding:11px 18px;font-size:12.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent}
   .rail button.on{color:var(--acc);border-bottom-color:var(--acc)}
@@ -262,9 +261,44 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
 .health .msg{flex:1;line-height:1.4}
 .health .msg b{display:block;font-size:13px;letter-spacing:.02em}
 .health .msg span{color:var(--dim);font-size:12px}
+
+/* ------------------------------------------- the page switcher + safe area
+   TWO BUGS IN ONE PLACE, BOTH REPORTED FROM A PHONE ON 20 AUGUST 2026.
+
+   1  THE HEADER WAS DRAWN UNDER THE PHONE'S OWN STATUS BAR.
+      viewport-fit=cover plus apple-mobile-web-app-status-bar-style
+      black-translucent means the page owns the whole screen INCLUDING the
+      strip the clock and battery live in. There was a --safe-b for the
+      bottom notch and no --safe-t, so "LONA://account" rendered straight
+      through the 19:06 and the wifi icon. One variable, applied once, to
+      whichever element is stuck to the top.
+
+   2  THERE WAS NO WAY TO MOVE BETWEEN THE PAGES FROM A PHONE.
+      index.html's nav carries the links, but it is display:none below
+      800px because it is a desktop row of section anchors. So on a phone
+      the four pages were four separate dead ends. This bar carries the same
+      four links on every page and never collapses - it scrolls sideways.
+
+   ONE STICKY CONTAINER, NOT THREE. The header, this bar and (on the
+   terminal) the desktop rail are now children of a single sticky element.
+   That deletes terminal.html's `top:53px` magic number, which was a
+   hard-coded copy of the header's height and would have been wrong the
+   first time the header changed - which is this commit. */
+.stickytop{position:sticky;top:0;z-index:90;padding-top:var(--safe-t);
+  background:rgba(5,8,11,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pageswitch{display:flex;gap:2px;padding:0 8px;overflow-x:auto;
+  border-bottom:1px solid var(--line);scrollbar-width:none}
+.pageswitch::-webkit-scrollbar{display:none}
+.pageswitch a{flex:none;padding:8px 12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
+.pageswitch a:hover{color:var(--ink);text-decoration:none}
+.pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
 </style>
 </head>
 <body>
+<div class="stickytop">
 <header class="top">
   <span class="dot" id="live"></span>
   <span class="brand">LONA<b>://</b><i id="viewname">account</i></span>
@@ -287,6 +321,13 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
   <button data-go="funding">Funding</button>
   <button data-go="brief">Analyst</button>
 </nav>
+<nav class="pageswitch" aria-label="LONA pages">
+  <a href="index.html">platform</a>
+  <a href="terminal.html" aria-current="page">terminal</a>
+  <a href="learn.html">learn</a>
+  <a href="practice.html">practice</a>
+</nav>
+</div>
 
 <div class="wrap">
 
@@ -772,6 +813,19 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
       <span>peak</span><span id="or-fwd-mid"></span><span id="or-fwd-edge"></span>
     </div>
     <div class="note" id="or-fwd-note"></div>
+  </div>
+
+  <!-- THE GO-LIVE GATE. Published so it cannot be quietly moved.
+       Above the second book and above the positions, because "may this place a
+       real order yet" outranks every other number on the page. -->
+  <div class="pnl" id="or-gate-card" style="margin-top:12px;display:none">
+    <h2><span class="car">&#9656;</span>the go-live gate
+      <span class="tail" id="or-gate-tail"></span></h2>
+    <div class="pad" id="or-gate-line"></div>
+    <div class="band" id="or-gate-band">
+      <div class="band-fill" id="or-gate-fill"></div>
+    </div>
+    <div class="note" id="or-gate-note"></div>
   </div>
 
   <!-- THE SECOND BOOK. Scored, never traded. Finding 029.
@@ -2139,6 +2193,43 @@ function bandNote(b) {
     "they come, so a live book shows red on most days while behaving exactly as measured.";
 }
 
+/* THE GO-LIVE GATE, DRAWN FROM THE PUBLISHED COUNT AND NEVER FROM THIS PAGE'S
+   OWN ARITHMETIC. The number is computed on the recording machine by
+   GoLiveGate.cs out of the append-only journal; this only draws it. Method rule
+   16 - a rule living in two programs will eventually be two rules, and this is
+   the last rule in the project that should ever be allowed to disagree with
+   itself. If the field is absent the card hides rather than guessing. */
+function renderGate(o) {
+  const card = $("or-gate-card"), g = o && o.goLive;
+  if (!card) return;
+  if (!g || typeof g.cleanDaysInARow !== "number") { card.style.display = "none"; return; }
+  card.style.display = "";
+
+  const need = g.requiredCleanDays || 90;
+  const have = g.cleanDaysInARow || 0;
+  const pctv = Math.max(0, Math.min(100, have / need * 100));
+
+  $("or-gate-tail").textContent = have + " / " + need + " clean days";
+  $("or-gate-line").innerHTML =
+    "<b>" + (g.met ? "MET" : g.stalled ? "STOPPED" : "counting") + "</b> &mdash; " +
+    (g.summary || "");
+
+  const fill = $("or-gate-fill");
+  fill.style.width = pctv + "%";
+  fill.style.background = g.met ? "var(--acc)" : g.stalled ? "var(--bad)" : "var(--warn)";
+
+  $("or-gate-note").innerHTML =
+    "<b>What this gate is.</b> Ninety consecutive days on which the daily plan ran " +
+    "and no gap exceeded 26 hours. <b>Any single missed day sends it back to zero</b> " +
+    "&mdash; no percentages, no rolling averages. It was set at zero on 20 August 2026, " +
+    "after an update silently stopped the plan for four days while every green light " +
+    "stayed green. " +
+    (g.missedDays ? "<b>Missed days so far: " + g.missedDays + ".</b> " : "") +
+    "Clearing it permits <b>one hand-placed minimum-size order watched by a human</b>. " +
+    "It does not permit automated trading, and there is no order-placement code in " +
+    "this build to permit. See <code>lab/prereg_live.md</code>.";
+}
+
 function renderShadow(o) {
   /* THE SECOND BOOK - finding 029's shorter hold, scored beside the designated
      rule and traded by nobody.
@@ -2355,6 +2446,7 @@ function renderOrders() {
     $("or-recon-summary").textContent = "";
     $("or-recon-verdict").textContent = "";
     renderForward(null);
+    renderGate(null);
     renderShadow(null);
     return;
   }
@@ -2398,6 +2490,7 @@ function renderOrders() {
     o.reconciliation.clean ? "pos" : o.reconciliation.wasChecked ? "neg" : ""));
 
   renderForward(o);
+  renderGate(o);
   renderShadow(o);
 
   if (!o.positions.length) {
