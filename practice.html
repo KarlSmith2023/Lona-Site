@@ -109,6 +109,60 @@ footer{border-top:1px solid var(--line);margin-top:44px;padding-top:18px;
   border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
 .pageswitch a:hover{color:var(--ink);text-decoration:none}
 .pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
+
+/* ------------------------------------------------- the exchange layout
+   Karl asked for this to look less like a worksheet and more like the venue
+   he actually trades on. The layout is a DEX's: market strip along the top,
+   candles on the left, position and ticket down the right, fills underneath.
+
+   NOTHING DECORATIVE INVENTS A NUMBER. There is no fake order book and no
+   fake volume, because a depth ladder made of noise would teach nothing and
+   would imply this page models something it does not. Every figure on screen
+   is either the simulation's own state or a measured statistic. The one
+   cosmetic thing is the candle WICK - see the comment on candles() - and the
+   page says so out loud. */
+.mkt{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--panel);overflow:hidden;margin:16px 0 10px}
+.mkt .cell{padding:9px 14px;border-right:1px solid var(--line);min-width:104px}
+.mkt .cell:last-child{border-right:none}
+.mkt .k{font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
+.mkt .v{font-family:var(--mono);font-size:15px;margin-top:2px;letter-spacing:-.02em}
+.mkt .pair{display:flex;align-items:center;gap:9px;padding:9px 14px;
+  border-right:1px solid var(--line);background:var(--panel2)}
+.mkt .pair b{font-family:var(--mono);font-size:15px;letter-spacing:.03em}
+.mkt .pill{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);
+  border:1px solid rgba(240,160,42,.4);border-radius:5px;padding:2px 6px}
+
+.desk{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:900px){.desk{grid-template-columns:minmax(0,1fr) 292px;align-items:start}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.card h3{margin:0;padding:9px 14px;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--faint);border-bottom:1px solid var(--line);font-weight:600}
+.card .body{padding:12px 14px}
+.side{display:flex;flex-direction:column;gap:10px}
+
+.posrow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13px}
+.posrow span:first-child{color:var(--dim)}
+.posrow span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.flat{padding:14px;text-align:center;color:var(--faint);font-size:12.5px}
+
+.tkt{display:grid;gap:8px}
+.tkt .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tkt button{width:100%;padding:12px 10px;font-size:13.5px}
+.tkt .meta{font-size:11.5px;color:var(--faint);line-height:1.45}
+
+table.fills{width:100%;border-collapse:collapse;font-size:12.5px}
+table.fills th{text-align:right;padding:7px 14px;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--line)}
+table.fills th:first-child,table.fills td:first-child{text-align:left}
+table.fills td{padding:7px 14px;text-align:right;border-bottom:1px solid rgba(24,35,46,.5);
+  font-family:var(--mono);font-variant-numeric:tabular-nums}
+table.fills tbody tr:last-child td{border-bottom:none}
+.tag{display:inline-block;padding:1px 7px;border-radius:5px;font-family:var(--sans);
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase}
+.tag.b{background:rgba(45,224,165,.14);color:var(--acc)}
+.tag.s{background:rgba(232,84,74,.14);color:var(--bad)}
+.scrolly{max-height:196px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -157,27 +211,73 @@ days: buy when the close is strictly above every one of the previous 50 closes,
 hold exactly 5 days, then out. It never changes its mind. Both of you pay the
 same 10bp round-trip fee.</p>
 
-<div class="panel">
-  <div class="row" style="margin-bottom:12px">
+<div class="panel" style="padding:12px 14px">
+  <div class="row">
     <span class="sub" style="margin-right:4px">Market:</span>
     <button id="btn-edge" class="go">with the measured edge</button>
     <button id="btn-noedge">no edge at all</button>
   </div>
-  <div class="row">
-    <button id="btn-start" class="go">Deal a new season</button>
-    <button id="btn-buy" class="buy" disabled>Buy LONA</button>
-    <button id="btn-sell" class="sell" disabled>Sell</button>
-    <button id="btn-skip" disabled>Next day &rsaquo;</button>
-    <button id="btn-run" disabled>Skip to the end &raquo;</button>
+  <div class="note ok" id="mode-note" style="margin:12px 0 0"></div>
+</div>
+
+<div class="mkt" id="mkt"></div>
+
+<div class="desk">
+  <div class="card">
+    <h3>LONA&#8202;/&#8202;USD &middot; 1d &middot; simulated</h3>
+    <div id="chart"></div>
+    <div class="key" style="padding:0 14px 12px">
+      <span><i style="background:var(--acc)"></i>up day</span>
+      <span><i style="background:var(--bad)"></i>down day</span>
+      <span><i style="background:var(--s2)"></i>50-day high the rule watches</span>
+      <span><i style="background:var(--s3)"></i>you were long</span>
+    </div>
   </div>
-  <div class="note ok" id="mode-note" style="margin-top:12px"></div>
-  <div class="tiles" id="tiles"></div>
-  <div id="chart"></div>
-  <div class="key">
-    <span><i style="background:var(--s1)"></i>LONA price</span>
-    <span><i style="background:var(--s3)"></i>your position</span>
-    <span><i style="background:var(--s2)"></i>50-day high</span>
+
+  <div class="side">
+    <div class="card">
+      <h3>Your position</h3>
+      <div id="position"></div>
+    </div>
+
+    <div class="card">
+      <h3>Order ticket</h3>
+      <div class="body tkt">
+        <div class="two">
+          <button id="btn-buy" class="buy" disabled>Buy LONA</button>
+          <button id="btn-sell" class="sell" disabled>Sell</button>
+        </div>
+        <div class="two">
+          <button id="btn-skip" disabled>Next day &rsaquo;</button>
+          <button id="btn-run" disabled>Skip to end &raquo;</button>
+        </div>
+        <button id="btn-start" class="go">Deal a new season</button>
+        <div class="meta" id="tkt-meta"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Finding 008&rsquo;s rule</h3>
+      <div id="rulebox"></div>
+    </div>
   </div>
+</div>
+
+<div class="card" style="margin:10px 0 0">
+  <h3>Your fills</h3>
+  <div class="scrolly" id="fills"></div>
+</div>
+
+<h2>The same rule, running for real</h2>
+<p class="sub">Everything above is a fake coin. <b>This is not.</b> It is the
+live paper book from this project&rsquo;s forward record &mdash; the identical
+rule, on real Hyperliquid markets, written down once a day and
+<b>never revised afterwards</b>. It reads whatever the platform last published,
+so it is as current as the machine that keeps it.</p>
+
+<div class="card" id="paperbook" style="margin:10px 0 0">
+  <h3>Forward record &middot; live</h3>
+  <div class="body"><span class="sub">reading the published record&hellip;</span></div>
 </div>
 
 <h2>The honest part</h2>
@@ -292,8 +392,41 @@ believe a good backtest.</p>
   }
 
   /* ------------------------------------------------------------ the rule */
+  /* ------------------------------------------------------- candle wicks
+     The generator produces CLOSES and nothing else, because a close is all
+     finding 008 has ever looked at. A candle chart needs a high and a low, so
+     they are drawn here - and this is the one thing on the page that is not
+     measured.
+
+     IT IS COSMETIC AND IT IS SAID OUT LOUD ON THE PAGE. The body of every
+     candle is real: it runs from yesterday's close to today's, which is what
+     the rule trades. Only the thin wick above and below is invented, and it
+     is drawn from a SEPARATE seeded generator so that not one number in
+     series() changes. The calibration in lab/verify_practice.js is measured
+     on closes and is untouched by this.
+
+     Doing it the lazy way - drawing extra numbers from the same rng inside
+     series() - would have shifted the whole sequence and silently broken a
+     calibration that took two attempts to get right. */
+  function candles(p, seed) {
+    var r = rng((seed ^ 0x9E3779B9) >>> 0), out = [];
+    for (var i = 1; i < p.length; i++) {
+      var o = p[i - 1], c = p[i], body = Math.abs(c - o);
+      out[i] = {
+        o: o, c: c,
+        h: Math.max(o, c) + body * 0.35 * r() + c * 0.011 * r(),
+        l: Math.min(o, c) - body * 0.35 * r() - c * 0.011 * r()
+      };
+    }
+    return out;
+  }
+
   function rulePlay(p) {
     var eq = 1, held = 0, bars = 0, trades = 0, wins = 0, entry = 0, curve = [];
+    /* Per-bar state, so the "what the rule is doing" panel and the chart read
+       THIS implementation rather than a second copy of the same rule written
+       to agree with it. Method rule 16 - one rule, one program. */
+    var states = [];
     for (var i = WARM; i < p.length; i++) {
       if (held) {
         eq *= p[i] / p[i - 1];
@@ -305,9 +438,10 @@ believe a good backtest.</p>
         if (p[i] > hi) { held = 1; bars = 0; entry = p[i]; eq *= (1 - FEE); }
       }
       curve.push(eq);
+      states[i] = { held: held, bars: bars, entry: entry, eq: eq };
     }
     if (held) trades++;
-    return { eq: eq, trades: trades, wins: wins, curve: curve };
+    return { eq: eq, trades: trades, wins: wins, curve: curve, states: states };
   }
 
   function maxDD(curve) {
@@ -330,7 +464,8 @@ believe a good backtest.</p>
     var seed = (Math.random() * 4294967296) >>> 0;
     var p = series(seed, EDGE_MODE);
     G = { seed: seed, p: p, i: WARM, eq: 1, held: 0, entry: 0, trades: 0, wins: 0,
-          curve: [], marks: [], done: false };
+          curve: [], marks: [], fills: [], done: false,
+          k: candles(p, seed), rule: rulePlay(p) };
     el("verdict").innerHTML = "";
     el("btn-run").disabled = false;
     step(0);
@@ -352,6 +487,7 @@ believe a good backtest.</p>
     if (!G || G.held || G.done) return;
     G.held = 1; G.entry = G.p[G.i]; G.eq *= (1 - FEE);
     G.marks.push({ i: G.i, k: "b" });
+    G.fills.push({ day: G.i - WARM + 1, side: "buy", price: G.p[G.i], pnl: null });
     step(1);
   }
   function sell() {
@@ -359,6 +495,8 @@ believe a good backtest.</p>
     G.held = 0; G.eq *= (1 - FEE); G.trades++;
     if (G.p[G.i] > G.entry) G.wins++;
     G.marks.push({ i: G.i, k: "s" });
+    G.fills.push({ day: G.i - WARM + 1, side: "sell", price: G.p[G.i],
+                   pnl: G.p[G.i] / G.entry - 1 - 2 * FEE });
     step(1);
   }
   function runOut() {
@@ -372,76 +510,188 @@ believe a good backtest.</p>
     finish();
   }
 
-  /* ------------------------------------------------------------- chart */
+  /* ------------------------------------------------- chart, as a venue draws it
+     Candles, not a line, because Karl asked for something that reads like the
+     exchange he actually looks at. The BODY of every candle is real - it runs
+     from yesterday's close to today's, which is the only thing finding 008
+     ever sees. The wick is cosmetic; candles() explains why and the page says
+     so beneath the chart. */
   function chart() {
-    var W = 860, H = 300, L = 8, R = 66, T = 14, B = 26;
-    var from = Math.max(0, G.i - 150), to = G.i;
-    var slice = G.p.slice(from, to + 1);
-    var lo = Math.min.apply(null, slice), hi = Math.max.apply(null, slice);
-    var pad = (hi - lo) * 0.12 || 1;
+    var W = 900, H = 380, L = 10, R = 62, T = 14, B = 24;
+    var SHOW = 90;
+    var from = Math.max(1, G.i - SHOW), to = G.i;
+
+    var lo = Infinity, hi = -Infinity;
+    for (var i = from; i <= to; i++) {
+      if (G.k[i]) { lo = Math.min(lo, G.k[i].l); hi = Math.max(hi, G.k[i].h); }
+      if (i >= LOOK) {
+        var m = -Infinity;
+        for (var j = i - LOOK; j < i; j++) if (G.p[j] > m) m = G.p[j];
+        lo = Math.min(lo, m); hi = Math.max(hi, m);
+      }
+    }
+    if (!isFinite(lo)) { lo = 0; hi = 1; }
+    var pad = (hi - lo) * 0.08 || 1;
     lo -= pad; hi += pad;
-    var x = function (i) { return L + (i - from) / Math.max(1, to - from) * (W - L - R); };
+
+    var n = to - from + 1;
+    var cw = (W - L - R) / Math.max(1, n);
+    var x = function (i) { return L + (i - from + 0.5) * cw; };
     var y = function (v) { return T + (hi - v) / (hi - lo) * (H - T - B); };
     var out = [];
 
-    // the 50-day high the rule is watching
-    var band = [];
-    for (var i = from; i <= to; i++) {
-      if (i < LOOK) continue;
-      var m = -Infinity;
-      for (var j = i - LOOK; j < i; j++) if (G.p[j] > m) m = G.p[j];
-      band.push((band.length ? "L" : "M") + x(i).toFixed(1) + "," + y(m).toFixed(1));
-    }
-    if (band.length) {
-      out.push('<path d="' + band.join(" ") + '" fill="none" stroke="var(--s2)" ' +
-               'stroke-width="1.5" stroke-dasharray="4 4" opacity="0.85"/>');
-    }
-
-    var d = [];
-    for (var k = from; k <= to; k++) d.push((d.length ? "L" : "M") + x(k).toFixed(1) + "," + y(G.p[k]).toFixed(1));
-    out.push('<path d="' + d.join(" ") + '" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round"/>');
-
-    // where you were long
+    /* the bars you were long, shaded behind everything else */
     var seg = null;
     for (var m2 = 0; m2 < G.marks.length; m2++) {
       var mk = G.marks[m2];
       if (mk.k === "b") seg = mk.i;
-      else if (seg !== null) { paint(seg, mk.i); seg = null; }
+      else if (seg !== null) { shade(seg, mk.i); seg = null; }
     }
-    if (G.held && seg !== null) paint(seg, G.i);
-    function paint(a, b) {
-      if (b < from) return;
-      var dd = [];
-      for (var q = Math.max(a, from); q <= b; q++) dd.push((dd.length ? "L" : "M") + x(q).toFixed(1) + "," + y(G.p[q]).toFixed(1));
-      if (dd.length > 1) out.push('<path d="' + dd.join(" ") + '" fill="none" stroke="var(--s3)" stroke-width="4" opacity="0.75" stroke-linecap="round"/>');
+    if (G.held && seg !== null) shade(seg, G.i);
+    function shade(a, b) {
+      var a2 = Math.max(a, from), b2 = Math.min(b, to);
+      if (b2 < a2) return;
+      out.push('<rect x="' + (x(a2) - cw / 2).toFixed(1) + '" y="' + T +
+        '" width="' + ((b2 - a2 + 1) * cw).toFixed(1) + '" height="' + (H - T - B) +
+        '" fill="var(--s3)" opacity="0.10"/>');
     }
 
-    out.push('<circle cx="' + x(to).toFixed(1) + '" cy="' + y(G.p[to]).toFixed(1) +
-             '" r="4.5" fill="var(--s1)" stroke="#0a0f14" stroke-width="2"/>');
-    out.push('<text x="' + (W - R + 8) + '" y="' + (y(G.p[to]) + 4).toFixed(1) +
-             '" fill="var(--s1)" font-size="12" font-family="ui-monospace,monospace">' +
-             G.p[to].toFixed(2) + '</text>');
-    out.push('<text x="' + L + '" y="' + (H - 6) + '" fill="var(--faint)" font-size="11">day ' +
-             (G.i - WARM + 1) + ' of ' + DAYS + '</text>');
+    /* the 50-day high the rule is watching */
+    var band = [];
+    for (var i2 = from; i2 <= to; i2++) {
+      if (i2 < LOOK) continue;
+      var mx = -Infinity;
+      for (var j2 = i2 - LOOK; j2 < i2; j2++) if (G.p[j2] > mx) mx = G.p[j2];
+      band.push((band.length ? "L" : "M") + x(i2).toFixed(1) + "," + y(mx).toFixed(1));
+    }
+    if (band.length) {
+      out.push('<path d="' + band.join(" ") + '" fill="none" stroke="var(--s2)" ' +
+               'stroke-width="1.4" stroke-dasharray="5 4" opacity="0.9"/>');
+    }
 
-    return '<svg class="fig" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
-           'aria-label="Simulated LONA price with the fifty-day high the rule watches">' +
+    /* the candles */
+    var bw = Math.max(1.4, Math.min(9, cw * 0.62));
+    for (var i3 = from; i3 <= to; i3++) {
+      var k = G.k[i3];
+      if (!k) continue;
+      var up = k.c >= k.o, col = up ? "var(--acc)" : "var(--bad)";
+      var cx = x(i3);
+      out.push('<line x1="' + cx.toFixed(1) + '" y1="' + y(k.h).toFixed(1) +
+        '" x2="' + cx.toFixed(1) + '" y2="' + y(k.l).toFixed(1) +
+        '" stroke="' + col + '" stroke-width="1"/>');
+      var top = y(Math.max(k.o, k.c)), bot = y(Math.min(k.o, k.c));
+      out.push('<rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) +
+        '" width="' + bw.toFixed(1) + '" height="' + Math.max(1, bot - top).toFixed(1) +
+        '" fill="' + col + '"/>');
+    }
+
+    /* your entries and exits */
+    for (var m3 = 0; m3 < G.marks.length; m3++) {
+      var mk2 = G.marks[m3];
+      if (mk2.i < from || mk2.i > to) continue;
+      var my = y(G.p[mk2.i]) + (mk2.k === "b" ? 15 : -15);
+      out.push('<text x="' + x(mk2.i).toFixed(1) + '" y="' + my.toFixed(1) +
+        '" text-anchor="middle" font-size="11" font-weight="700" fill="' +
+        (mk2.k === "b" ? "var(--acc)" : "var(--bad)") + '">' +
+        (mk2.k === "b" ? "▲" : "▼") + '</text>');
+    }
+
+    /* the last price, on the axis, the way a venue shows it */
+    var last = G.p[to], ly = y(last);
+    out.push('<line x1="' + L + '" y1="' + ly.toFixed(1) + '" x2="' + (W - R) +
+      '" y2="' + ly.toFixed(1) + '" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>');
+    var lastUp = G.k[to] ? G.k[to].c >= G.k[to].o : true;
+    out.push('<rect x="' + (W - R + 2) + '" y="' + (ly - 9).toFixed(1) +
+      '" width="' + (R - 6) + '" height="18" rx="3" fill="' +
+      (lastUp ? "var(--acc)" : "var(--bad)") + '"/>');
+    out.push('<text x="' + (W - R + 6) + '" y="' + (ly + 4).toFixed(1) +
+      '" font-size="11" font-family="ui-monospace,monospace" fill="#05080b" font-weight="700">' +
+      last.toFixed(2) + '</text>');
+
+    out.push('<text x="' + L + '" y="' + (H - 7) + '" fill="var(--faint)" font-size="10.5">day ' +
+      (G.i - WARM + 1) + ' of ' + DAYS + '  ·  wicks are cosmetic, the rule only sees the close</text>');
+
+    return '<svg class="fig" style="border:none;border-radius:0;margin:0" viewBox="0 0 ' + W + ' ' + H +
+           '" role="img" aria-label="Simulated LONA candles with the fifty-day high the rule watches">' +
            out.join("") + '</svg>';
   }
 
+  /* ------------------------------------------------------------ the desk */
+  function money(v) { return v.toFixed(2); }
+
   function render() {
-    var t = [];
-    function tile(k, v, s, c) {
-      t.push('<div class="tile"><div class="k">' + k + '</div><div class="v ' + (c || "") +
-             '">' + v + '</div><div class="s">' + s + '</div></div>');
+    var price = G.p[G.i], prev = G.p[G.i - 1] || price;
+    var chg = price / prev - 1;
+    var line = -Infinity;
+    for (var j = G.i - LOOK; j < G.i; j++) if (G.p[j] > line) line = G.p[j];
+    var away = price / line - 1;
+
+    /* ---- the market strip */
+    var m = ['<div class="pair"><b>LONA<span class="dim">/USD</span></b>' +
+             '<span class="pill">simulated</span></div>'];
+    function cell(k, v, cls, sub) {
+      m.push('<div class="cell"><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' +
+             v + '</div>' + (sub ? '<div class="k" style="margin-top:2px">' + sub + '</div>' : '') + '</div>');
     }
-    var pnl = G.eq - 1;
-    tile("your equity", pc(pnl), G.held ? "long from " + G.entry.toFixed(2) : "in cash",
-         pnl > 0 ? "pos" : pnl < 0 ? "neg" : "");
-    tile("position", G.held ? "LONG" : "cash", G.held ? "entry " + G.entry.toFixed(2) : "nothing at risk", G.held ? "pos" : "");
-    tile("your trades", String(G.trades), "closed so far");
-    tile("price", G.p[G.i].toFixed(2), "day " + (G.i - WARM + 1) + " of " + DAYS);
-    el("tiles").innerHTML = t.join("");
+    cell("mark", money(price), chg >= 0 ? "pos" : "neg");
+    cell("1d change", pc(chg, 2), chg >= 0 ? "pos" : "neg");
+    cell("50-day high", money(line), "", away >= 0 ? "above it" : pc(away, 2) + " away");
+    cell("season", (G.i - WARM + 1) + " / " + DAYS);
+    cell("your equity", pc(G.eq - 1), G.eq >= 1 ? "pos" : "neg", G.held ? "long" : "in cash");
+    el("mkt").innerHTML = m.join("");
+
+    /* ---- your position */
+    if (!G.held) {
+      el("position").innerHTML = '<div class="flat">Flat. Nothing at risk.</div>';
+    } else {
+      var un = price / G.entry - 1;
+      el("position").innerHTML = '<div class="body">' +
+        row("side", '<span class="tag b">long</span>') +
+        row("entry", money(G.entry)) +
+        row("mark", money(price)) +
+        row("unrealised", '<span class="' + (un >= 0 ? "pos" : "neg") + '">' + pc(un, 2) + '</span>') +
+        row("size", "full stake") +
+        '</div>';
+    }
+    function row(k, v) { return '<div class="posrow"><span>' + k + '</span><span>' + v + '</span></div>'; }
+
+    /* ---- what the rule is doing, from the rule's own run */
+    var rs = G.rule.states[G.i];
+    if (!rs) {
+      el("rulebox").innerHTML = '<div class="flat">waiting for the first bar</div>';
+    } else if (!rs.held) {
+      el("rulebox").innerHTML = '<div class="body">' + row("state", "cash") +
+        row("waiting for", "a close above " + money(line)) +
+        row("its equity", '<span class="' + (rs.eq >= 1 ? "pos" : "neg") + '">' + pc(rs.eq - 1) + '</span>') +
+        '</div>';
+    } else {
+      el("rulebox").innerHTML = '<div class="body">' + row("state", '<span class="tag b">long</span>') +
+        row("entry", money(rs.entry)) +
+        row("bars held", rs.bars + " of 5") +
+        row("its equity", '<span class="' + (rs.eq >= 1 ? "pos" : "neg") + '">' + pc(rs.eq - 1) + '</span>') +
+        '</div>';
+    }
+
+    /* ---- your fills */
+    if (!G.fills.length) {
+      el("fills").innerHTML = '<div class="flat">No fills yet. Buy when you think the move is real.</div>';
+    } else {
+      var f = ['<table class="fills"><thead><tr><th>Day</th><th>Side</th><th>Price</th>' +
+               '<th>Fee</th><th>Trade P&amp;L</th></tr></thead><tbody>'];
+      for (var q = G.fills.length - 1; q >= 0; q--) {
+        var fl = G.fills[q];
+        f.push('<tr><td>' + fl.day + '</td><td><span class="tag ' + (fl.side === "buy" ? "b" : "s") +
+          '">' + fl.side + '</span></td><td>' + money(fl.price) + '</td><td class="dim">' +
+          pc(-FEE, 2) + '</td><td class="' + (fl.pnl === null ? "" : fl.pnl >= 0 ? "pos" : "neg") +
+          '">' + (fl.pnl === null ? "&mdash;" : pc(fl.pnl, 2)) + '</td></tr>');
+      }
+      f.push('</tbody></table>');
+      el("fills").innerHTML = f.join("");
+    }
+
+    el("tkt-meta").innerHTML = "Full stake each time, so the only thing being tested is " +
+      "<b>timing</b>. Both you and the rule pay 10bp a side.";
+
     el("chart").innerHTML = chart();
     el("btn-buy").disabled = G.held === 1 || G.done;
     el("btn-sell").disabled = G.held === 0 || G.done;
@@ -595,6 +845,89 @@ believe a good backtest.</p>
     series: series, rulePlay: rulePlay, DAYS: DAYS, WARM: WARM,
     params: { BASE: BASE, VOL: VOL, AC: AC, JUMP_P: JUMP_P, JUMP_M: JUMP_M, EDGE: EDGE, LOOK: LOOK }
   };
+
+  /* ------------------------------------------- the REAL book, read live
+     Karl asked for the actual forward record on this page as proof that the
+     rule above is not only a toy. It reads orders.json - the same file the
+     terminal reads - and renders whatever is in it.
+
+     THE CAVEAT IS NOT OPTIONAL AND IS NOT SMALL PRINT. Nineteen days at
+     +3% is not evidence of anything: finding 038 measured that a FULL YEAR
+     of this record has 37% power against zero, and that 19% of one-year
+     windows lost money while the edge was present throughout. A page that
+     showed the number without that sentence would be doing the exact thing
+     this project exists to refuse. */
+  function paperBook() {
+    var box = el("paperbook");
+    if (!box) return;
+
+    function say(html) { box.innerHTML = html; }
+    function note(t) {
+      return '<div class="note" style="margin:12px 14px 14px">' + t + '</div>';
+    }
+
+    fetch("orders.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var f = d && d.forward;
+        if (!f || !f.hasHistory) {
+          say('<h3>Forward record &middot; live</h3>' +
+              '<div class="flat">No record published yet. This panel fills in as soon as ' +
+              'the platform writes its first day.</div>');
+          return;
+        }
+
+        var days = f.runs, ret = f.returnSinceStart || 0;
+        var t = ['<h3>Forward record &middot; live &middot; ' + days + ' days</h3><div class="tiles" style="margin:14px">'];
+        function tile(k, v, sub, cls) {
+          t.push('<div class="tile"><div class="k">' + k + '</div><div class="v ' + (cls || "") +
+                 '">' + v + '</div><div class="s">' + sub + '</div></div>');
+        }
+        tile("paper equity", "$" + (f.currentUsd || 0).toFixed(2),
+             "started at $" + (f.startUsd || 0).toFixed(0), ret >= 0 ? "pos" : "neg");
+        tile("return", pc(ret, 2), "never revised", ret >= 0 ? "pos" : "neg");
+        tile("worst fall", pc(f.worstDrawdown || 0, 2),
+             f.outsideNormalBand ? "OUTSIDE the band" : "inside the band",
+             f.outsideNormalBand ? "warnc" : "");
+        tile("deployed today", d.deployedFraction === undefined ? "&mdash;" :
+             pc(d.deployedFraction, 0), (d.eligibleCount || 0) + " markets eligible");
+        t.push('</div>');
+
+        /* the curve itself, drawn from the appended points and nothing else */
+        var h = f.history || [];
+        if (h.length > 1) {
+          var W = 900, H = 120, P = 10;
+          var vals = h.map(function (x) { return x.equityUsd; });
+          var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+          var pad = (hi - lo) * 0.12 || 1; lo -= pad; hi += pad;
+          var pts = h.map(function (x, i) {
+            return (i ? "L" : "M") + (P + i / (h.length - 1) * (W - 2 * P)).toFixed(1) + "," +
+                   (P + (hi - x.equityUsd) / (hi - lo) * (H - 2 * P)).toFixed(1);
+          }).join(" ");
+          var startY = P + (hi - (f.startUsd || vals[0])) / (hi - lo) * (H - 2 * P);
+          t.push('<svg viewBox="0 0 ' + W + ' ' + H + '" style="display:block;width:100%;height:auto" ' +
+            'role="img" aria-label="Paper equity since the record began">' +
+            '<line x1="' + P + '" y1="' + startY.toFixed(1) + '" x2="' + (W - P) + '" y2="' + startY.toFixed(1) +
+            '" stroke="var(--line2)" stroke-dasharray="3 4" stroke-width="1"/>' +
+            '<path d="' + pts + '" fill="none" stroke="' + (ret >= 0 ? "var(--acc)" : "var(--bad)") +
+            '" stroke-width="2" stroke-linejoin="round"/></svg>');
+        }
+
+        t.push(note('<b>' + days + ' days is not evidence, and saying so is the point.</b> ' +
+          'Finding 038 measured this directly: a <b>full year</b> of this record has a ' +
+          '<b>37%</b> chance of telling the return apart from zero, and 80% needs about ' +
+          '<b>four years</b>. Nineteen per cent of one-year windows in the real data ' +
+          '<b>lost money</b> while the edge was present the whole time. So read the number ' +
+          'above as a machine that is running, not as a result.'));
+
+        say(t.join(""));
+      })
+      .catch(function () {
+        say('<h3>Forward record &middot; live</h3>' +
+            '<div class="flat">Could not read the published record just now.</div>');
+      });
+  }
+  paperBook();
 
   /* The page used to load with an empty chart and every button greyed out
      until something was clicked. setMode also writes the mode note and deals
