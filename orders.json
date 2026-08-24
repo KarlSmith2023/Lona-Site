@@ -1,9 +1,9 @@
 {
-  "at": "2026-08-23T02:44:26.3632051+00:00",
+  "at": "2026-08-24T00:17:06.8336007+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 360,
+  "paperEquityUsd": 370,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -28,25 +28,25 @@
     "kPEPE"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.75,
+  "deployedFraction": 0.80,
   "excludedNonCrypto": [
     "SPX"
   ],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 360,
+  "smallestViableAccountUsd": 370,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -5.19,
-  "openPaperPnlPct": -0.014423,
+  "openPaperPnlUsd": -4.66,
+  "openPaperPnlPct": -0.012603,
   "forward": {
     "hasHistory": true,
-    "runs": 21,
+    "runs": 22,
     "startUsd": 1000,
-    "currentUsd": 1031.29,
-    "peakUsd": 1033.43,
-    "returnSinceStart": 0.031286,
-    "drawdown": -0.002073,
+    "currentUsd": 1041.08,
+    "peakUsd": 1041.08,
+    "returnSinceStart": 0.041077,
+    "drawdown": 0,
     "worstDrawdown": -0.002073,
-    "bandUsed": 0.0077,
+    "bandUsed": 0,
     "outsideNormalBand": false,
     "history": [
       {
@@ -153,6 +153,11 @@
         "at": "2026-08-23T02:44:26.3632051+00:00",
         "equityUsd": 1031.29,
         "drawdown": -0.002073
+      },
+      {
+        "at": "2026-08-24T00:17:06.8336007+00:00",
+        "equityUsd": 1041.08,
+        "drawdown": 0
       }
     ]
   },
@@ -167,16 +172,21 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 15,
-    "deployedFraction": 0.75,
-    "releasedEarly": [],
-    "openPaperPnlUsd": -5.19,
-    "givenUpUsd": 0.00,
+    "heldCount": 12,
+    "deployedFraction": 0.60,
+    "releasedEarly": [
+      "BTC",
+      "ETH",
+      "FARTCOIN",
+      "kPEPE"
+    ],
+    "openPaperPnlUsd": -1.95,
+    "givenUpUsd": -2.71,
     "forward": {
-      "daysRecorded": 6,
-      "daysDiffered": 2,
-      "incumbentUsd": 328.50,
-      "shadowUsd": 322.77,
+      "daysRecorded": 7,
+      "daysDiffered": 3,
+      "incumbentUsd": 338.29,
+      "shadowUsd": 332.56,
       "returnGap": -0.019106,
       "incumbentWorstDrawdown": -0.006481,
       "shadowWorstDrawdown": -0.006595,
@@ -186,265 +196,281 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 2,
-    "daysRemaining": 88,
+    "cleanDaysInARow": 3,
+    "daysRemaining": 87,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-08-23",
+    "lastRecorded": "2026-08-24",
     "missedDays": 3,
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "2 of 90 clean days. 88 to go, and any single missed day sends it back to zero.",
+    "summary": "3 of 90 clean days. 87 to go, and any single missed day sends it back to zero.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
-      "coin": "XRP",
+      "coin": "ENA",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 1.464,
-      "price": 1.4862,
-      "returnSinceEntry": 0.015164,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": 0.27
+      "entryPrice": 0.16175,
+      "price": 0.16272,
+      "returnSinceEntry": 0.005997,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": 0.11
     },
     {
       "coin": "SOL",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 93.905,
-      "price": 94.609,
-      "returnSinceEntry": 0.007497,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": 0.13
+      "entryPrice": 95.501,
+      "price": 95.108,
+      "returnSinceEntry": -0.004115,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.08
     },
     {
-      "coin": "XMR",
+      "coin": "PUMP",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 433.25,
-      "price": 435.44,
-      "returnSinceEntry": 0.005055,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": 0.09
+      "entryPrice": 0.005231,
+      "price": 0.005209,
+      "returnSinceEntry": -0.004206,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.08
+    },
+    {
+      "coin": "UNI",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 4.5316,
+      "price": 4.50425,
+      "returnSinceEntry": -0.006035,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.11
     },
     {
       "coin": "DOGE",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 0.091978,
-      "price": 0.092262,
-      "returnSinceEntry": 0.003088,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": 0.06
+      "entryPrice": 0.093479,
+      "price": 0.092818,
+      "returnSinceEntry": -0.007071,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.13
     },
     {
-      "coin": "kPEPE",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
-      "entryPrice": 0.004128,
-      "price": 0.0041,
-      "returnSinceEntry": -0.006783,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.12
+      "coin": "XRP",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 1.5214,
+      "price": 1.5098,
+      "returnSinceEntry": -0.007625,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.14
     },
     {
       "coin": "ZEC",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 802.17,
-      "price": 795.88,
-      "returnSinceEntry": -0.007841,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.14
-    },
-    {
-      "coin": "AAVE",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 126.69,
-      "price": 125.65,
-      "returnSinceEntry": -0.008209,
-      "notionalUsd": 18.00,
+      "entryPrice": 854.03,
+      "price": 847.02,
+      "returnSinceEntry": -0.008208,
+      "notionalUsd": 18.50,
       "paperPnlUsd": -0.15
     },
     {
       "coin": "HYPE",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 79.408,
-      "price": 78.656,
-      "returnSinceEntry": -0.009470,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.17
-    },
-    {
-      "coin": "BTC",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
-      "entryPrice": 78383.0,
-      "price": 77227.0,
-      "returnSinceEntry": -0.014748,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.27
-    },
-    {
-      "coin": "PUMP",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 0.004971,
-      "price": 0.004879,
-      "returnSinceEntry": -0.018507,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.33
+      "entryPrice": 82.369,
+      "price": 81.67,
+      "returnSinceEntry": -0.008486,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.16
     },
     {
       "coin": "LIT",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 3.1936,
-      "price": 3.1024,
-      "returnSinceEntry": -0.028557,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.51
+      "entryPrice": 3.5814,
+      "price": 3.5506,
+      "returnSinceEntry": -0.008600,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.16
     },
     {
-      "coin": "ENA",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 0.15879,
-      "price": 0.15403,
-      "returnSinceEntry": -0.029977,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.54
-    },
-    {
-      "coin": "ETH",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
-      "entryPrice": 2518.3,
-      "price": 2419.5,
-      "returnSinceEntry": -0.039233,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.71
+      "coin": "BTC",
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
+      "entryPrice": 78383.0,
+      "price": 77630.0,
+      "returnSinceEntry": -0.009607,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.18
     },
     {
       "coin": "SUI",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 0.85106,
+      "price": 0.84075,
+      "returnSinceEntry": -0.012114,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.22
+    },
+    {
+      "coin": "AAVE",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 141.64,
+      "price": 139.75,
+      "returnSinceEntry": -0.013344,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.25
+    },
+    {
+      "coin": "kPEPE",
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
+      "entryPrice": 0.004128,
+      "price": 0.004047,
+      "returnSinceEntry": -0.019622,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.36
+    },
+    {
+      "coin": "ETH",
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
+      "entryPrice": 2518.3,
+      "price": 2457.86,
+      "returnSinceEntry": -0.024000,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.44
+    },
+    {
+      "coin": "XMR",
       "barsSinceEntry": 1,
       "barsRemaining": 3,
-      "entryPrice": 0.84504,
-      "price": 0.81101,
-      "returnSinceEntry": -0.040270,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -0.72
+      "entryPrice": 433.25,
+      "price": 419.6,
+      "returnSinceEntry": -0.031506,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -0.58
     },
     {
       "coin": "FARTCOIN",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
       "entryPrice": 0.19642,
-      "price": 0.1737,
-      "returnSinceEntry": -0.115671,
-      "notionalUsd": 18.00,
-      "paperPnlUsd": -2.08
+      "price": 0.17805,
+      "returnSinceEntry": -0.093524,
+      "notionalUsd": 18.50,
+      "paperPnlUsd": -1.73
     }
   ],
   "orders": [
     {
       "coin": "LINK",
       "reason": "exit - no longer in the book",
-      "deltaNotionalUsd": -500.46,
+      "deltaNotionalUsd": -497.30,
       "placeable": false,
       "refusal": "price unknown for a market outside the plan"
     },
     {
       "coin": "AAVE",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "BTC",
       "reason": "rebalance - drifted outside the band",
-      "deltaNotionalUsd": -354.24,
+      "deltaNotionalUsd": -647.34,
       "placeable": true
     },
     {
       "coin": "DOGE",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "ENA",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "ETH",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "FARTCOIN",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "HYPE",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "LIT",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "PUMP",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "SOL",
       "reason": "rebalance - drifted outside the band",
-      "deltaNotionalUsd": -992.19,
+      "deltaNotionalUsd": -743.90,
       "placeable": true
     },
     {
       "coin": "SUI",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
+      "placeable": true
+    },
+    {
+      "coin": "UNI",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "XMR",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "XRP",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "ZEC",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     },
     {
       "coin": "kPEPE",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.50,
       "placeable": true
     }
   ],
@@ -462,7 +488,7 @@
       {
         "coin": "BTC",
         "status": "Drifted",
-        "detail": "1,968 % away from the intended size, beyond the 30 % tolerance"
+        "detail": "3,499 % away from the intended size, beyond the 30 % tolerance"
       },
       {
         "coin": "DOGE",
@@ -502,10 +528,15 @@
       {
         "coin": "SOL",
         "status": "Drifted",
-        "detail": "5,512 % away from the intended size, beyond the 30 % tolerance"
+        "detail": "4,021 % away from the intended size, beyond the 30 % tolerance"
       },
       {
         "coin": "SUI",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "UNI",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
       },
