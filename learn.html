@@ -482,6 +482,67 @@ point apart.</p>
 </section>
 
 <section>
+<h2><span class="n">RULE SEVEN</span>One rule written twice is two rules</h2>
+
+<p>On 27 August 2026 the live planner was caught buying a market it could not
+have bought. LINK appeared in the book already three days into a five-day
+position, at a price from four days earlier &mdash; a day on which LINK was not
+one of the twenty markets the strategy is allowed to touch.</p>
+
+<p>The cause was small and easy to miss. When a market joins the top twenty at
+the weekly re-rank, the code asks &ldquo;did this break out in the last five
+days?&rdquo; It never asks &ldquo;was it allowed to be traded on the day it broke
+out?&rdquo; So a name that arrived on Monday was credited with Thursday&rsquo;s
+signal, and the book recorded a trade nobody could have made.</p>
+
+<div class="callout warn">
+  <div class="t">&#9888; The same hole was in six different programs</div>
+  <p>The rule &mdash; buy on a new 50-day high, hold five days &mdash; had been
+  written six times: once in the live order planner, once in the backtest engine,
+  and four more times across the research scripts that produced the published
+  numbers. <strong>Every one of them had the identical defect.</strong> Not
+  because the same mistake was copied, but because each author independently
+  failed to ask the same question.</p>
+</div>
+
+<p>This is why the method rule exists in the first place: <em>a rule that exists
+in two programs will eventually be two rules.</em> The usual failure is that the
+copies drift apart and start disagreeing. This was the rarer and nastier version
+&mdash; six copies agreeing perfectly, and all six wrong together. Agreement
+between implementations is <strong>not</strong> evidence of correctness when they
+share an assumption.</p>
+
+<p><strong>And the test suite did not catch it.</strong> There were four hundred
+passing tests. They all still passed after the bug was fixed. A test proves the
+code does what the test asks; nobody had thought to ask &ldquo;can a market be
+entered before it joined the universe?&rdquo;, so nothing failed.
+<strong>A green suite is evidence about the questions you thought of, not about
+the ones you didn&rsquo;t.</strong> The only thing that found this was reading
+what the machine actually did on a specific day and noticing a number &mdash;
+<code>barsSinceEntry: 3</code> on a position one day old &mdash; that could not be
+true.</p>
+
+<h3>What it was worth, which is the honest part</h3>
+
+<p>The correction was measured twice, on two venues. On Hyperliquid it made the
+strategy <em>better</em>: return up nearly a point, worst fall improving from
+&minus;14% to &minus;11%. On OKX it cost a point of return and left the Sharpe
+ratio unchanged.</p>
+
+<p>So the tempting headline &mdash; &ldquo;the bug was hiding a better
+strategy&rdquo; &mdash; was written after the first measurement and had to be
+withdrawn after the second. <strong>A small effect measured once measures the
+noise as much as the effect.</strong> The defect was real, it had to be fixed
+because a book that records trades nobody made is not a record at all, and its
+actual size was about one point in either direction.</p>
+
+<p class="sub">Method rules 35 through 40 all come from this one episode, and two
+of them exist because of mistakes made while investigating it &mdash; a diagnosis
+published from a reconstruction that had never been checked against the
+machine&rsquo;s own log, and a conclusion drawn from a single run.</p>
+</section>
+
+<section>
 <h2><span class="n">THE RESULT</span>What survived all of that</h2>
 
 <p>One rule. Buy a market when it closes above every price of the previous 50
@@ -495,6 +556,7 @@ cash. Roughly 16% invested on an average day.</p>
 <tr class="hl"><td>BitMEX &middot; bitcoin only</td><td>10.25 yr</td><td class="pos">+27.7%</td><td class="neg">&minus;54%</td><td class="pos">2.39</td></tr>
 <tr><td>OKX &middot; 356 markets</td><td>6.6 yr</td><td class="pos">+26.1%</td><td class="neg">&minus;35%</td><td>2.1</td></tr>
 <tr><td>Hyperliquid &middot; 232 markets</td><td>3.0 yr</td><td class="pos">+20.9%</td><td>&minus;14%</td><td class="warnc">1.5</td></tr>
+<tr class="hl"><td>OKX &middot; 301 markets &middot; <b>re-run 27 Aug after rule seven</b></td><td>5.7 yr</td><td class="pos">+26.4%</td><td class="neg">&minus;30%</td><td class="pos">2.1</td></tr>
 </tbody>
 </table></div>
 
@@ -516,7 +578,7 @@ on most days while it behaves exactly as measured, and there is roughly a
 </section>
 
 <section>
-<h2><span class="n">IN SHORT</span>The whole method, in eight lines</h2>
+<h2><span class="n">IN SHORT</span>The whole method, in nine lines</h2>
 
 <ol class="steps">
 <li>Ask whether a coin would have done as well &mdash; and correct for how many
@@ -529,6 +591,8 @@ things you tried.</li>
 <li>Know when the history has run out &mdash; and never take it from a
 source that deleted its failures.</li>
 <li>When the rule and the result disagree, the rule wins.</li>
+<li>Write the rule <em>once</em> &mdash; and remember that copies agreeing with
+each other proves nothing if they share a blind spot.</li>
 </ol>
 
 <p>None of this was designed in advance. Every line exists because a result died

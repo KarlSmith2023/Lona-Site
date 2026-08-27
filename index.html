@@ -224,7 +224,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 <section>
   <h2>Liquidity Oriented Neural Analytics</h2>
   <h1>A research platform that tries<br/>to kill its own ideas.</h1>
-  <p class="lede">Thirty-eight findings. Thirty-one method rules. One designated
+  <p class="lede">Forty-one findings. Forty method rules. One designated
   strategy. Zero orders placed — and that last number is still the point.</p>
 
   <div class="quote">&ldquo;Never trade because we think something works.
@@ -232,7 +232,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 
   <p class="sub">Most trading systems are built to find edges. This one is built
   to <b>destroy</b> them and keep only what survives. Around 145 rules have been
-  tested and one is still standing. Four of the thirty-eight findings are
+  tested and one is still standing. Five of the forty-one findings are
   retractions of earlier findings in the same file — including two that were
   wrong for a fortnight before this platform caught itself, and one where the
   statistical null being used to reject ideas turned out to be a number the
@@ -249,15 +249,15 @@ tr.hl{background:rgba(45,224,165,.06)}
 <!-- ============================================================== status -->
 <section id="status">
   <h2>Status</h2>
-  <h3>Where the platform is on 20 August 2026</h3>
+  <h3>Where the platform is on 27 August 2026</h3>
 
   <div class="tiles" style="margin:18px 0">
     <div class="tile"><div class="k">Order-book tape</div>
-      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 10 days &middot; 3.3 GB</div></div>
+      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 18 days &middot; 7.7 GB</div></div>
     <div class="tile"><div class="k">Forward record</div>
-      <div class="v warn">16 runs</div><div class="s">stalled since 16 Aug &mdash; see below</div></div>
+      <div class="v pos">25 runs</div><div class="s">running daily &middot; 6 of 90 clean days</div></div>
     <div class="tile"><div class="k">Test cases</div>
-      <div class="v">406</div><div class="s">across 6 suites</div></div>
+      <div class="v">437</div><div class="s">across 7 suites</div></div>
     <div class="tile"><div class="k">Orders placed</div>
       <div class="v faint">0</div><div class="s">deliberately</div></div>
   </div>
@@ -329,6 +329,29 @@ tr.hl{background:rgba(45,224,165,.06)}
   close of the preceding 49 days, hold it five days at 1/20 of capital, otherwise
   cash. Every row below is net of fees <b>and net of the actual funding paid</b>.</p>
 
+  <div style="border-left:3px solid #c07d20;background:#150f06;padding:14px 18px;margin:18px 0">
+    <div style="color:#c07d20;font-weight:600;letter-spacing:.04em;margin-bottom:8px">
+      &#9888; CORRECTION &middot; 27 AUGUST 2026 &middot; FINDING 040</div>
+    <p class="sub" style="margin:0 0 10px">Every row in the table below was produced by
+    code that <b>entered markets retroactively</b>. When a market joined the top twenty at
+    the weekly re-rank, the entry scan looked back through the hold window without asking
+    whether the market had been tradeable on the day it broke out &mdash; so a name that
+    joined on Monday could arrive already three days into a position, at a price it could
+    not have traded. It was found in the live planner on 27 August, and then found in
+    <b>five further implementations of the same rule</b>, including the Python that produced
+    these numbers. One rule, six programs, the same hole in all six.</p>
+    <p class="sub" style="margin:0 0 10px"><b>All six are now fixed and the correction has
+    been measured twice.</b> On Hyperliquid it improved the result; on OKX it cost a point of
+    return and changed the Sharpe not at all. <b>The honest summary is that the defect was
+    small and its direction is not stable</b> &mdash; but it was unmeasured, and an unmeasured
+    error is not a conservative one. The OKX row has been re-run from scratch on a separate
+    codebase and is marked below. Binance and BitMEX have not yet been re-measured.</p>
+    <p class="sub" style="margin:0"><b>And the drawdown to plan around is not &minus;15%.</b>
+    That figure comes from the three-year Hyperliquid window, which contains no bear market.
+    The datasets that include 2021&ndash;22 put the worst fall at <b>&minus;28% to &minus;35%</b>.
+    Size positions off that number.</p>
+  </div>
+
   <div class="scroll" style="margin:18px 0"><table>
     <thead><tr><th>Dataset</th><th>Span</th><th>Dead names</th><th>CAGR</th>
       <th>Sharpe</th><th>Worst DD</th><th>t</th></tr></thead>
@@ -339,10 +362,15 @@ tr.hl{background:rgba(45,224,165,.06)}
       <tr class="hl"><td>BitMEX &middot; XBTUSD alone</td><td>10.25 yr</td>
         <td>n/a</td><td class="pos">+27.7%</td><td>+0.88</td>
         <td class="neg">&minus;54%</td><td class="pos">+2.39</td></tr>
-      <tr><td>OKX &middot; 356 perps, crypto only</td><td>6.6 yr</td>
+      <tr><td>OKX &middot; 356 perps, crypto only <span class="warn">pre-040</span></td><td>6.6 yr</td>
         <td class="neg">absent</td><td class="pos">+26.1%</td><td>+1.03</td>
         <td class="neg">&minus;35%</td><td>+2.1</td></tr>
-      <tr><td>Hyperliquid &middot; 232 perps</td><td>3.0 yr</td>
+      <tr class="hl"><td>OKX &middot; 301 perps &middot; <b>re-measured 27 Aug, post-040</b>,
+        independent codebase, 100% funding coverage</td><td>5.7 yr</td>
+        <td class="neg">absent</td><td class="pos">+26.4%</td><td class="pos">+1.09</td>
+        <td class="neg">&minus;30%</td><td class="pos">+2.1</td></tr>
+      <tr><td>Hyperliquid &middot; 232 perps <span class="warn">pre-040 &middot;
+        re-measurement in progress</span></td><td>3.0 yr</td>
         <td class="pos">kept</td><td class="pos">+20.9%</td><td>+1.02</td>
         <td>&minus;14%</td><td class="warn">+1.5</td></tr>
     </tbody>
