@@ -866,7 +866,7 @@ believe a good backtest.</p>
       return '<div class="note" style="margin:12px 14px 14px">' + t + '</div>';
     }
 
-    fetch("orders.json?t=" + Date.now(), { cache: "no-store" })
+    fetch("https://karlsmith2023.github.io/Lona-Site/orders.json?t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         var f = d && d.forward;

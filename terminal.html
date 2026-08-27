@@ -1937,7 +1937,7 @@ function renderResearch() {
    describing an hour. The distance between "now" and "30-day mean" is the most
    useful thing here, so both are always shown together.
    =========================================================================== */
-const BOARD_URL = "funding.json";
+const BOARD_URL = "https://karlsmith2023.github.io/Lona-Site/funding.json";
 const BOARD_MS = 10 * 60 * 1000;
 
 async function loadBoard() {
@@ -2061,7 +2061,7 @@ $("fd-chips").querySelector("[data-filt=hedge]").addEventListener("click", funct
 });
 
 
-const ANALYST_URL = "analyst.json";
+const ANALYST_URL = "https://karlsmith2023.github.io/Lona-Site/analyst.json";
 const ANALYST_MS  = 60000;
 const STALE_MIN   = 75;   // published hourly, so 75 minutes means a run was missed
 
@@ -2093,7 +2093,7 @@ function readable(j) {
    The published file is built from an ALLOWLIST on the PC side, so it carries
    no wallet address and no account balance - only the paper book. That is why
    this page can be public. */
-const ORDERS_URL = "orders.json";
+const ORDERS_URL = "https://karlsmith2023.github.io/Lona-Site/orders.json";
 const ORDERS_MS = 5 * 60000;
 
 async function loadOrders() {
@@ -2319,7 +2319,7 @@ function renderShadow(o) {
    that has stopped cannot update a flag to say so, but it also cannot stop the
    clock. The AGE OF THIS FILE is therefore the only trustworthy signal on the
    page, and it is the one the colour is driven by. */
-const STATUS_URL = "status.json";
+const STATUS_URL = "https://karlsmith2023.github.io/Lona-Site/status.json";
 
 async function loadHealth() {
   try {
