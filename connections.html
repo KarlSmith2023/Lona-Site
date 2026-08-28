@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#05080b"/>
+<meta name="description" content="Which venues LONA can reach, what permissions exist, and why no key is ever on this page."/>
+<title>LONA :: connections</title>
+<style>
+:root{
+  --bg:#05080b; --panel:#0a0f14; --panel2:#0d141b; --line:#18232e; --line2:#233240;
+  --ink:#d6e2ee; --dim:#8296a9; --faint:#546779;
+  --acc:#2de0a5; --warn:#f0a02a; --bad:#e8544a;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  --r:12px; --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);
+  -webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:20;background:rgba(5,8,11,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  padding:12px 18px}
+/* The notch. Declaring --safe-t and never applying it looks identical to
+   applying it, right up until someone opens this on a phone. */
+header{padding-top:var(--safe-t)}
+.hd{padding-top:12px}
+.hd{display:flex;align-items:center;gap:10px;max-width:1080px;margin:0 auto}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none}
+.brand{font:600 15px/1 var(--mono);letter-spacing:.02em}
+.brand span{color:var(--acc)}
+.clock{margin-left:auto;font:12px/1 var(--mono);color:var(--faint)}
+nav.pageswitch{display:flex;gap:2px;max-width:1080px;margin:0 auto;padding:0 18px;
+  border-bottom:1px solid var(--line);overflow-x:auto}
+nav.pageswitch a{padding:11px 14px;font:12px/1 var(--mono);letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);text-decoration:none;white-space:nowrap;
+  border-bottom:2px solid transparent}
+nav.pageswitch a[aria-current]{color:var(--acc);border-bottom-color:var(--acc)}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
+h1{font:600 26px/1.25 var(--sans);margin:16px 0 6px;letter-spacing:-.01em}
+h2{font:600 17px/1.3 var(--sans);margin:34px 0 10px}
+p{color:var(--dim);margin:10px 0}
+b,strong{color:var(--ink)}
+code{font:12.5px var(--mono);background:var(--panel2);border:1px solid var(--line);
+  border-radius:5px;padding:1px 5px;color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;margin:16px 0}
+.vault{border-left:3px solid var(--acc);background:#06120e}
+.vault .t{color:var(--acc);font:600 13px/1 var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:10px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+th{text-align:left;font:11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);padding:0 12px 9px 0;border-bottom:1px solid var(--line)}
+td{padding:11px 12px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.ok{color:var(--acc)} .warnc{color:var(--warn)} .bad{color:var(--bad)}
+.mono{font-family:var(--mono);font-size:12.5px}
+.pill{display:inline-block;font:11px/1 var(--mono);letter-spacing:.06em;padding:4px 8px;
+  border-radius:999px;border:1px solid var(--line2);color:var(--dim)}
+.pill.ok{border-color:#12503c;background:#07160f;color:var(--acc)}
+.pill.bad{border-color:#5a1f1b;background:#180a09;color:var(--bad)}
+.pill.warn{border-color:#5a4113;background:#171104;color:var(--warn)}
+.age{font:11px/1 var(--mono);color:var(--faint)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.tile{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:13px}
+.tile .k{font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tile .v{font:600 19px/1.2 var(--mono);margin:7px 0 3px}
+.tile .s{font-size:12px;color:var(--dim)}
+figure{margin:18px 0}
+figcaption{font-size:12.5px;color:var(--faint);margin-top:8px}
+.foot{border-top:1px solid var(--line);margin-top:44px;padding:18px 0;font-size:12px;color:var(--faint)}
+ul{color:var(--dim);padding-left:20px} li{margin:6px 0}
+.disabled{opacity:.55}
+button{font:600 13px var(--sans);border-radius:8px;padding:9px 15px;border:1px solid var(--line2);
+  background:var(--panel2);color:var(--faint);cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<header><div class="hd">
+  <span class="dot"></span>
+  <span class="brand">LONA<span>::</span>connections</span>
+  <span class="clock" id="clock">--:--:-- UTC</span>
+</div></header>
+<nav class="pageswitch" aria-label="LONA pages">
+  <a href="index.html">platform</a>
+  <a href="terminal.html">terminal</a>
+  <a href="connections.html" aria-current="page">connections</a>
+  <a href="learn.html">learn</a>
+  <a href="practice.html">practice</a>
+</nav>
+
+<div class="wrap">
+
+<h1>Connections</h1>
+<p>Which venues LONA can reach, what those connections are permitted to do, and
+when each was last checked. <b>Everything on this page is a mirror. Nothing on it
+is a control that can start anything.</b></p>
+
+<div class="card vault">
+  <div class="t">&#128274; This page holds no credentials, and cannot</div>
+  <p style="margin-top:0">There is no field on this page to enter an API key, no
+  storage that could hold one, and no request from this page that carries one.
+  That is not an omission to be filled in later &mdash; it is the design.</p>
+  <p><b>The page never signs. It writes intent; the executor reads intent.</b>
+  Keys live in the operating system's credential store on the machine that runs
+  the executor, are read once at startup, and are never transmitted, never
+  logged and never rendered. The executor holds no inbound port: it polls
+  outward and nothing can reach in.</p>
+  <p style="margin-bottom:0">The consequence worth stating plainly: <b>a total
+  compromise of this website cannot move a single coin.</b> Not because the
+  login is strong, but because there is nothing here to steal. On 27 August the
+  Access policy in front of this site was misconfigured twice in one morning.
+  That cost a broken data feed on a phone. It could not have cost money, and
+  this is the reason.</p>
+</div>
+
+<h2>Venues</h2>
+<div class="card">
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>Venue</th><th>Role</th><th>Reachable now</th><th>Key</th>
+      <th>Read</th><th>Trade</th><th>Withdraw</th><th>Archive</th>
+    </tr></thead>
+    <tbody id="venues">
+      <tr><td colspan="8" class="mono" style="color:var(--faint)">checking&hellip;</td></tr>
+    </tbody>
+  </table></div>
+  <p class="age" id="probed" style="margin-bottom:0">&nbsp;</p>
+</div>
+
+<p><b>The withdraw column is the one that earns its place.</b> An exchange key
+with withdrawal enabled makes every other precaution here decorative. It should
+read <span class="pill bad">NO KEY</span> or <span class="pill ok">off</span>
+and nothing else, ever. If it ever reads otherwise, that is the alarm, and it is
+deliberately the last column so it is the one your eye lands on.</p>
+
+<h2>The executor</h2>
+<div class="grid" id="exec">
+  <div class="tile"><div class="k">Intent</div><div class="v" id="i-state">&mdash;</div>
+    <div class="s" id="i-reason">reading&hellip;</div></div>
+  <div class="tile"><div class="k">Size cap</div><div class="v" id="i-cap">&mdash;</div>
+    <div class="s">hard ceiling enforced twice, independently</div></div>
+  <div class="tile"><div class="k">Last heartbeat</div><div class="v" id="i-pulse">&mdash;</div>
+    <div class="s" id="i-mode">&nbsp;</div></div>
+  <div class="tile"><div class="k">Order-placement code</div><div class="v ok">NONE</div>
+    <div class="s">absent from the build by design</div></div>
+</div>
+<p class="age" id="apiage">&nbsp;</p>
+
+<h2>How a decision reaches a venue</h2>
+<figure>
+<svg viewBox="0 0 720 178" role="img" width="100%"
+     aria-label="This page writes intent to a worker; the executor polls that intent and signs orders with a key the page never sees.">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+    orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#546779"/></marker></defs>
+  <rect x="4" y="26" width="150" height="58" rx="9" fill="#0d141b" stroke="#233240"/>
+  <text x="79" y="50" text-anchor="middle" fill="#d6e2ee" font-size="12.5" font-weight="600">this page</text>
+  <text x="79" y="68" text-anchor="middle" fill="#546779" font-size="11">no key, no signing</text>
+
+  <rect x="204" y="26" width="150" height="58" rx="9" fill="#0d141b" stroke="#233240"/>
+  <text x="279" y="50" text-anchor="middle" fill="#d6e2ee" font-size="12.5" font-weight="600">intent store</text>
+  <text x="279" y="68" text-anchor="middle" fill="#546779" font-size="11">on / halt / cap</text>
+
+  <rect x="404" y="26" width="150" height="58" rx="9" fill="#06120e" stroke="#12503c"/>
+  <text x="479" y="50" text-anchor="middle" fill="#2de0a5" font-size="12.5" font-weight="600">executor</text>
+  <text x="479" y="68" text-anchor="middle" fill="#546779" font-size="11">holds the key</text>
+
+  <rect x="604" y="26" width="112" height="58" rx="9" fill="#0d141b" stroke="#233240"/>
+  <text x="660" y="50" text-anchor="middle" fill="#d6e2ee" font-size="12.5" font-weight="600">venue</text>
+  <text x="660" y="68" text-anchor="middle" fill="#546779" font-size="11">OKX &middot; Hyperliquid</text>
+
+  <line x1="158" y1="55" x2="198" y2="55" stroke="#546779" stroke-width="1.4" marker-end="url(#a)"/>
+  <text x="178" y="44" text-anchor="middle" fill="#546779" font-size="10">writes</text>
+  <line x1="400" y1="55" x2="360" y2="55" stroke="#2de0a5" stroke-width="1.4" marker-end="url(#a)"/>
+  <text x="380" y="44" text-anchor="middle" fill="#2de0a5" font-size="10">polls</text>
+  <line x1="558" y1="55" x2="598" y2="55" stroke="#546779" stroke-width="1.4" marker-end="url(#a)"/>
+  <text x="578" y="44" text-anchor="middle" fill="#546779" font-size="10">signs</text>
+
+  <text x="360" y="126" text-anchor="middle" fill="#8296a9" font-size="11.5">
+    Every arrow points away from the key. The executor reaches out; nothing reaches in.</text>
+  <text x="360" y="146" text-anchor="middle" fill="#546779" font-size="11">
+    Compromise anything left of the green box and the worst you can do is stop the bot.</text>
+</svg>
+<figcaption>The direction of the middle arrow is the whole security model. If it
+pointed the other way &mdash; a page pushing signed orders outward &mdash; every
+box to its left would become worth attacking.</figcaption>
+</figure>
+
+<h2>Stopping it</h2>
+<div class="card disabled">
+  <p style="margin-top:0"><b>A halt control belongs here and is not built yet.</b>
+  When it is, it will be able to do exactly one thing: set <code>halt</code>.
+  It will have no control that enables trading, raises a cap, or adds a venue
+  &mdash; those require the executor's own configuration, deliberately.</p>
+  <p><button disabled>Halt all trading</button>
+  <span class="pill warn" style="margin-left:8px">not wired</span></p>
+  <p style="margin-bottom:0"><b>Why it is disabled rather than absent:</b> writing
+  intent needs a verified identity, and identity comes from the Access header.
+  <code>api.lonaquant.com</code> sits deliberately <i>outside</i> Access so the
+  executor &mdash; which has no browser and cannot log in &mdash; can poll it. So
+  a POST from this page arrives with no identity and is refused, correctly. The
+  fix is a second hostname on the same worker, behind Access, carrying only the
+  write path. Until that exists, a button here would be a button that always
+  fails, and a safety control that does nothing is worse than none.</p>
+</div>
+
+<h2>Adding a venue</h2>
+<p>A venue is not connected by filling in a form. In order, and the page is last:</p>
+<ul>
+  <li><b>A venue adapter</b> &mdash; universe, candles, funding, and a place-order
+    path. The second implementation is what forces the interface to be one.</li>
+  <li><b>An archive and its funding history</b>, so the venue can be measured
+    before it is traded.</li>
+  <li><b>Finding 008 re-measured on it</b>, pre-registered, before any money.
+    The universe rule is &ldquo;top 20 by dollar volume <i>on that venue</i>&rdquo;,
+    so a new venue is a new universe and a new strategy until proven otherwise.</li>
+  <li><b>Venue-scoped intent</b>, so one leg can be halted without halting all.</li>
+  <li><b>This page</b>, which only ever shows the four above.</li>
+</ul>
+<p><b>OKX is the one venue where steps two and three are already done.</b> 301
+markets, 5.7 years, 100% funding coverage: <span class="mono ok">+26.4% CAGR,
+Sharpe 1.09, worst drawdown &minus;30%, t 2.1</span> &mdash; pre-registered
+before the data was downloaded, and it confirmed. That is why it is on this page
+and Binance is not.</p>
+<p><b>And the open question, which is research and not engineering:</b> two
+venues is not two copies of LONA. Two independent books, each top-20 on its own
+venue, is a different strategy from one merged universe ranked across both &mdash;
+different concentration, different correlation, different drawdown. Finding 008
+describes neither. Nothing here should be traded on two venues until that has a
+number attached.</p>
+
+<div class="foot">
+  LONA &middot; research only, not advice &middot; no order-placement code exists in this
+  build &middot; every figure on this page is measured, and the ones that are not yet
+  measured say so.
+</div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var DATA = "https://karlsmith2023.github.io/Lona-Site/connections.json";
+  var API = "https://api.lonaquant.com";
+
+  function el(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function tick() {
+    var d = new Date();
+    el("clock").textContent = d.toISOString().slice(11, 19) + " UTC";
+  }
+  tick(); setInterval(tick, 1000);
+
+  function ago(iso) {
+    if (!iso) { return "—"; }
+    var s = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);
+    if (s < 90) { return Math.round(s) + "s ago"; }
+    if (s < 5400) { return Math.round(s / 60) + " min ago"; }
+    return Math.round(s / 3600) + " h ago";
+  }
+
+  // Live reachability. Public, unauthenticated endpoints only - a check that
+  // needed a key would defeat the point of the page.
+  var VENUES = [
+    { name: "Hyperliquid", role: "data + designated book",
+      probe: function () {
+        return fetch("https://api.hyperliquid.xyz/info", {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ type: "meta" })
+        });
+      } },
+    { name: "OKX", role: "measured, not yet traded",
+      probe: function () { return fetch("https://www.okx.com/api/v5/public/time"); } }
+  ];
+
+  function pill(cls, text) { return '<span class="pill ' + cls + '">' + text + "</span>"; }
+
+  function render(rows, facts) {
+    el("venues").innerHTML = rows.map(function (v) {
+      var f = (facts && facts[v.name]) || {};
+      var reach = v.ms == null
+        ? pill("bad", "unreachable")
+        : pill("ok", "yes") + ' <span class="age">' + v.ms + " ms</span>";
+      var key = f.keyConfigured ? pill("warn", "configured") : pill("bad", "no key");
+      function perm(on) {
+        if (!f.keyConfigured) { return '<span class="age">n/a</span>'; }
+        return on ? pill("warn", "on") : pill("ok", "off");
+      }
+      var withdraw = !f.keyConfigured
+        ? '<span class="age">n/a</span>'
+        : (f.withdraw ? pill("bad", "ON") : pill("ok", "off"));
+      return "<tr><td><b>" + esc(v.name) + "</b></td><td>" + esc(v.role) + "</td>"
+        + "<td>" + reach + "</td><td>" + key + "</td>"
+        + "<td>" + perm(f.read) + "</td><td>" + perm(f.trade) + "</td>"
+        + "<td>" + withdraw + "</td>"
+        + "<td>" + (f.archive ? esc(f.archive) : '<span class="age">—</span>') + "</td></tr>";
+    }).join("");
+  }
+
+  function probeAll() {
+    var facts = null;
+    fetch(DATA + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (d) {
+        facts = d && d.venues ? d.venues : null;
+        el("probed").innerHTML = facts
+          ? "permissions as last reported by the executor, "
+            + esc(ago(d.at)) + " · reachability checked from this browser just now"
+          : "<span class=\"warnc\">connections.json is not published, so the key columns "
+            + "read n/a.</span> Reachability below is a live check from this browser.";
+        return Promise.all(VENUES.map(function (v) {
+          var t0 = performance.now();
+          return v.probe()
+            .then(function (r) { v.ms = r.ok ? Math.round(performance.now() - t0) : null; })
+            .catch(function () { v.ms = null; });
+        }));
+      })
+      .then(function () { render(VENUES, facts); });
+  }
+  probeAll();
+  setInterval(probeAll, 60000);
+
+  function readApi() {
+    fetch(API + "/api/intent?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (o) {
+        var halted = o.halt || !o.enabled;
+        el("i-state").innerHTML = halted
+          ? '<span class="ok">HALTED</span>' : '<span class="warnc">ENABLED</span>';
+        el("i-reason").textContent = o.reason || "—";
+        el("i-cap").textContent = "$" + (o.maxNotionalUsd || 0);
+      })
+      .catch(function () { el("i-state").innerHTML = '<span class="bad">unreachable</span>'; });
+
+    fetch(API + "/api/health?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (h) {
+        var e = h.executor;
+        el("i-pulse").innerHTML = e
+          ? esc(ago(e.at))
+          : '<span class="warnc">never</span>';
+        el("i-mode").textContent = e
+          ? (e.mode + (e.healthy ? " · healthy" : " · UNHEALTHY"))
+          : "no executor has ever checked in";
+        el("apiage").textContent = "read from " + API + " · " + new Date().toISOString().slice(11, 19) + " UTC";
+      })
+      .catch(function () { el("apiage").textContent = "api.lonaquant.com did not answer"; });
+  }
+  readApi();
+  setInterval(readApi, 30000);
+}());
+</script>
+</body>
+</html>
