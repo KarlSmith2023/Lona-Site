@@ -119,6 +119,29 @@ tr.hl{background:rgba(45,224,165,.06)}
   border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
 .pageswitch a:hover{color:var(--ink);text-decoration:none}
 .pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
+
+/* The twelve. A reference set, not a narrative - so it reads as a rack of
+   cards you scan, rather than seven lessons you read in order. */
+ol.principles{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:13px}
+ol.principles>li{background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r);padding:17px 19px 15px;
+  display:grid;grid-template-columns:2.4em 1fr;column-gap:14px;align-items:start}
+ol.principles>li:hover{border-color:var(--line2)}
+.pnum{grid-row:1 / span 4;font:600 15px/1.25 var(--mono);color:var(--acc);
+  letter-spacing:.02em;padding-top:2px;font-variant-numeric:tabular-nums}
+ol.principles h3{grid-column:2;margin:0;font:600 16.5px/1.32 var(--sans);
+  color:var(--ink);text-wrap:balance}
+ol.principles p{grid-column:2;margin:7px 0 0;font-size:14.5px;line-height:1.6;
+  color:var(--dim)}
+ol.principles p.paid{grid-column:2;margin-top:11px;font-size:13.5px;
+  color:var(--faint);border-left:2px solid var(--line2);padding-left:12px}
+.beneath{grid-column:2;margin-top:12px;font:11px/1.5 var(--mono);
+  letter-spacing:.06em;color:var(--faint)}
+@media (max-width:560px){
+  ol.principles>li{grid-template-columns:1fr;row-gap:0}
+  .pnum{grid-row:auto;grid-column:1;margin-bottom:5px}
+  ol.principles h3,ol.principles p,ol.principles p.paid,.beneath{grid-column:1}
+}
 </style>
 </head>
 <body>
@@ -586,26 +609,109 @@ on most days while it behaves exactly as measured, and there is roughly a
 </section>
 
 <section>
-<h2><span class="n">IN SHORT</span>The whole method, in nine lines</h2>
+<h2><span class="n">IN SHORT</span>The whole method, in twelve principles</h2>
 
-<ol class="steps">
-<li>Ask whether a coin would have done as well &mdash; and correct for how many
-things you tried.</li>
-<li>Count independent observations, not rows.</li>
-<li>Leave the failures in the data.</li>
-<li>Build controls that are <em>supposed</em> to fail, and check they do.</li>
-<li>Write down the pass mark before you look.</li>
-<li>Prefer new time over new analysis.</li>
-<li>Know when the history has run out &mdash; and never take it from a
-source that deleted its failures.</li>
-<li>When the rule and the result disagree, the rule wins.</li>
-<li>Write the rule <em>once</em> &mdash; and remember that copies agreeing with
-each other proves nothing if they share a blind spot.</li>
+<p class="sub">Thirty-nine numbered rules sit underneath these, each with the
+specific failure that earned it. <b>Twelve is what fits in a head at the moment
+one of them is about to be broken</b>, which is the only moment a rule matters.</p>
+
+<ol class="principles">
+<li>
+<span class="pnum">01</span>
+<h3>Count what you have, not what you printed</h3>
+<p>Rows are not observations. Overlapping samples are one sample. An estimate has a spread, and the spread is often larger than the estimate itself.</p>
+<p class="paid">BTC produced 158,517 tape rows in a single day and roughly 4,723 independent ones. A t-statistic computed on the raw rows would have been about five times too large.</p>
+<span class="beneath">rules 2 &middot; 3 &middot; 13 &middot; 14 &middot; 22 &middot; 25 &middot; 40</span>
+</li>
+<li>
+<span class="pnum">02</span>
+<h3>State the do-nothing baseline before the result</h3>
+<p>Rank so that doing nothing scores exactly zero. Record both directions, or the baseline is the market wearing a strategy&rsquo;s clothes. A performance number without its beta is a rumour.</p>
+<p class="paid">Holding the whole top twenty loses money with an 83% drawdown. That row is the only thing that makes the selection rule mean anything.</p>
+<span class="beneath">rules 1 &middot; 4 &middot; 26</span>
+</li>
+<li>
+<span class="pnum">03</span>
+<h3>Include what died &mdash; and refuse data that hides it</h3>
+<p>The dead are not a rounding error. A venue that will not serve its delisted markets is not a weaker source, it is a disqualified one.</p>
+<p class="paid">Findings 001&ndash;005 all died of samples chosen after the outcome was known. Binance&rsquo;s archive pads delisted contracts with frozen prices, which deflates every volatility estimate downstream.</p>
+<span class="beneath">rules 5 &middot; 8 &middot; 23</span>
+</li>
+<li>
+<span class="pnum">04</span>
+<h3>Charge every cost before quoting a return</h3>
+<p>Fees at every tier, funding on every held day, slippage, and the capital the position ties up. A cost you have not measured is a result you have not measured.</p>
+<p class="paid">Funding costs the breakout book 6.7 points of return a year &mdash; about a quarter of its gross. For months that was a warning message rather than a number.</p>
+<span class="beneath">rules 6 &middot; 7 &middot; 41</span>
+</li>
+<li>
+<span class="pnum">05</span>
+<h3>Take a total apart before believing it</h3>
+<p>A leg that returns exactly nothing for five years is a data problem, not a result. An aggregate cannot see one missing part, and a number that is impossible to obtain is still an answer.</p>
+<p class="paid">One dead market out of twenty-four moved no counter the recorder printed, for four hours.</p>
+<span class="beneath">rules 12 &middot; 18 &middot; 30</span>
+</li>
+<li>
+<span class="pnum">06</span>
+<h3>Write the pass mark before you look</h3>
+<p>State the metric as a formula, not a phrase. Compute the power before choosing the threshold. Correct for the search. A test you can still redesign is not a test.</p>
+<p class="paid">Best-of-26 on pure noise has a median Sharpe of +1.11. Finding 025&rsquo;s H2 passed the uncorrected test and failed the correction twice over &mdash; it is the best thing this project has found and it is still not adopted.</p>
+<span class="beneath">rules 10 &middot; 27 &middot; 28 &middot; 39</span>
+</li>
+<li>
+<span class="pnum">07</span>
+<h3>Every control must be able to fail &mdash; and be watched failing</h3>
+<p>One draw is not a distribution. A null you designed is not a null: derive it by destroying the thing under test and leaving everything else intact. And a self-healing system hides the failure it heals.</p>
+<p class="paid">A single shuffle scored +0.48 against the real book&rsquo;s +1.55 and read as a pass. Two hundred shuffles showed 10% of them beating it.</p>
+<span class="beneath">rules 9 &middot; 19/20 &middot; 29 &middot; 43</span>
+</li>
+<li>
+<span class="pnum">08</span>
+<h3>One rule, one definition, pinned by shared cases</h3>
+<p>A rule that exists in two programs will eventually be two rules, and the fix is not vigilance &mdash; it is one definition both call, plus shared cases with known answers every implementation must reproduce. <b>Agreement between implementations is not evidence of correctness when they share an assumption.</b></p>
+<p class="paid">Finding 040 lived in six implementations at once, every one agreeing perfectly with the others and all six wrong together, for a fortnight.</p>
+<span class="beneath">rules 15 &middot; 16 &middot; 17</span>
+</li>
+<li>
+<span class="pnum">09</span>
+<h3>Read the system&rsquo;s own record before explaining it</h3>
+<p>Reconstruct to find the disagreement; read the machine&rsquo;s own log to explain it. A matching reconstruction is a hypothesis, not a diagnosis, and &ldquo;it matched&rdquo; and &ldquo;I checked&rdquo; are different claims.</p>
+<p class="paid">A diagnosis was published from an 18-of-18 match without anyone reading the machine&rsquo;s journal, and acted on. Two later documents then disagreed about whether the damage was three days or five. It was four, and the journal said so in one command.</p>
+<span class="beneath">rules 35 &middot; 36 &middot; 37 &middot; 38 &middot; 42</span>
+</li>
+<li>
+<span class="pnum">10</span>
+<h3>The machine is part of the experiment</h3>
+<p>A standing instruction is code, and an uncorrected one runs every night. A monitor inherits the blind spot of whatever it was originally pointed at. A recovery path that has never recovered anything is a hypothesis.</p>
+<p class="paid">Every single failure in the week of 22&ndash;28 August 2026 was operational. Not one was &ldquo;the strategy was wrong&rdquo;. Rigour accumulates where the last failure was, not where the next one will be.</p>
+<span class="beneath">rules 31 &middot; 32 &middot; 33 &middot; 44</span>
+</li>
+<li>
+<span class="pnum">11</span>
+<h3>Collect what cannot be re-collected, wider than you need</h3>
+<p>A backtest can be re-run. An order book that was not recorded is gone at any price. Record the candidates, not just the incumbents.</p>
+<p class="paid">231 markets of price history were rebuilt from the venue in four minutes. No venue serves you last Tuesday&rsquo;s order book.</p>
+<span class="beneath">rule 21</span>
+</li>
+<li>
+<span class="pnum">12</span>
+<h3>Absent code cannot fire by accident</h3>
+<p>Disabled code can. There is no order-placement code in this build, and that is a design decision rather than an omission.</p>
+<p class="paid">The same decision appears twice more: a go-live gate with no manual override, and a page that writes intent but cannot sign.</p>
+<span class="beneath">rule 11</span>
+</li>
 </ol>
 
 <p>None of this was designed in advance. Every line exists because a result died
 on it &mdash; and several of them exist because a result we had already published
 turned out to be wrong.</p>
+
+<p class="sub">These twelve replaced thirty-nine numbered rules on 28 August 2026.
+The numbers were kept exactly as they were, holes and all: four of them
+(19, 24, 34, 43) never had a rule in them, one was cited for two incompatible
+ideas, and one was a mis-numbered copy of another. Renumbering would have broken
+every citation in thirty-five documents &mdash; and a project that keeps its
+retractions should not quietly tidy away its filing errors.</p>
 </section>
 
 <div class="foot">
