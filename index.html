@@ -192,6 +192,18 @@ tr.hl{background:rgba(45,224,165,.06)}
   border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap}
 .pageswitch a:hover{color:var(--ink);text-decoration:none}
 .pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
+
+/* THE STATUS BAR, 29 August 2026.
+   env(safe-area-inset-top) is the right answer and it is not always given: when
+   the site is opened from the home-screen icon rather than a browser tab, iOS
+   has been observed reporting 0, and the header then paints underneath the
+   clock, signal bars and battery. viewport-fit=cover is set and correct; this
+   is a floor under it, not a replacement for it. 44px is the status bar's own
+   height, so where env() works the max() keeps env()'s larger value and where
+   it does not the header still clears the hardware. */
+@media (display-mode:standalone),(display-mode:fullscreen){
+  .stickytop{padding-top:max(var(--safe-t),44px)}
+}
 </style>
 </head>
 <body>
@@ -1158,5 +1170,30 @@ tr.hl{background:rgba(45,224,165,.06)}
 </div>
 
 </div>
+
+<script>
+/* CARRY THE CONNECTED ADDRESS ACROSS THE PAGE SWITCHER, 29 August 2026.
+   The terminal keeps the address in location.hash on purpose - a hash is never
+   sent to a server and closing the tab forgets it, which is why it was chosen
+   over browser storage. But every switcher link was a bare filename, so leaving
+   the terminal dropped the hash and coming back showed the paste box again. The
+   address survived exactly as long as you stayed on one page, which is not what
+   "kept in the URL" led anyone to expect.
+   Only a well-formed 20-byte address is carried, so nothing else in a hash ever
+   propagates, and the href is rebuilt from its base each time rather than
+   appended to, so this cannot accumulate. */
+(function(){
+  function carry(){
+    var h = location.hash;
+    if (!/^#0x[0-9a-fA-F]{40}$/.test(h)) { return; }
+    var links = document.querySelectorAll(".pageswitch a");
+    for (var i = 0; i < links.length; i++) {
+      links[i].setAttribute("href", links[i].getAttribute("href").split("#")[0] + h);
+    }
+  }
+  carry();
+  addEventListener("hashchange", carry);
+})();
+</script>
 </body>
 </html>
