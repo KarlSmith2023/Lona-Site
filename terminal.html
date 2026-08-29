@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#05080b"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<!-- black, NOT black-translucent. Changed 29 August 2026.
+     black-translucent tells iOS to draw the page UNDERNEATH the status bar and
+     leaves the page responsible for padding itself clear with
+     env(safe-area-inset-top) - a value that is well known to come back as 0 in
+     precisely this configuration, which is how the clock and battery ended up
+     printed on top of "LONA://brief". A 44px floor was tried first and was
+     compensating for the symptom. With "black", iOS reserves the status bar
+     itself and the page can no longer paint there at all, so the failure has
+     nowhere to happen rather than being corrected after the fact. The cost is a
+     solid status bar instead of one blending into the page, on a background
+     that is already #05080b. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <meta name="apple-mobile-web-app-title" content="LONA"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>LONA :: terminal</title>
@@ -297,16 +308,12 @@ label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercas
 .pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
 
 /* THE STATUS BAR, 29 August 2026.
-   env(safe-area-inset-top) is the right answer and it is not always given: when
-   the site is opened from the home-screen icon rather than a browser tab, iOS
-   has been observed reporting 0, and the header then paints underneath the
-   clock, signal bars and battery. viewport-fit=cover is set and correct; this
-   is a floor under it, not a replacement for it. 44px is the status bar's own
-   height, so where env() works the max() keeps env()'s larger value and where
-   it does not the header still clears the hardware. */
-@media (display-mode:standalone),(display-mode:fullscreen){
-  .stickytop{padding-top:max(var(--safe-t),44px)}
-}
+   There was a 44px floor here, forcing the header clear of the notch when
+   env(safe-area-inset-top) reported 0. It is gone, because the meta tag in the
+   head no longer asks iOS to put the page under the status bar at all - see the
+   comment beside apple-mobile-web-app-status-bar-style. Reinstating the floor
+   now would ADD 44px of empty space to a header that already starts below the
+   hardware. Two fixes for one problem is one fix too many. */
 </style>
 </head>
 <body>

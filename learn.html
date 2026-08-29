@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<!-- The four iOS metas below are IDENTICAL on all five pages, added 29 August
+     2026. Only index and terminal carried them before, so whichever page you
+     happened to add to the home screen decided how the whole site behaved, and
+     moving between pages changed the layout under you. The switcher is the one
+     thing that must look the same everywhere; so is the frame around it. -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="LONA"/>
 <meta name="theme-color" content="#05080b"/>
 <meta name="description" content="How LONA decides whether a trading idea is real - the method, explained from scratch."/>
 <title>LONA - how we decide what's real</title>
@@ -144,16 +152,12 @@ ol.principles p.paid{grid-column:2;margin-top:11px;font-size:13.5px;
 }
 
 /* THE STATUS BAR, 29 August 2026.
-   env(safe-area-inset-top) is the right answer and it is not always given: when
-   the site is opened from the home-screen icon rather than a browser tab, iOS
-   has been observed reporting 0, and the header then paints underneath the
-   clock, signal bars and battery. viewport-fit=cover is set and correct; this
-   is a floor under it, not a replacement for it. 44px is the status bar's own
-   height, so where env() works the max() keeps env()'s larger value and where
-   it does not the header still clears the hardware. */
-@media (display-mode:standalone),(display-mode:fullscreen){
-  .stickytop{padding-top:max(var(--safe-t),44px)}
-}
+   There was a 44px floor here, forcing the header clear of the notch when
+   env(safe-area-inset-top) reported 0. It is gone, because the meta tag in the
+   head no longer asks iOS to put the page under the status bar at all - see the
+   comment beside apple-mobile-web-app-status-bar-style. Reinstating the floor
+   now would ADD 44px of empty space to a header that already starts below the
+   hardware. Two fixes for one problem is one fix too many. */
 </style>
 </head>
 <body>
