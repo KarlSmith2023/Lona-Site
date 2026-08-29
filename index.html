@@ -298,8 +298,9 @@ tr.hl{background:rgba(45,224,165,.06)}
         <td>every limit ships with a case that proves it blocks something</td></tr>
       <tr><td>Paper ledger</td><td class="pos">live</td>
         <td>equity curve derived from the append-only plan journal</td></tr>
-      <tr><td>Daily plan (the forward record)</td><td class="warn">stalled</td>
-        <td>last run 16 Aug &middot; its scheduled task is not installed on the machine yet</td></tr>
+      <tr><td>Daily plan (the forward record)</td>
+        <td id="plan-state" class="warn">reading&hellip;</td>
+        <td id="plan-note">from the published record</td></tr>
       <tr><td>Execution pipeline</td><td class="warn">dry run</td>
         <td>signer built &middot; payload never spoken to the venue</td></tr>
       <tr><td>Live trading</td><td class="faint">not started</td>
@@ -1194,6 +1195,50 @@ tr.hl{background:rgba(45,224,165,.06)}
   carry();
   addEventListener("hashchange", carry);
 })();
+</script>
+
+<script>
+/* THE ONE ROW IN THAT TABLE THAT GOES STALE ON ITS OWN, 29 August 2026.
+   It read "stalled - last run 16 Aug - its scheduled task is not installed" for
+   thirteen days after both halves stopped being true. The plan had run every
+   day, on an installed task, and the platform page went on telling anyone who
+   looked that the forward record was dead.
+   Every other row in that table describes something that changes when a human
+   changes it. This one changes by itself overnight, so it is the one row that
+   must not be typed by hand. It now reads the published record and prints the
+   date it was written, so a stale answer looks stale instead of confident. */
+(function () {
+  var SRC = "https://karlsmith2023.github.io/Lona-Site/orders.json";
+  var st = document.getElementById("plan-state");
+  var nt = document.getElementById("plan-note");
+  if (!st || !nt) { return; }
+
+  fetch(SRC + "?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (o) {
+      var at = new Date(o.at);
+      var age = (Date.now() - at.getTime()) / 36e5;
+      var day = at.toISOString().slice(0, 10);
+      var g = o.goLive || {};
+      /* 26 hours is the pre-registered definition of a clean day, so it is the
+         threshold here too rather than a second number invented for a webpage. */
+      if (age > 26) {
+        st.className = "warn";
+        st.textContent = "stalled";
+        nt.innerHTML = "last run " + day + " &middot; " + age.toFixed(0) + " hours ago";
+      } else {
+        st.className = "pos";
+        st.textContent = "running";
+        nt.innerHTML = "last run " + day + " &middot; " +
+          (g.cleanDaysInARow != null ? g.cleanDaysInARow + " of 90 clean days" : "on schedule");
+      }
+    })
+    .catch(function () {
+      st.className = "warn";
+      st.textContent = "unknown";
+      nt.textContent = "could not read the published record";
+    });
+}());
 </script>
 </body>
 </html>
