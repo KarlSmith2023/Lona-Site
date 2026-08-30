@@ -6,18 +6,29 @@
 <meta name="theme-color" content="#05080b"/>
 <meta name="description" content="LONA — Liquidity Oriented Neural Analytics. A quantitative crypto research platform."/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<!-- black, NOT black-translucent. Changed 29 August 2026.
-     black-translucent tells iOS to draw the page UNDERNEATH the status bar and
-     leaves the page responsible for padding itself clear with
-     env(safe-area-inset-top) - a value that is well known to come back as 0 in
-     precisely this configuration, which is how the clock and battery ended up
-     printed on top of "LONA://brief". A 44px floor was tried first and was
-     compensating for the symptom. With "black", iOS reserves the status bar
-     itself and the page can no longer paint there at all, so the failure has
-     nowhere to happen rather than being corrected after the fact. The cost is a
-     solid status bar instead of one blending into the page, on a background
-     that is already #05080b. -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<!-- THE STATUS BAR. Third attempt, 30 August 2026, and the two wrong ones are
+     written down because both were wrong in an instructive way.
+
+     ATTEMPT 1 put a 44px floor under the sticky header. It WORKED, and it was
+     described as "compensating for a symptom".
+     ATTEMPT 2, on 29 August, replaced it with content="black" on the theory
+     that iOS would then reserve the status bar itself and the page could not
+     paint there. The floor was DELETED on the strength of that theory. The
+     theory was untestable from here - there is no iPhone in the build
+     environment - and it was wrong: with viewport-fit=cover the web view still
+     covers the whole screen, and a home-screen icon added before the change
+     keeps the metadata it was installed with anyway. The result was the clock
+     printed over "LONA://account" again, with the fix that used to work now
+     removed.
+
+     ATTEMPT 3 stops choosing between the two mechanisms. black-translucent
+     means the page is DEFINITELY under the status bar, on every iOS version
+     and whenever the icon was installed - one regime, not two - and the page
+     then pads itself with max(env(safe-area-inset-top), 44px). The env value
+     is used when iOS reports it; the floor covers the configuration where it
+     comes back 0, which is the case that started all of this. Deterministic
+     beats clever. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="LONA"/>
 <title>LONA — quantitative crypto research</title>
 <style>
@@ -192,6 +203,24 @@ tr.hl{background:rgba(45,224,165,.06)}
    That deletes terminal.html's `top:53px` magic number, which was a
    hard-coded copy of the header's height and would have been wrong the
    first time the header changed - which is this commit. */
+/* THE FLOOR UNDER THE STATUS BAR. Reinstated 30 August 2026, and combined with
+   env() rather than instead of it - see the comment beside
+   apple-mobile-web-app-status-bar-style in the head.
+
+   max(), not a plain fallback: env(safe-area-inset-top, 44px) returns 0 rather
+   than 44 when the property is SUPPORTED and zero, which is exactly the
+   configuration this is for. Only inside a standalone iOS web app, so Safari,
+   Android and every desktop are untouched - and it is guarded twice, by the
+   media query and by a class the head script sets from navigator.standalone,
+   because display-mode:standalone has not always matched on iOS and this
+   particular bug has now shipped twice. */
+@supports (-webkit-touch-callout:none){
+  @media all and (display-mode:standalone){
+    :root{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+  }
+}
+html.ios-standalone{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+
 .stickytop{position:sticky;top:0;z-index:90;padding-top:var(--safe-t);
   background:rgba(5,8,11,.94);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
@@ -204,14 +233,17 @@ tr.hl{background:rgba(45,224,165,.06)}
 .pageswitch a:hover{color:var(--ink);text-decoration:none}
 .pageswitch a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
 
-/* THE STATUS BAR, 29 August 2026.
-   There was a 44px floor here, forcing the header clear of the notch when
-   env(safe-area-inset-top) reported 0. It is gone, because the meta tag in the
-   head no longer asks iOS to put the page under the status bar at all - see the
-   comment beside apple-mobile-web-app-status-bar-style. Reinstating the floor
-   now would ADD 44px of empty space to a header that already starts below the
-   hardware. Two fixes for one problem is one fix too many. */
+/* THE PARAGRAPH THAT USED TO BE HERE WAS WRONG, AND IS KEPT AS A HEADSTONE.
+   It said the 44px floor was gone because content="black" meant iOS would not
+   let the page paint under the status bar, and that reinstating the floor
+   "would ADD 44px of empty space". Neither was true: with viewport-fit=cover
+   the page covers the whole screen anyway, and deleting the floor put the
+   clock straight back over the header. It was reasoned from a theory that
+   could not be tested from the build environment, and shipped. The floor is
+   back, above, combined with env() rather than instead of it. */
 </style>
+<script>/* iOS does not always report display-mode:standalone. This is the other half of the guard on --safe-t; see the status-bar comment above. */
+try{if(window.navigator.standalone===true){document.documentElement.className+=" ios-standalone";}}catch(e){}</script>
 </head>
 <body>
 <div class="stickytop">
@@ -244,7 +276,7 @@ tr.hl{background:rgba(45,224,165,.06)}
 <section>
   <h2>Liquidity Oriented Neural Analytics</h2>
   <h1>A research platform that tries<br/>to kill its own ideas.</h1>
-  <p class="lede">Forty-four findings. Twelve principles. One designated
+  <p class="lede">Fifty-three findings. Twelve principles. One designated
   strategy. Zero orders placed — and that last number is still the point.</p>
 
   <div class="quote">&ldquo;Never trade because we think something works.
@@ -253,10 +285,12 @@ tr.hl{background:rgba(45,224,165,.06)}
   <p class="sub">Most trading systems are built to find edges. This one is built
   to <b>destroy</b> them and keep only what survives. Around 145 rules have been
   tested and one is still standing. The twelve principles were consolidated on
-  28 August from thirty-nine numbered rules, each of which exists because a
-  result died on it &mdash; nothing was renumbered or deleted, because a project
-  that keeps its retractions should not tidy away its filing errors either. Seven
-  of the forty-four findings retract a number published earlier in the same file
+  28 August from the thirty-nine numbered rules that existed then, each of which
+  exists because a result died on it &mdash; nothing was renumbered or deleted,
+  because a project that keeps its retractions should not tidy away its filing
+  errors either. Twenty-four more rules have been written since, so the numbering
+  now runs to sixty-eight with the four old holes still in it. Seven
+  of the fifty-three findings retract a number published earlier in the same file
   &mdash; including two that were
   wrong for a fortnight before this platform caught itself, and one where the
   statistical null being used to reject ideas turned out to be a number the

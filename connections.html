@@ -9,7 +9,16 @@
      moving between pages changed the layout under you. The switcher is the one
      thing that must look the same everywhere; so is the frame around it. -->
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<!-- black-translucent, deliberately. Third attempt at this, 30 August 2026.
+     A 44px floor fixed it; on 29 August the floor was deleted and content="black"
+     put in its place, on the untestable theory that iOS would then reserve the
+     status bar itself. It does not, with viewport-fit=cover - and a home-screen
+     icon keeps the metadata it was installed with regardless. The clock was
+     printed over "LONA://account" again with the working fix now removed.
+     black-translucent means the page is DEFINITELY under the status bar, one
+     regime rather than two, and the CSS pads for it with
+     max(env(safe-area-inset-top), 44px). See the comment beside --safe-t. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="LONA"/>
 <meta name="theme-color" content="#05080b"/>
 <meta name="description" content="Which venues LONA can reach, what permissions exist, and why no key is ever on this page."/>
@@ -32,6 +41,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);
    the tab strip scrolled away on this page and stayed put on every other one.
    The switcher is the one element that must behave identically everywhere,
    because it is the thing you are looking at while you move between pages. */
+/* THE FLOOR UNDER THE STATUS BAR. Reinstated 30 August 2026, and combined with
+   env() rather than instead of it - see the comment beside
+   apple-mobile-web-app-status-bar-style in the head.
+
+   max(), not a plain fallback: env(safe-area-inset-top, 44px) returns 0 rather
+   than 44 when the property is SUPPORTED and zero, which is exactly the
+   configuration this is for. Only inside a standalone iOS web app, so Safari,
+   Android and every desktop are untouched - and it is guarded twice, by the
+   media query and by a class the head script sets from navigator.standalone,
+   because display-mode:standalone has not always matched on iOS and this
+   particular bug has now shipped twice. */
+@supports (-webkit-touch-callout:none){
+  @media all and (display-mode:standalone){
+    :root{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+  }
+}
+html.ios-standalone{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+
 .stickytop{position:sticky;top:0;z-index:20;background:rgba(5,8,11,.94);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   padding-top:var(--safe-t)}
@@ -87,14 +114,17 @@ ul{color:var(--dim);padding-left:20px} li{margin:6px 0}
 button{font:600 13px var(--sans);border-radius:8px;padding:9px 15px;border:1px solid var(--line2);
   background:var(--panel2);color:var(--faint);cursor:not-allowed}
 
-/* THE STATUS BAR, 29 August 2026.
-   There was a 44px floor here, forcing the header clear of the notch when
-   env(safe-area-inset-top) reported 0. It is gone, because the meta tag in the
-   head no longer asks iOS to put the page under the status bar at all - see the
-   comment beside apple-mobile-web-app-status-bar-style. Reinstating the floor
-   now would ADD 44px of empty space to a header that already starts below the
-   hardware. Two fixes for one problem is one fix too many. */
+/* THE PARAGRAPH THAT USED TO BE HERE WAS WRONG, AND IS KEPT AS A HEADSTONE.
+   It said the 44px floor was gone because content="black" meant iOS would not
+   let the page paint under the status bar, and that reinstating the floor
+   "would ADD 44px of empty space". Neither was true: with viewport-fit=cover
+   the page covers the whole screen anyway, and deleting the floor put the
+   clock straight back over the header. It was reasoned from a theory that
+   could not be tested from the build environment, and shipped. The floor is
+   back, above, combined with env() rather than instead of it. */
 </style>
+<script>/* iOS does not always report display-mode:standalone. This is the other half of the guard on --safe-t; see the status-bar comment above. */
+try{if(window.navigator.standalone===true){document.documentElement.className+=" ios-standalone";}}catch(e){}</script>
 </head>
 <body>
 
