@@ -1317,11 +1317,31 @@ function trailingVolume(bars, days) {
 
 /**
  * How many days ago did this market last close STRICTLY above every close in
- * the preceding `LOOKBACK - 1` days? Returns null if never within the window.
+ * the preceding LOOKBACK days? Returns null if never within the window.
  *
  * Strictly above matters. A flat or pegged market is never below any earlier
  * close, so a loose test makes it a permanent breakout - which is exactly how
  * finding 004 ended up with a currency peg at the top of its leaderboard.
+ *
+ * THE WINDOW IS `i - LOOKBACK`, NOT `i - LOOKBACK + 1`. Corrected 30 August 2026.
+ *
+ * This function read FORTY-NINE closes and called it fifty, for as long as the
+ * page has existed. It is the same off-by-one finding 046 found in the C# and
+ * finding 047 corrected there on 29 August - and the correction never crossed
+ * into JavaScript, so from that day the page showed a book the machine did not
+ * hold. A close whose only superior in the preceding fifty days was the oldest
+ * one triggered an entry here and did not in Lona.Rules.
+ *
+ * The doc comment above said "LOOKBACK - 1", which made the code look right to
+ * anyone checking it against its own description. progress() four lines below
+ * has always used the full window, so two functions on this page disagreed
+ * about what a fifty-day high is: a market could show as below its high and as
+ * having broken out, in the same render.
+ *
+ * lab/rule-fixture.json exists to stop exactly this, and it had never been read
+ * by anything but the C# that writes it. lab/check-rule-fixture.js now runs it
+ * against this file, and PageScriptTests pins the bounds in the test suite so
+ * the check cannot go unrun.
  */
 function daysSinceNewHigh(bars) {
   const close = bars.map(b => parseFloat(b.c));
@@ -1330,7 +1350,7 @@ function daysSinceNewHigh(bars) {
     const i = n - 1 - back;
     if (i < LOOKBACK) break;
     let highest = -Infinity;
-    for (let j = i - LOOKBACK + 1; j < i; j++) highest = Math.max(highest, close[j]);
+    for (let j = i - LOOKBACK; j < i; j++) highest = Math.max(highest, close[j]);
     if (close[i] > highest) return back;
   }
   return null;
