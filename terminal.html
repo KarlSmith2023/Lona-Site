@@ -209,10 +209,56 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   border-top:1px solid var(--line);background:var(--panel2);
   font:400 11.5px/1.5 var(--mono);color:var(--dim);min-height:38px}
 .readout b{color:var(--ink);font-weight:600}
-.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;
-  border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:12px 14px;
+  font-size:11.5px;color:var(--faint)}
 .legend i{display:inline-block;width:11px;height:3px;border-radius:2px;
   margin-right:5px;vertical-align:middle}
+
+/* ---- THE BOOK AND THE TAPE -------------------------------------------
+   What makes a page read as a live venue rather than a report: resting
+   size at each price, and prints arriving. Both are read-only and public.
+   Neither can place, cancel or sign anything, and there is no order ticket
+   here by design - the page never signs; it writes intent and the executor
+   reads it. A greyed-out Buy button would complete the picture and put a
+   control on this page that must never exist on it. */
+.depth{margin-top:12px}
+.dgrid{display:grid;gap:12px}
+@media(min-width:900px){.dgrid{grid-template-columns:1fr 1fr}}
+.seg{padding:0 0 10px}
+@media(min-width:900px){.seg{display:none}}
+@media(max-width:899px){.dpane{display:none}.dpane.on{display:block}}
+
+.ladder{font:400 11.5px/1 var(--mono);padding:6px 0}
+.lrow{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:6px;padding:3px 14px;align-items:center}
+/* The depth bar is BEHIND the numbers and grows from the right, which is
+   the convention every venue uses, so the eye reads the wall before it
+   reads the price. */
+.lrow i{position:absolute;top:1px;bottom:1px;right:0;border-radius:2px 0 0 2px}
+.lrow.ask i{background:rgba(232,84,74,.16)}
+.lrow.bid i{background:rgba(45,224,165,.14)}
+.lrow span{position:relative;z-index:1}
+.lrow .px{font-weight:600}
+.lrow.ask .px{color:var(--neg)} .lrow.bid .px{color:var(--pos)}
+.lrow .sz{text-align:right;color:var(--ink)}
+.lrow .cum{text-align:right;color:var(--faint)}
+.lhead{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 14px 6px;
+  font:400 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint)}
+.lhead .sz,.lhead .cum{text-align:right}
+.mid{display:flex;justify-content:space-between;align-items:baseline;
+  padding:7px 14px;margin:4px 0;border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);background:var(--panel2);
+  font:600 13px/1 var(--mono)}
+.mid .sp{font-weight:400;font-size:11px;color:var(--dim)}
+
+.tape{font:400 11.5px/1 var(--mono);padding:6px 0;max-height:322px;overflow-y:auto}
+.trow{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:3px 14px}
+.trow .px{font-weight:600}
+.trow.buy .px{color:var(--pos)} .trow.sell .px{color:var(--neg)}
+.trow .sz{text-align:right;color:var(--ink)}
+.trow .tm{color:var(--faint);text-align:right;min-width:62px}
+.dempty{padding:16px 14px;color:var(--faint);font-size:12px}
 tr.tap{cursor:pointer}
 tr.tap:hover{background:var(--panel2)}
 
@@ -531,6 +577,14 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
 
 <!-- ============================================================== MARKETS -->
 <section class="view" id="v-markets">
+  <!-- SAY WHAT THE GESTURE DOES. The chart was reachable from these rows
+       from the day it shipped and nobody could have known: the only thing
+       that announced it was a cursor change on a desktop, and this page is
+       checked on a 390px phone. One sentence is the entire fix, and it is
+       cheaper than the two days the missing one cost. -->
+  <div class="note" style="margin-bottom:12px">Tap any market to chart it &mdash;
+  candles, the level a close has to beat, every day the rule fired and the five
+  bars each entry is held for.</div>
   <div class="tiles six" id="mkt-tiles"></div>
 
   <div class="pnl" style="margin-top:12px">
@@ -564,8 +618,12 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
 <!-- ================================================================ CHART -->
 <section class="view" id="v-chart">
   <div class="chart-top">
-    <button class="back" id="ck-back" aria-label="Back to markets">
-      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    <!-- A LIST, NOT A BACK ARROW. This is a top-level tab on a phone now,
+         so there is nothing behind it to go back to; the button opens the
+         full market table, and tapping a row there returns here on that
+         market. A chevron would promise history that does not exist. -->
+    <button class="back" id="ck-back" aria-label="All markets" title="All markets">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <select id="ck-pick" aria-label="Market"></select>
     <span class="price num" id="ck-price">&mdash;</span>
@@ -582,19 +640,65 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
   <div class="chart-wrap">
     <div id="ck-svg"></div>
     <div class="readout" id="ck-readout">Touch or hover the chart to read a day.</div>
+    <div class="note" id="ck-verdict"></div>
+  </div>
+
+  <!-- ONE PANE AT A TIME ON A PHONE, BOTH SIDE BY SIDE ON A DESKTOP. A book
+       and a tape stacked on a 390px screen is a page nobody scrolls to the
+       bottom of, and the tape is the half that has to be glanceable. -->
+  <div class="depth" id="ck-depth">
+    <div class="chips seg" id="ck-seg">
+      <button class="chip on" data-pane="book">Order book</button>
+      <button class="chip" data-pane="tape">Trades</button>
+    </div>
+    <div class="dgrid">
+      <div class="pnl dpane on" id="ck-pane-book">
+        <h2><span class="car">&#9656;</span>order book
+          <span class="tail" id="ck-spread"></span></h2>
+        <div class="lhead"><span>price</span><span class="sz">size</span>
+          <span class="cum">total</span></div>
+        <div class="ladder" id="ck-ladder"><div class="dempty">Loading the book&hellip;</div></div>
+        <div class="note">Resting size at each of the twenty best prices a side,
+        straight from the venue. <b>Total</b> is cumulative from the touch, so it
+        answers the only question a book is really asked: how much can move before
+        the price gets to here.</div>
+      </div>
+      <div class="pnl dpane" id="ck-pane-tape">
+        <h2><span class="car">&#9656;</span>trades
+          <span class="tail" id="ck-tapecount"></span></h2>
+        <div class="lhead"><span>price</span><span class="sz">size</span>
+          <span class="cum">time</span></div>
+        <div class="tape" id="ck-tape"><div class="dempty">Waiting for prints&hellip;</div></div>
+        <div class="note">Prints as the venue reports them, green when the buyer
+        crossed and red when the seller did. The venue returns only the last few,
+        so this polls and stitches them together by trade id &mdash; the same
+        de-duplication the recorder does, for the same reason. A very fast market
+        can out-run it between polls; it is a tape, not the tape.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT SITS BETWEEN THE CHART AND THE BOOK, AND WHY IT IS ALMOST NOTHING.
+       The order was chart, readout, key, verdict, four tiles, book. That is five
+       screens on a 390px phone before reaching the one panel that changes every
+       second - which is method rule 75 again, written this week, applied to my
+       own new work within the hour: present, correct and effectively absent.
+
+       Live things first. The readout and the verdict stay with the chart because
+       they describe the bar under your finger. The key is read once and then
+       never again, so it goes last. The venue stats are context, so they follow
+       the book rather than stand in front of it. -->
+  <div class="tiles" id="ck-tiles" style="margin-top:12px"></div>
+
+  <div class="pnl" style="margin-top:12px">
+    <h2><span class="car">&#9656;</span>what the colours mean</h2>
     <div class="legend">
       <span><i style="background:var(--acc2)"></i>the level a close must beat &mdash; highest close of the prior 50 days</span>
       <span><i style="background:var(--acc)"></i>triggered, and the 5 bars it is held for</span>
       <span><i style="background:var(--violet)"></i>your position&rsquo;s entry price</span>
       <span><i style="background:var(--warn)"></i>your fills</span>
     </div>
-    <div class="note" id="ck-verdict"></div>
   </div>
-
-  <!-- BELOW the chart, deliberately. These four tiles were above it and pushed
-       the chart off the bottom of a 390px phone, which is the one screen this
-       page is checked on. The chart is the view; everything else is context. -->
-  <div class="tiles" id="ck-tiles" style="margin-top:12px"></div>
 </section>
 
 <!-- ============================================================== SIGNALS -->
@@ -1076,7 +1180,15 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
 
 <nav class="tabs">
   <button data-go="account" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Account</button>
-  <button data-go="markets"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Markets</button>
+  <!-- CHART, NOT MARKETS, AND THIS IS THE SECOND TAB ON PURPOSE.
+       The chart shipped reachable on a phone only by tapping a market row,
+       with nothing on the screen saying so. Karl opened the page it had been
+       built for and asked where it was, which is the correct verdict on a
+       feature you have to be told about. The full market table has not gone
+       anywhere - it is one tap from inside the chart, and tapping any row
+       there comes straight back. Two faces of one destination, so this tab
+       lights for both of them. -->
+  <button data-go="chart"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Chart</button>
   <button data-go="signals"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 9v6M19 7v10"/></svg>Signals</button>
   <button data-go="research"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.4-4.4"/></svg>Research</button>
   <button data-go="risk"><svg viewBox="0 0 24 24"><path d="M12 3l8 3.6v5.2c0 4.6-3.3 8.4-8 9.2-4.7-.8-8-4.6-8-9.2V6.6z"/></svg>Risk</button>
@@ -1111,7 +1223,17 @@ const S = {                    // everything the page knows, in one place
   candles: new Map(),          // coin -> [{t, c, v}]
   universe20: [], universe40: [],
   book8: [], book9: [], near: [],
-  chartCoin: "BTC", chartRange: 120,
+  // null until something has actually been chosen - see ensureChartCoin.
+  // It used to be "BTC", which is a defensible market to open on and a
+  // terrible one to open on ALWAYS: the chart exists to show the rule
+  // firing, and BTC is usually the market where nothing is happening.
+  chartCoin: null, chartPicked: false, chartRange: 120,
+  // The book is a snapshot and is replaced whole; the tape is accumulated,
+  // keyed by the venue's own trade id so a poll that overlaps the last one
+  // cannot print the same trade twice. That is PrintLedger's rule, and it
+  // is here for the reason it is there: 175 of 3,001 kPEPE prints in the
+  // archive were replays, identical but for when we received them.
+  book: null, tape: new Map(), depthCoin: null, depthPane: "book", tickDp: null,
   account: null, fills: [], funding: [],
   spotValue: 0,                // the WHOLE unified account, priced. See below.
   spotMetaRaw: null, spotMetaAt: 0,   // global spot data, cached 10 min
@@ -1233,7 +1355,13 @@ function ckGeom() {
     : { W: 1000, H: 478, L: 6, R: 78, T: 10, PB: 348, VT: 374, VB: 452, grid: 4 };
 }
 
+// Both of the chart's two readers ask here first. The view can be entered
+// from the tab, from a market row, from the desktop rail, and from the
+// refresh that redraws it every twenty seconds, and it can be entered
+// before any candle has loaded - so the choice is made at the point of USE
+// rather than at each of the four doors.
 function ckBars() {
+  ensureChartCoin();
   const bars = S.candles.get(S.chartCoin);
   if (!bars || !bars.length) return null;
   return bars;
@@ -1491,6 +1619,7 @@ function ckBindPointer(svg, f) {
 
 /** Header: the market picker, the live price and the venue's own stats. */
 function renderChartHead() {
+  ensureChartCoin();
   const all = markets().filter(m => !m.delisted && S.candles.has(m.name))
     .sort((a, b) => b.vol - a.vol);
 
@@ -1526,8 +1655,41 @@ function renderChartHead() {
     + `<div class="v num">${t[1]}</div><div class="s">${t[2]}</div></div>`).join("");
 }
 
+/**
+ * WHICH MARKET THE CHART OPENS ON, WHEN NOBODY HAS SAID.
+ *
+ * The most recent trigger. S.book8 is already exactly that list - the top-20
+ * universe filtered to markets whose entry rule has fired inside the hold
+ * window, sorted by bars-since-entry ascending and tie-broken on volume - so
+ * book8[0] is the freshest firing there is. Reading it here rather than
+ * recomputing means the chart cannot open on a market the book disagrees
+ * about, which is the whole argument of finding 055 applied one level up.
+ *
+ * Falls back to the largest 24h volume when nothing has fired, because an
+ * empty book is a normal state and a blank chart is not an answer to it.
+ *
+ * RESOLVED ONCE. After that S.chartPicked stays true and the twenty-second
+ * refresh never touches the coin again - a chart that re-aimed itself while
+ * being read would be worse than one that opened on the wrong market.
+ */
+function defaultChartCoin() {
+  if (S.book8.length) return S.book8[0].coin;
+  const byVol = markets().filter(m => !m.delisted && S.candles.has(m.name))
+    .sort((a, b) => b.vol - a.vol);
+  return byVol.length ? byVol[0].name : null;
+}
+
+function ensureChartCoin() {
+  if (S.chartPicked) return;
+  const d = defaultChartCoin();
+  if (!d) return;                 // no candles yet; the next render tries again
+  S.chartCoin = d;
+  S.chartPicked = true;
+}
+
 function openChart(coin) {
   S.chartCoin = coin;
+  S.chartPicked = true;
   go("chart");
   renderChartHead();
   renderChart();
@@ -1551,14 +1713,241 @@ $("ck-ranges").querySelectorAll("button").forEach(b =>
     renderChart();
   }));
 
+/* ----------------------------------------------------------- book and tape */
+
+const DEPTH_MS = 1000;   // one second. The venue returns ~3s of prints per call.
+const LADDER_N = 12;     // levels a side on screen; the venue sends 20.
+const TAPE_N   = 60;
+
+/**
+ * Poll the two public read-only feeds for the market on screen.
+ *
+ * ONLY WHILE THE CHART IS THE VIEW AND THE TAB IS IN FRONT. A book nobody is
+ * looking at is two requests a second of somebody's battery and the venue's
+ * rate limit, spent on a picture that will be thrown away.
+ *
+ * ONE RETRY, NOT FOUR. post() defaults to four attempts with backoff, which is
+ * right for the daily plan and wrong here: a poll that keeps retrying is still
+ * retrying when the next poll starts, and at one second apart they would stack
+ * up behind each other. A dropped frame at this cadence costs nothing - the
+ * next one is a second away - so it fails fast and leaves the last good picture
+ * on screen rather than blanking it.
+ */
+async function loadDepth() {
+  if (S.view !== "chart" || document.hidden || !S.chartCoin) return;
+
+  const coin = S.chartCoin;
+  if (coin !== S.depthCoin) {
+    S.depthCoin = coin;
+    S.book = null;
+    S.tape.clear();
+  }
+
+  try {
+    const [bk, tr] = await Promise.all([
+      post({ type: "l2Book", coin }, 1),
+      post({ type: "recentTrades", coin }, 1),
+    ]);
+
+    // The market can be changed while these are in flight, and a book drawn
+    // under the wrong header is worse than no book.
+    if (S.chartCoin !== coin) return;
+
+    S.book = bk;
+    const touch = bk.levels && bk.levels[0] && bk.levels[0][0];
+    if (touch) S.tickDp = venueDp(touch.px);
+
+    for (const x of tr || []) {
+      if (S.tape.has(x.tid)) continue;
+      // px, sz, side and time. NOT `users` - the venue names both counterparties
+      // on every print and this page has no reason to hold other people's
+      // addresses in memory, let alone put them on a screen.
+      S.tape.set(x.tid, { px: parseFloat(x.px), sz: parseFloat(x.sz),
+                          buy: x.side === "B", time: x.time });
+    }
+
+    if (S.tape.size > TAPE_N * 3) {
+      const keep = [...S.tape.entries()].sort((a, b) => b[1].time - a[1].time)
+        .slice(0, TAPE_N);
+      S.tape = new Map(keep);
+    }
+
+    renderDepth();
+  } catch (e) {
+    // Deliberately silent and deliberately non-destructive. This runs once a
+    // second; a console line per failure would bury everything else in the log
+    // within a minute of losing the network.
+  }
+}
+
+/**
+ * How many decimals the VENUE quotes this market to, read off its own price
+ * strings rather than guessed from the magnitude.
+ *
+ * ckNum() picks precision from size - three decimals above 1, six below - which
+ * is right for a chart axis and wrong for a book. It rendered ZEC\'s 872.04 as
+ * "872.040" and a four-tick spread as "0.040000", six digits of which only two
+ * carry information. A ladder is a column of numbers read by eye for the place
+ * where they stop agreeing, and trailing zeros that are not really there make
+ * that harder rather than easier. The venue already knows the tick; it is in
+ * every string it sends.
+ */
+function venueDp(s) {
+  const str = String(s);
+  const dot = str.indexOf(".");
+  return dot < 0 ? 0 : str.length - dot - 1;
+}
+
+/**
+ * A price in a ladder: grouped, and to the venue\'s tick exactly - no more
+ * digits and no fewer.
+ *
+ * ckNum() cannot be used here even with an explicit dp, because above 1000 it
+ * takes a different branch and rounds to whole units: a BTC mid of 79,107.5
+ * would print as 79,108 and the half would vanish. That is the right call for
+ * a chart axis, where the number is a label, and the wrong one for a book,
+ * where the number IS the thing.
+ */
+function ckPx(v, dp) {
+  const d = dp === undefined || dp === null ? 2 : dp;
+  return v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+/**
+ * The venue publishes the size precision for every market as szDecimals. Using
+ * it means the ladder shows what the venue itself would show - kPEPE in whole
+ * units, BTC to five places - instead of a rule of thumb that renders 136 beside
+ * 1.01 in the same column and makes a book look mis-aligned when it is not.
+ */
+function venueSzDp(coin) {
+  const u = S.meta && S.meta.universe && S.meta.universe.find(x => x.name === coin);
+  return u && typeof u.szDecimals === "number" ? u.szDecimals : 2;
+}
+
+function ckTime(ms) {
+  const d = new Date(ms);
+  return String(d.getUTCHours()).padStart(2, "0") + ":"
+       + String(d.getUTCMinutes()).padStart(2, "0") + ":"
+       + String(d.getUTCSeconds()).padStart(2, "0");
+}
+
+function renderDepth() {
+  renderLadder();
+  renderTape();
+}
+
+function renderLadder() {
+  const host = $("ck-ladder");
+  const bk = S.book;
+  if (!bk || !bk.levels || bk.levels.length < 2) {
+    host.innerHTML = '<div class="dempty">No book for this market.</div>';
+    $("ck-spread").textContent = "";
+    return;
+  }
+
+  const bids = bk.levels[0].slice(0, LADDER_N);
+  const asks = bk.levels[1].slice(0, LADDER_N);
+  if (!bids.length || !asks.length) {
+    host.innerHTML = '<div class="dempty">One side of this book is empty.</div>';
+    return;
+  }
+
+  const run = rows => {
+    let c = 0;
+    return rows.map(r => { c += parseFloat(r.sz); return { px: parseFloat(r.px), sz: parseFloat(r.sz), cum: c }; });
+  };
+  const b = run(bids), a = run(asks);
+  const bMax = b[b.length - 1].cum || 1;
+  const aMax = a[a.length - 1].cum || 1;
+
+  // EACH SIDE SCALED TO ITSELF, which is what every venue does and is not the
+  // obvious choice. Scaling both to the larger total is more honest in one
+  // narrow sense - a lopsided book looks lopsided - and it destroyed the panel
+  // the first time it was drawn: ZEC had 159 bid against 19.5 offered, so the
+  // whole ask side rendered as slivers under 12% and the shape within it, which
+  // is the thing a ladder is read for, was gone.
+  //
+  // The imbalance did not need a bar to carry it. It is a number, so it is
+  // printed as one, in the middle, where the eye already is.
+
+  const dp = S.tickDp === null ? undefined : S.tickDp;
+  const sdp = venueSzDp(S.depthCoin);
+  const line = (r, cls, scale) =>
+    '<div class="lrow ' + cls + '"><i style="width:' + (100 * r.cum / scale).toFixed(1) + '%"></i>'
+    + '<span class="px">' + ckPx(r.px, dp) + '</span>'
+    + '<span class="sz">' + ckPx(r.sz, sdp) + '</span>'
+    + '<span class="cum">' + ckPx(r.cum, sdp) + '</span></div>';
+
+  const bestBid = b[0].px, bestAsk = a[0].px;
+  const spread = bestAsk - bestBid;
+  const mid = (bestAsk + bestBid) / 2;
+  const bps = mid > 0 ? (spread / mid) * 10000 : 0;
+
+  // Asks reversed so the best ask sits against the spread: the ladder reads
+  // outwards from the middle in both directions, which is how a book is read.
+  // Bid share of the visible depth. 50% is balanced; above it there is more
+  // resting size below the touch than above it. Visible depth only - twelve
+  // levels a side - so it says nothing about the book beyond that.
+  const share = 100 * bMax / (bMax + aMax);
+
+  host.innerHTML =
+      a.slice().reverse().map(r => line(r, "ask", aMax)).join("")
+    + '<div class="mid"><span>' + ckPx(mid, dp) + '</span>'
+    + '<span class="sp">spread ' + ckPx(spread, dp)
+    + '  ·  ' + bps.toFixed(1) + ' bps'
+    + '  ·  ' + share.toFixed(0) + '% bid</span></div>'
+    + b.map(r => line(r, "bid", bMax)).join("");
+
+  $("ck-spread").textContent = bps.toFixed(1) + " bps";
+}
+
+function renderTape() {
+  const host = $("ck-tape");
+  const rows = [...S.tape.values()].sort((x, y) => y.time - x.time).slice(0, TAPE_N);
+
+  $("ck-tapecount").textContent = rows.length ? rows.length + " prints" : "";
+
+  if (!rows.length) {
+    host.innerHTML = '<div class="dempty">No prints yet. Quiet markets stay quiet for minutes at a time.</div>';
+    return;
+  }
+
+  const dp = S.tickDp === null ? undefined : S.tickDp;
+  const sdp = venueSzDp(S.depthCoin);
+  host.innerHTML = rows.map(r =>
+    '<div class="trow ' + (r.buy ? "buy" : "sell") + '">'
+    + '<span class="px">' + ckPx(r.px, dp) + '</span>'
+    + '<span class="sz">' + ckPx(r.sz, sdp) + '</span>'
+    + '<span class="tm">' + ckTime(r.time) + '</span></div>').join("");
+}
+
+$("ck-seg").querySelectorAll("button").forEach(btn =>
+  btn.addEventListener("click", () => {
+    S.depthPane = btn.dataset.pane;
+    $("ck-seg").querySelectorAll("button").forEach(x =>
+      x.classList.toggle("on", x === btn));
+    document.querySelectorAll("#ck-depth .dpane").forEach(pane =>
+      pane.classList.toggle("on", pane.id === "ck-pane-" + S.depthPane));
+  }));
+
 /* --------------------------------------------------------------- routing */
 function go(view) {
   S.view = view;
-  if (view === "chart") { renderChartHead(); renderChart(); }
+  if (view === "chart") { renderChartHead(); renderChart(); loadDepth(); }
   document.querySelectorAll(".view").forEach(v =>
     v.classList.toggle("on", v.id === "v-" + view));
-  document.querySelectorAll("[data-go]").forEach(b =>
+  // The desktop rail has room for Markets AND Chart and matches exactly.
+  // The phone bar has eight slots at 48px and a ninth would put every one of
+  // them under the 44px touch floor, so Chart took Markets' place there and
+  // lights for either view. Splitting the two bars here rather than giving
+  // the markets view a second name keeps ONE view id per section: a view
+  // that answers to two names is the kind of thing that is fine until the
+  // day something iterates over them.
+  document.querySelectorAll(".rail [data-go]").forEach(b =>
     b.classList.toggle("on", b.dataset.go === view));
+  const tab = view === "markets" ? "chart" : view;
+  document.querySelectorAll(".tabs [data-go]").forEach(b =>
+    b.classList.toggle("on", b.dataset.go === tab));
   $("viewname").textContent = view === "risk" ? "risk" : view;
   window.scrollTo({ top: 0, behavior: "instant" });
 }
@@ -3302,6 +3691,11 @@ async function boot() {
   setInterval(loadBoard, BOARD_MS);
   loadOrders();
   setInterval(loadOrders, ORDERS_MS);
+  // The book and the tape. loadDepth returns immediately unless the chart is
+  // the view AND the tab is in front, so this is a one-second timer that costs
+  // nothing on every other page.
+  setInterval(loadDepth, DEPTH_MS);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadDepth(); });
 
   const hash = location.hash.replace("#", "").trim();
   if (/^0x[0-9a-fA-F]{40}$/.test(hash)) { $("addr").value = hash; setAddr(hash); }
