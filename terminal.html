@@ -144,6 +144,78 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .tile .s{font-size:10.5px;color:var(--faint);margin-top:2px}
 @media(min-width:900px){.tile .v{font-size:22px}}
 
+
+/* ----------------------------------------------------------------- chart
+   THE RULE, DRAWN. Added 30 August 2026.
+
+   Every other view in this terminal is a table of what the rule concluded.
+   This is the only one that shows the rule HAPPENING: the price, the level a
+   close has to beat, and the five bars it is held for afterwards.
+
+   The trigger level comes from ruleTrack - the same function daysSinceNewHigh
+   reads - so the line on the chart is by construction the line the book is
+   using. Drawing it from a second calculation is how the page came to show a
+   forty-nine day high beside a fifty-day one.
+
+   SVG rather than canvas: two hundred daily candles is nothing to draw, the
+   result stays sharp on a phone at any pixel ratio without DPI arithmetic, and
+   it inherits the page's own colours instead of needing a second palette. */
+.chart-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.chart-top .back{display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border:1px solid var(--line);border-radius:9px;
+  background:var(--panel);color:var(--dim);flex:none}
+.chart-top .back svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}
+.chart-top select{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+  border-radius:9px;padding:8px 10px;font:600 15px/1 var(--mono);min-height:var(--tap);
+  letter-spacing:.02em;flex:0 1 auto;min-width:0;max-width:230px}
+/* The back button is a phone affordance. On a desktop the page switcher is
+   right there and a second way back is clutter. */
+@media(min-width:900px){.chart-top .back{display:none}
+  .chart-top select{max-width:300px}}
+/* On a 390px phone the row is back + picker + price, and at a 230px picker the
+   price ran off the right edge. The picker gives way first: the market name is
+   already short and the price is the number you came for. */
+@media(max-width:700px){
+  .chart-top select{max-width:152px;font-size:14px}
+  .chart-top .price{font-size:19px}
+  .ranges{margin-left:auto}
+}
+.chart-top .price{font:600 22px/1 var(--mono);letter-spacing:-.02em}
+.chart-top .chg{font:600 13px/1 var(--mono)}
+.chart-top .spacer{flex:1}
+.ranges{display:flex;gap:6px}
+.ranges button{border:1px solid var(--line);background:var(--panel);color:var(--dim);
+  border-radius:8px;padding:0 12px;height:34px;font:600 11px/1 var(--mono);
+  letter-spacing:.06em}
+.ranges button.on{color:var(--acc);border-color:var(--acc)}
+.chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden}
+.chart-wrap svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.ck-grid{stroke:var(--line);stroke-width:1}
+.ck-up{fill:var(--pos);stroke:var(--pos)}
+.ck-dn{fill:var(--neg);stroke:var(--neg)}
+.ck-lvl{fill:none;stroke:var(--acc2);stroke-width:2;stroke-dasharray:none}
+.ck-hold{fill:var(--acc);opacity:.10}
+.ck-fire{fill:var(--acc)}
+.ck-pos{stroke:var(--violet);stroke-width:1.6;stroke-dasharray:5 4;fill:none}
+.ck-fill{fill:var(--warn)}
+.ck-vol-up{fill:var(--pos);opacity:.45}
+.ck-vol-dn{fill:var(--neg);opacity:.45}
+.ck-txt{fill:var(--faint);font:400 11px var(--mono)}
+.ck-txt.hi{fill:var(--dim)}
+.ck-cross{stroke:var(--line2);stroke-width:1;stroke-dasharray:3 3}
+.ck-last{fill:var(--panel2);stroke:var(--line2)}
+.readout{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;
+  border-top:1px solid var(--line);background:var(--panel2);
+  font:400 11.5px/1.5 var(--mono);color:var(--dim);min-height:38px}
+.readout b{color:var(--ink);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;
+  border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}
+.legend i{display:inline-block;width:11px;height:3px;border-radius:2px;
+  margin-right:5px;vertical-align:middle}
+tr.tap{cursor:pointer}
+tr.tap:hover{background:var(--panel2)}
+
 /* ---------------------------------------------------------------- tables */
 .scroll{overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain}
@@ -372,6 +444,7 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
 <nav class="rail">
   <button data-go="account" class="on">Account</button>
   <button data-go="markets">Markets</button>
+  <button data-go="chart">Chart</button>
   <button data-go="signals">Signals</button>
   <button data-go="research">Research</button>
   <button data-go="risk">Risk &amp; execution</button>
@@ -486,6 +559,42 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
     book on the signals page ranks on the <b>trailing 7-day mean</b> for exactly that
     reason.</div>
   </div>
+</section>
+
+<!-- ================================================================ CHART -->
+<section class="view" id="v-chart">
+  <div class="chart-top">
+    <button class="back" id="ck-back" aria-label="Back to markets">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <select id="ck-pick" aria-label="Market"></select>
+    <span class="price num" id="ck-price">&mdash;</span>
+    <span class="chg num" id="ck-chg"></span>
+    <span id="ck-badge"></span>
+    <span class="spacer"></span>
+    <div class="ranges" id="ck-ranges">
+      <button data-days="60">60D</button>
+      <button data-days="120" class="on">120D</button>
+      <button data-days="200">200D</button>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div id="ck-svg"></div>
+    <div class="readout" id="ck-readout">Touch or hover the chart to read a day.</div>
+    <div class="legend">
+      <span><i style="background:var(--acc2)"></i>the level a close must beat &mdash; highest close of the prior 50 days</span>
+      <span><i style="background:var(--acc)"></i>triggered, and the 5 bars it is held for</span>
+      <span><i style="background:var(--violet)"></i>your position&rsquo;s entry price</span>
+      <span><i style="background:var(--warn)"></i>your fills</span>
+    </div>
+    <div class="note" id="ck-verdict"></div>
+  </div>
+
+  <!-- BELOW the chart, deliberately. These four tiles were above it and pushed
+       the chart off the bottom of a 390px phone, which is the one screen this
+       page is checked on. The chart is the view; everything else is context. -->
+  <div class="tiles" id="ck-tiles" style="margin-top:12px"></div>
 </section>
 
 <!-- ============================================================== SIGNALS -->
@@ -1002,6 +1111,7 @@ const S = {                    // everything the page knows, in one place
   candles: new Map(),          // coin -> [{t, c, v}]
   universe20: [], universe40: [],
   book8: [], book9: [], near: [],
+  chartCoin: "BTC", chartRange: 120,
   account: null, fills: [], funding: [],
   spotValue: 0,                // the WHOLE unified account, priced. See below.
   spotMetaRaw: null, spotMetaAt: 0,   // global spot data, cached 10 min
@@ -1090,9 +1200,361 @@ async function pool(items, worker, limit = 6) {
   return out;
 }
 
+/* ===========================================================================
+   THE CHART - the rule, drawn
+
+   Every other view here reports what the rule CONCLUDED. This one shows it
+   happening: the price, the level a close has to beat, the days it triggered,
+   and the five bars each entry is held for.
+
+   The level comes from ruleTrack, which is also what daysSinceNewHigh reads,
+   so the blue line is by construction the line the book is using. Drawing it
+   from a second calculation is exactly how this page came to display a
+   forty-nine day high beside a fifty-day one.
+
+   Public venue data only. Your own position and fills are drawn if an address
+   is connected - read-only, the same clearinghouseState a block explorer
+   serves. Nothing here can sign, place or cancel anything.
+   =========================================================================== */
+
+/**
+ * THE CHART IS PORTRAIT ON A PHONE AND LANDSCAPE ON A DESKTOP.
+ *
+ * One fixed viewBox scaled to the container gave a 390px phone a chart 183
+ * pixels tall - a squashed strip in which a fifty-day level line and a hundred
+ * and twenty candles are unreadable. The viewBox is chosen from the window
+ * width instead, so the phone gets a tall chart and the desktop a wide one, and
+ * the SVG still scales crisply at any pixel ratio.
+ */
+function ckGeom() {
+  const narrow = window.innerWidth < 700;
+  return narrow
+    ? { W: 640, H: 872, L: 6, R: 76, T: 10, PB: 664, VT: 692, VB: 836, grid: 3 }
+    : { W: 1000, H: 478, L: 6, R: 78, T: 10, PB: 348, VT: 374, VB: 452, grid: 4 };
+}
+
+function ckBars() {
+  const bars = S.candles.get(S.chartCoin);
+  if (!bars || !bars.length) return null;
+  return bars;
+}
+
+/** Chart geometry for the visible slice, or null if there is nothing to draw. */
+function ckFrame() {
+  const g = ckGeom();
+  const bars = ckBars();
+  if (!bars) return null;
+
+  // The rule is computed over the WHOLE series and then sliced, never over the
+  // slice: a 60-day view still needs the 50 days before its first bar to know
+  // what that bar had to beat. Computing on the slice would silently change the
+  // rule with the zoom level.
+  const track = ruleTrack(bars);
+  const from = Math.max(0, bars.length - S.chartRange);
+  const view = bars.slice(from);
+  if (view.length < 2) return null;
+
+  let lo = Infinity, hi = -Infinity, vmax = 0;
+  for (let k = 0; k < view.length; k++) {
+    const b = view[k];
+    lo = Math.min(lo, parseFloat(b.l));
+    hi = Math.max(hi, parseFloat(b.h));
+    vmax = Math.max(vmax, parseFloat(b.v) || 0);
+    const lvl = track[from + k].level;
+    if (lvl !== null) { lo = Math.min(lo, lvl); hi = Math.max(hi, lvl); }
+  }
+  if (!(hi > lo)) return null;
+
+  const pad = (hi - lo) * 0.06;
+  lo -= pad; hi += pad;
+
+  const plotW = g.W - g.L - g.R;
+  const cw = plotW / view.length;
+  const x = k => g.L + (k + 0.5) * cw;
+  const y = v => g.T + (g.PB - g.T) * (1 - (v - lo) / (hi - lo));
+  const vy = v => g.VB - (g.VB - g.VT) * (vmax > 0 ? v / vmax : 0);
+
+  return { g, bars, track, from, view, lo, hi, vmax, cw, x, y, vy, plotW };
+}
+
+function ckNum(v, dp) {
+  return v >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 })
+       : v.toFixed(dp === undefined ? (v >= 1 ? 3 : 6) : dp);
+}
+
+function renderChart() {
+  const host = $("ck-svg");
+  const f = ckFrame();
+
+  if (!f) {
+    host.innerHTML = '<div class="pad" style="color:var(--dim)">'
+      + (S.candles.size ? "No candles for this market yet."
+                        : "Loading candles from Hyperliquid…") + "</div>";
+    $("ck-verdict").textContent = "";
+    return;
+  }
+
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const g = f.g;
+  const p = [];
+
+  // ---- horizontal grid and the price scale
+  for (let n = 0; n <= g.grid; n++) {
+    const v = f.lo + (f.hi - f.lo) * (n / g.grid);
+    const yy = f.y(v);
+    p.push(`<line class="ck-grid" x1="${g.L}" y1="${yy}" x2="${g.W - g.R}" y2="${yy}"/>`);
+    p.push(`<text class="ck-txt" x="${g.W - g.R + 7}" y="${yy + 4}">${esc(ckNum(v))}</text>`);
+  }
+
+  // ---- the five bars after every trigger, shaded, drawn first so candles sit on top
+  for (let k = 0; k < f.view.length; k++) {
+    if (!f.track[f.from + k].triggered) continue;
+    const x0 = f.x(k) - f.cw / 2;
+    const w = Math.min(f.cw * HOLD, g.W - g.R - x0);
+    p.push(`<rect class="ck-hold" x="${x0.toFixed(1)}" y="${g.T}" `
+         + `width="${Math.max(0, w).toFixed(1)}" height="${(g.PB - g.T).toFixed(1)}"/>`);
+  }
+
+  // ---- the level a close has to beat, stepped
+  let d = "";
+  for (let k = 0; k < f.view.length; k++) {
+    const lvl = f.track[f.from + k].level;
+    if (lvl === null) { d = ""; continue; }
+    const x0 = f.x(k) - f.cw / 2, x1 = f.x(k) + f.cw / 2, yy = f.y(lvl);
+    d += (d === "" ? `M${x0.toFixed(1)} ${yy.toFixed(1)}` : `L${x0.toFixed(1)} ${yy.toFixed(1)}`)
+       + `L${x1.toFixed(1)} ${yy.toFixed(1)}`;
+  }
+  if (d) p.push(`<path class="ck-lvl" d="${d}"/>`);
+
+  // ---- candles and volume
+  const bw = Math.max(1, f.cw * 0.62);
+  for (let k = 0; k < f.view.length; k++) {
+    const b = f.view[k];
+    const o = parseFloat(b.o), c = parseFloat(b.c);
+    const hh = parseFloat(b.h), ll = parseFloat(b.l);
+    const cls = c >= o ? "ck-up" : "ck-dn";
+    const xc = f.x(k);
+    const top = f.y(Math.max(o, c)), bot = f.y(Math.min(o, c));
+    p.push(`<line class="${cls}" x1="${xc.toFixed(1)}" y1="${f.y(hh).toFixed(1)}" `
+         + `x2="${xc.toFixed(1)}" y2="${f.y(ll).toFixed(1)}" stroke-width="1"/>`);
+    p.push(`<rect class="${cls}" x="${(xc - bw / 2).toFixed(1)}" y="${top.toFixed(1)}" `
+         + `width="${bw.toFixed(1)}" height="${Math.max(1, bot - top).toFixed(1)}"/>`);
+
+    const vv = parseFloat(b.v) || 0;
+    const vt = f.vy(vv);
+    p.push(`<rect class="${c >= o ? "ck-vol-up" : "ck-vol-dn"}" `
+         + `x="${(xc - bw / 2).toFixed(1)}" y="${vt.toFixed(1)}" `
+         + `width="${bw.toFixed(1)}" height="${Math.max(0.5, g.VB - vt).toFixed(1)}"/>`);
+  }
+
+  // ---- a marker on every day the rule fired
+  for (let k = 0; k < f.view.length; k++) {
+    if (!f.track[f.from + k].triggered) continue;
+    const xc = f.x(k), yy = f.y(parseFloat(f.view[k].h)) - 7;
+    p.push(`<path class="ck-fire" d="M${xc.toFixed(1)} ${yy.toFixed(1)}`
+         + `l-4.5 -7h9z"/>`);
+  }
+
+  // ---- your position, if an address is connected
+  const pos = ckPosition();
+  if (pos && pos.entry > f.lo && pos.entry < f.hi) {
+    const yy = f.y(pos.entry);
+    p.push(`<line class="ck-pos" x1="${g.L}" y1="${yy.toFixed(1)}" x2="${g.W - g.R}" y2="${yy.toFixed(1)}"/>`);
+    p.push(`<text class="ck-txt hi" x="${g.L + 6}" y="${(yy - 6).toFixed(1)}">your entry ${esc(ckNum(pos.entry))}</text>`);
+  }
+
+  // ---- your fills in this market, within the visible window
+  const firstT = f.view[0].t, lastT = f.view[f.view.length - 1].t;
+  for (const fill of (S.fills || [])) {
+    if (fill.coin !== S.chartCoin) continue;
+    const t = fill.time;
+    if (t < firstT || t > lastT + 86400000) continue;
+    const k = Math.round((t - firstT) / 86400000);
+    const px = parseFloat(fill.px);
+    if (!isFinite(px) || px < f.lo || px > f.hi) continue;
+    p.push(`<circle class="ck-fill" cx="${f.x(Math.min(k, f.view.length - 1)).toFixed(1)}" `
+         + `cy="${f.y(px).toFixed(1)}" r="2.6"/>`);
+  }
+
+  // ---- the last close, boxed on the scale
+  const lastC = parseFloat(f.view[f.view.length - 1].c);
+  const ly = f.y(lastC);
+  p.push(`<line class="ck-grid" x1="${g.L}" y1="${ly.toFixed(1)}" x2="${g.W - g.R}" y2="${ly.toFixed(1)}" stroke-dasharray="2 4"/>`);
+  p.push(`<rect class="ck-last" x="${g.W - g.R + 2}" y="${(ly - 9).toFixed(1)}" width="${g.R - 6}" height="18" rx="4"/>`);
+  p.push(`<text class="ck-txt hi" x="${g.W - g.R + 7}" y="${(ly + 4).toFixed(1)}">${esc(ckNum(lastC))}</text>`);
+
+  // ---- dates along the bottom
+  const every = Math.max(1, Math.round(f.view.length / 6));
+  for (let k = 0; k < f.view.length; k += every) {
+    const dt = new Date(f.view[k].t);
+    p.push(`<text class="ck-txt" x="${f.x(k).toFixed(1)}" y="${g.H - 3}" text-anchor="middle">`
+         + `${dt.getUTCDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][dt.getUTCMonth()]}</text>`);
+  }
+
+  p.push(`<line id="ck-cx" class="ck-cross" x1="0" y1="${g.T}" x2="0" y2="${g.VB}" style="display:none"/>`);
+
+  host.innerHTML = `<svg viewBox="0 0 ${g.W} ${g.H}" role="img" `
+    + `aria-label="Daily candles for ${esc(S.chartCoin)} with the finding 008 trigger level">`
+    + p.join("") + "</svg>";
+
+  // The buttons are painted FROM the state rather than by the handler that
+  // changed it, so there is one source of truth for which range is showing.
+  $("ck-ranges").querySelectorAll("button").forEach(b =>
+    b.classList.toggle("on", Number(b.dataset.days) === S.chartRange));
+
+  ckBindPointer(host.querySelector("svg"), f);
+  ckVerdict(f);
+}
+
+/** The connected account's position in the charted market, if any. */
+function ckPosition() {
+  const list = S.account && S.account.assetPositions;
+  if (!Array.isArray(list)) return null;
+  for (const a of list) {
+    const q = a.position;
+    if (!q || q.coin !== S.chartCoin) continue;
+    const entry = parseFloat(q.entryPx || 0);
+    if (!isFinite(entry) || entry <= 0) continue;
+    return { entry, size: parseFloat(q.szi || 0) };
+  }
+  return null;
+}
+
+/** What the rule says about this market right now, in words. */
+function ckVerdict(f) {
+  const since = daysSinceNewHigh(f.bars);
+  const pr = progress(f.bars);
+  const inUniverse = S.universe20.includes(S.chartCoin);
+  const bits = [];
+
+  if (since === null) {
+    bits.push("<b>No entry.</b> The rule has not seen a close above the prior "
+      + LOOKBACK + "-day high in the last " + HOLD + " days.");
+  } else {
+    bits.push("<b>Held, day " + (since + 1) + " of " + HOLD + ".</b> It broke out "
+      + (since === 0 ? "on the most recent close" : since + " day(s) ago") + ".");
+  }
+
+  if (pr) {
+    bits.push("Last close " + ckNum(pr.last) + " against a level of " + ckNum(pr.high)
+      + " &mdash; <b>" + (pr.ratio * 100).toFixed(1) + "%</b> of what it must beat.");
+  }
+
+  bits.push(inUniverse
+    ? "It <b>is</b> in this week&rsquo;s traded twenty."
+    : "It is <b>not</b> in this week&rsquo;s traded twenty, so the book cannot hold it "
+      + "however it trades.");
+
+  $("ck-verdict").innerHTML = bits.join(" ");
+}
+
+/** Crosshair and per-day readout. Pointer events cover mouse and touch alike. */
+function ckBindPointer(svg, f) {
+  if (!svg) return;
+  const out = $("ck-readout");
+  const line = svg.querySelector("#ck-cx");
+
+  const read = ev => {
+    const box = svg.getBoundingClientRect();
+    const px = ((ev.clientX - box.left) / box.width) * f.g.W;
+    let k = Math.round((px - f.g.L) / f.cw - 0.5);
+    k = Math.max(0, Math.min(f.view.length - 1, k));
+
+    const b = f.view[k];
+    const t = f.track[f.from + k];
+    const dt = new Date(b.t);
+    const o = parseFloat(b.o), c = parseFloat(b.c);
+    const chg = o > 0 ? (c - o) / o : 0;
+
+    line.setAttribute("x1", f.x(k)); line.setAttribute("x2", f.x(k));
+    line.style.display = "";
+
+    out.innerHTML =
+      "<span>" + dt.toISOString().slice(0, 10) + "</span>"
+      + "<span>O <b>" + ckNum(o) + "</b></span>"
+      + "<span>H <b>" + ckNum(parseFloat(b.h)) + "</b></span>"
+      + "<span>L <b>" + ckNum(parseFloat(b.l)) + "</b></span>"
+      + "<span>C <b>" + ckNum(c) + "</b></span>"
+      + '<span class="' + (chg >= 0 ? "pos" : "neg") + '">' + (chg * 100).toFixed(2) + "%</span>"
+      + (t.level === null ? "<span>level &mdash;</span>"
+                          : "<span>level <b>" + ckNum(t.level) + "</b></span>")
+      + (t.triggered ? '<span class="acc"><b>TRIGGERED</b></span>' : "");
+  };
+
+  svg.addEventListener("pointermove", read);
+  svg.addEventListener("pointerdown", read);
+  svg.addEventListener("pointerleave", () => {
+    line.style.display = "none";
+    out.textContent = "Touch or hover the chart to read a day.";
+  });
+}
+
+/** Header: the market picker, the live price and the venue's own stats. */
+function renderChartHead() {
+  const all = markets().filter(m => !m.delisted && S.candles.has(m.name))
+    .sort((a, b) => b.vol - a.vol);
+
+  const pick = $("ck-pick");
+  if (pick.dataset.n !== String(all.length)) {
+    pick.dataset.n = String(all.length);
+    // THE COIN NAME ONLY. The option used to carry " · universe", which a
+    // 152px picker on a phone truncated to "ETH · univers" - the suffix
+    // pushing out the one word that matters. Universe membership is a badge
+    // beside the price instead, where it has room.
+    pick.innerHTML = all.map(m => `<option value="${m.name}">${m.name}</option>`).join("");
+  }
+  pick.value = S.chartCoin;
+
+  const m = all.find(x => x.name === S.chartCoin) || markets().find(x => x.name === S.chartCoin);
+  if (!m) return;
+
+  $("ck-price").textContent = ckNum(m.mark);
+  $("ck-badge").innerHTML = S.universe20.includes(S.chartCoin)
+    ? '<span class="badge cash">universe</span>' : "";
+  const chg = $("ck-chg");
+  chg.textContent = (m.chg >= 0 ? "+" : "") + (m.chg * 100).toFixed(2) + "%";
+  chg.className = "chg num " + (m.chg >= 0 ? "pos" : "neg");
+
+  const pos = ckPosition();
+  $("ck-tiles").innerHTML = [
+    ["24h volume", compact(m.vol), "venue"],
+    ["open interest", compact(m.oi), "across the venue"],
+    ["funding", (m.fundYr * 100).toFixed(1) + "%", "annualised, current hour"],
+    ["your position", pos ? ckNum(Math.abs(pos.size)) + " " + S.chartCoin : "flat",
+      pos ? "entry " + ckNum(pos.entry) : (S.addr ? "connected, nothing open" : "not connected")],
+  ].map(t => `<div class="tile"><div class="k">${t[0]}</div>`
+    + `<div class="v num">${t[1]}</div><div class="s">${t[2]}</div></div>`).join("");
+}
+
+function openChart(coin) {
+  S.chartCoin = coin;
+  go("chart");
+  renderChartHead();
+  renderChart();
+}
+
+// THE VIEWBOX DEPENDS ON THE WINDOW WIDTH, so a rotation or a resize has to
+// redraw or the phone keeps a landscape chart in portrait. Debounced, because
+// a drag on a desktop fires this continuously.
+let ckResize = 0;
+window.addEventListener("resize", () => {
+  if (S.view !== "chart") return;
+  clearTimeout(ckResize);
+  ckResize = setTimeout(renderChart, 150);
+});
+
+$("ck-back").addEventListener("click", () => go("markets"));
+$("ck-pick").addEventListener("change", e => openChart(e.target.value));
+$("ck-ranges").querySelectorAll("button").forEach(b =>
+  b.addEventListener("click", () => {
+    S.chartRange = Number(b.dataset.days);
+    renderChart();
+  }));
+
 /* --------------------------------------------------------------- routing */
 function go(view) {
   S.view = view;
+  if (view === "chart") { renderChartHead(); renderChart(); }
   document.querySelectorAll(".view").forEach(v =>
     v.classList.toggle("on", v.id === "v-" + view));
   document.querySelectorAll("[data-go]").forEach(b =>
@@ -1102,6 +1564,14 @@ function go(view) {
 }
 document.querySelectorAll("[data-go]").forEach(b =>
   b.addEventListener("click", () => go(b.dataset.go)));
+
+// Delegated, once, on the document: the market lists are re-rendered every
+// twenty seconds, so a listener attached to each row would be re-attached
+// hundreds of times a minute and leak every one of them.
+document.addEventListener("click", (ev) => {
+  const hit = ev.target.closest("[data-coin]");
+  if (hit && hit.dataset.coin) openChart(hit.dataset.coin);
+});
 
 /* ---------------------------------------------------------- market data */
 async function loadMarkets() {
@@ -1201,7 +1671,10 @@ function renderMarkets() {
     : short.has(m.name) ? '<span class="badge short">carry</span>'
     : S.universe20.includes(m.name) ? '<span class="badge cash">universe</span>' : "";
 
-  $("mkt-rows").innerHTML = rows.slice(0, 240).map(m => `<tr>
+  // TAP A MARKET TO SEE THE RULE ON IT. The chart is a detail view rather than
+  // a ninth tab: eight tabs on a 390px phone are already 48px each, and a ninth
+  // would put every tap target under the 44px floor the rest of this page keeps.
+  $("mkt-rows").innerHTML = rows.slice(0, 240).map(m => `<tr class="tap" data-coin="${m.name}">
     <td>${m.name}</td>
     <td>${money(m.mark)}</td>
     <td class="${cls(m.chg)}">${pct(m.chg)}</td>
@@ -1212,7 +1685,7 @@ function renderMarkets() {
     <td class="faint">${m.lev}&times;</td>
     <td>${tag(m)}</td></tr>`).join("");
 
-  $("mkt-cards").innerHTML = rows.slice(0, 60).map(m => `<div class="card">
+  $("mkt-cards").innerHTML = rows.slice(0, 60).map(m => `<div class="card tap" data-coin="${m.name}">
     <div class="row1"><span class="sym">${m.name}</span>${tag(m)}
       <span class="px">${money(m.mark)}</span></div>
     <div class="row2">
@@ -1298,6 +1771,7 @@ async function loadSignals(force) {
   hist.forEach(x => { if (x) S.trailFund.set(x.coin, x); });
 
   computeBooks(all);
+  if (S.view === "chart") { renderChartHead(); renderChart(); }
   S.lastSignal = Date.now();
   try { renderSignals(); } catch (e) { S.error = "renderSignals: " + (e.stack || e); throw e; }
   renderMarkets();
@@ -1343,28 +1817,67 @@ function trailingVolume(bars, days) {
  * against this file, and PageScriptTests pins the bounds in the test suite so
  * the check cannot go unrun.
  */
-function daysSinceNewHigh(bars) {
+/**
+ * THE WINDOW, DEFINED ONCE. Added 30 August 2026.
+ *
+ * For every bar, the level that bar had to beat - the highest close of the
+ * LOOKBACK closes before it - and whether it beat it.
+ *
+ * WHY THIS EXISTS. Until now the window was written out twice, and the two
+ * copies were not the same window:
+ *
+ *     daysSinceNewHigh   for (let j = i - LOOKBACK; j < i;     j++)   50 closes
+ *     progress           for (let j = n - LOOKBACK; j < n - 1; j++)   49 closes
+ *
+ * The first is indexed off the bar being judged, the second off the array
+ * length, so progress() silently dropped the oldest close and reported a
+ * FORTY-NINE day high as the distance to a fifty-day high. The same page
+ * therefore showed one level for "did it trigger" and a different level for
+ * "how close is it", and a market could read as below its high while appearing
+ * in the book.
+ *
+ * That is the same defect corrected in daysSinceNewHigh earlier the same day,
+ * wearing a different disguise, and the test written for the first one could
+ * not see the second: it compared the loops as TEXT after normalising the index
+ * variable, so `i - LOOKBACK` and `n - LOOKBACK` looked identical. Both
+ * functions now read the window from here, so there is nothing left to
+ * disagree.
+ */
+function ruleTrack(bars, lookback) {
+  const lb = lookback || LOOKBACK;
   const close = bars.map(b => parseFloat(b.c));
-  const n = close.length;
-  for (let back = 0; back < HOLD; back++) {
-    const i = n - 1 - back;
-    if (i < LOOKBACK) break;
+  const out = new Array(close.length);
+  for (let i = 0; i < close.length; i++) {
+    if (i < lb) { out[i] = { level: null, triggered: false }; continue; }
     let highest = -Infinity;
-    for (let j = i - LOOKBACK; j < i; j++) highest = Math.max(highest, close[j]);
-    if (close[i] > highest) return back;
+    for (let j = i - lb; j < i; j++) highest = Math.max(highest, close[j]);
+    out[i] = { level: highest, triggered: close[i] > highest };
+  }
+  return out;
+}
+
+function daysSinceNewHigh(bars) {
+  const track = ruleTrack(bars);
+  for (let back = 0; back < HOLD; back++) {
+    const i = track.length - 1 - back;
+    if (i < 0 || track[i].level === null) break;
+    if (track[i].triggered) return back;
   }
   return null;
 }
 
-/** How close is this market to triggering, as a fraction of its own 50d high? */
+/**
+ * How close is this market to triggering, as a fraction of the level it would
+ * have to beat? Reads that level from ruleTrack, so it is the SAME level the
+ * entry test uses - see the note above. It used to compute its own, off by one
+ * bar in the other direction.
+ */
 function progress(bars) {
-  const close = bars.map(b => parseFloat(b.c));
-  const n = close.length;
-  if (n < LOOKBACK + 1) return null;
-  let highest = -Infinity;
-  for (let j = n - LOOKBACK; j < n - 1; j++) highest = Math.max(highest, close[j]);
-  const last = close[n - 1];
-  return { last, high: highest, ratio: last / highest };
+  const track = ruleTrack(bars);
+  const at = track[track.length - 1];
+  if (!at || at.level === null) return null;
+  const last = parseFloat(bars[bars.length - 1].c);
+  return { last, high: at.level, ratio: last / at.level };
 }
 
 function computeBooks(all) {
@@ -2813,6 +3326,7 @@ async function boot() {
       await loadMarkets();
       if (S.addr) loadAccount();
       await loadSignals(false);
+      if (S.view === "chart") { renderChartHead(); renderChart(); }
       $("live").className = "dot on";
     } catch (e) { $("live").className = "dot err"; }
   }, REFRESH_MS);
