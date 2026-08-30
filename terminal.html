@@ -1825,6 +1825,13 @@ async function loadDepth() {
     S.depthCoin = coin;
     S.book = null;
     S.tape.clear();
+    // AND REPAINT IMMEDIATELY. Clearing the state without clearing the screen
+    // left the previous market's ladder and tape sitting under the new
+    // market's header for as long as the next fetch took - which, if that
+    // fetch failed, was for ever, silently, because the catch below is
+    // deliberately quiet. The comment two lines down says a book drawn under
+    // the wrong header is worse than no book; this is what makes that true.
+    renderDepth();
   }
 
   try {
@@ -1908,6 +1915,23 @@ function venueSzDp(coin) {
   return u && typeof u.szDecimals === "number" ? u.szDecimals : 2;
 }
 
+/**
+ * The price a position is marked at RIGHT NOW.
+ *
+ * One definition, because there were three: the position cards read it from
+ * markets(), and two separate liquidation warnings read a markPx field the
+ * venue does not send and silently fell back to the entry price. Method rule
+ * 72 - when two pieces of code must agree, delete one of them.
+ *
+ * Falls back to entryPx only when the market is genuinely not in the venue
+ * snapshot yet, which is a first-paint condition, not a steady state.
+ */
+function liveMark(p) {
+  const m = markets().find(x => x.name === p.coin);
+  if (m && m.mark > 0) return m.mark;
+  return parseFloat(p.entryPx || 0);
+}
+
 function ckTime(ms) {
   const d = new Date(ms);
   return String(d.getUTCHours()).padStart(2, "0") + ":"
@@ -1933,6 +1957,11 @@ function renderLadder() {
   const asks = bk.levels[1].slice(0, LADDER_N);
   if (!bids.length || !asks.length) {
     host.innerHTML = '<div class="dempty">One side of this book is empty.</div>';
+    // The badge too. The early return above this one clears it and this one did
+    // not, so a thin market inherited the previous market's spread in the panel
+    // heading - a number belonging to a different market, presented as this
+    // one's, beside the words saying there is no book to have a spread.
+    $("ck-spread").textContent = "";
     return;
   }
 
@@ -2566,7 +2595,15 @@ async function spotMarks() {
   const fresh = S.spotMetaAt && (Date.now() - S.spotMetaAt) < 600000;
   const root = fresh ? S.spotMetaRaw : await post({ type: "spotMetaAndAssetCtxs" });
   S.spotMetaRaw = root;
-  S.spotMetaAt = Date.now();
+  // ONLY ON A REAL FETCH. This was outside the branch, so every cache HIT also
+  // reset the clock - `Date.now() - S.spotMetaAt` was permanently about twenty
+  // seconds, the ten-minute expiry could never be reached, and spot marks were
+  // pinned to whatever they were when the address was first connected. Leave
+  // the terminal open on a home-screen icon for nine hours and account value,
+  // leverage and margin utilisation are all computed against nine-hour-old
+  // spot prices, with nothing on screen saying so. That is the same quantity
+  // whose earlier mistake overstated leverage fourfold.
+  if (!fresh) S.spotMetaAt = Date.now();
   if (!Array.isArray(root) || root.length < 2) return marks;
 
   const byCoin = new Map();
@@ -2665,7 +2702,7 @@ function positionNotes(pos, value, free) {
 
   pos.forEach(p => {
     const liq = p.liquidationPx ? parseFloat(p.liquidationPx) : null;
-    const mk = parseFloat((p.markPx !== undefined ? p.markPx : p.entryPx) || 0);
+    const mk = liveMark(p);          // see the note above the tightest-liq block
     if (!liq || !(mk > 0)) return;
     const away = Math.abs(liq - mk) / mk;
     if (away >= 0.10) return;
@@ -2863,10 +2900,27 @@ function renderAccount() {
      mark to the liquidation price, and at 40x that distance is 2.5%. So compute
      the tightest one across the book and, when it is close, say so ABOVE the
      bar rather than below it. */
+  // THE LIVE MARK, NOT THE ENTRY PRICE, AND THIS WAS WRONG UNTIL 30 AUGUST.
+  //
+  // clearinghouseState's position object carries coin, szi, leverage, entryPx,
+  // positionValue, unrealizedPnl, returnOnEquity, liquidationPx, marginUsed,
+  // maxLeverage and cumFunding. Verified against a live account holding 175
+  // positions: there is NO markPx on it. So `p.markPx ?? p.entryPx` never once
+  // took the first branch - the distance to liquidation was frozen at whatever
+  // it was the moment the position opened, and drifted further from the truth
+  // the closer the position came to being closed.
+  //
+  // An 8x long opened at 100,000 with a liquidation at 88,000, with the market
+  // now at 92,000, is 4.3% from being closed. This computed 12% and painted
+  // nothing, while the card twenty lines below - which reads the live mark
+  // correctly - printed 4.3% in red. Two numbers on one screen, disagreeing,
+  // and the reassuring one was the one in the banner.
+  //
+  // markets() is the venue's own metaAndAssetCtxs, refreshed on the same timer.
   let tightest = null, tightestCoin = "";
   pos.forEach(p => {
     const liq = p.liquidationPx ? parseFloat(p.liquidationPx) : null;
-    const mk = parseFloat((p.markPx ?? p.entryPx) || 0);
+    const mk = liveMark(p);
     if (!liq || !(mk > 0)) return;
     const d = Math.abs(liq - mk) / mk;
     if (tightest === null || d < tightest) { tightest = d; tightestCoin = p.coin; }
@@ -3466,9 +3520,23 @@ function renderHealth() {
   //  Amber is the honest middle: publishing is late, and the last thing we
   //  heard was good.
   // -------------------------------------------------------------------------
-  const PUBLISH_EVERY = 30;         // guard cycles, one a minute
-  const LATE = PUBLISH_EVERY * 1.5; // 45 min - one missed publish plus slack
-  const GONE = PUBLISH_EVERY * 3;   // 90 min - two missed, the PC is off
+  // FIVE, NOT THIRTY. LONA-GUARD.bat sets PUBLISH_EVERY=5; this said 30, left
+  // behind when the guard was sped up on 29 August. The strip went amber at 45
+  // minutes for a signal the guard's own comment says is a real fault at about
+  // twelve, so a machine that lost its network at 14:00 read "All well" until
+  // 14:45 and did not go red until 15:30.
+  //
+  // Two copies of one number in two programs - method rule 16 - and there is no
+  // way to share a constant between a .bat and a page, so PublishCadenceTests
+  // compares these two literals and fails when they diverge. The comment is not
+  // the mechanism; the test is.
+  const PUBLISH_EVERY = 5;          // guard cycles, one a minute
+  // At a five-minute cadence 1.5x is 7.5 minutes, which is inside the jitter of
+  // a cycle that also does a git push - it would cry wolf. Two missed publishes
+  // plus slack is the honest threshold and lands on the twelve minutes the
+  // guard's own note names.
+  const LATE = PUBLISH_EVERY * 2.4; // 12 min - two missed publishes plus slack
+  const GONE = PUBLISH_EVERY * 6;   // 30 min - six missed, the PC is off
 
   const ageMin = (Date.now() - Date.parse(h.at)) / 60000;
   const t = h.tape || {};
