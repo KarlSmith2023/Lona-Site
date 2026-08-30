@@ -221,11 +221,44 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
    here by design - the page never signs; it writes intent and the executor
    reads it. A greyed-out Buy button would complete the picture and put a
    control on this page that must never exist on it. */
+/* ---- THE STAT STRIP ---------------------------------------------------
+   Label above value, six cells in one tight row above the chart, which is how
+   every venue puts its header together and is the shape Karl was pointing at.
+   It replaces four 90px tiles that carried three of the same numbers with more
+   ink and less information.
+
+   Finding 055 moved tiles OUT of this position because they pushed the chart
+   off the bottom of a 390px phone. That was two rows of large cards, about
+   190px; this is one 46px row, and the chart is measured after the change
+   rather than argued about. */
+.strip{display:flex;gap:0;margin:10px 0 12px;overflow-x:auto;
+  border:1px solid var(--line);border-radius:var(--r);background:var(--panel);
+  scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.strip .cell{flex:1 0 auto;min-width:98px;padding:7px 13px;
+  border-right:1px solid var(--line)}
+.strip .cell:last-child{border-right:0}
+.strip .k{font:400 9.5px/1.4 var(--mono);letter-spacing:.09em;
+  text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.strip .v{font:600 13px/1.35 var(--mono);color:var(--ink);white-space:nowrap}
+.strip .v.pos{color:var(--pos)} .strip .v.neg{color:var(--neg)}
+.strip .v.acc{color:var(--acc)}
+.strip .v small{font-weight:400;color:var(--dim);font-size:10.5px;margin-left:5px}
+
 .depth{margin-top:12px}
-.dgrid{display:grid;gap:12px}
+/* align-items:start so each panel is as tall as its own contents. Grid
+   items stretch by default, which left the tape panel padded out to the
+   book's height with a field of empty background under the last print. */
+.dgrid{display:grid;gap:12px;align-items:start}
 @media(min-width:900px){.dgrid{grid-template-columns:1fr 1fr}}
+/* #ck-seg, not .seg. The .chips rule that gives this its layout is declared
+   ninety lines further down the stylesheet, and a media query buys no extra
+   specificity - so `.seg{display:none}` lost to `.chips{display:flex}` on
+   source order alone and the phone's pane switcher was still sitting there
+   on a desktop showing both panes. The id wins outright and cannot be
+   undone by anything moving around below it. */
 .seg{padding:0 0 10px}
-@media(min-width:900px){.seg{display:none}}
+@media(min-width:900px){#ck-seg{display:none}}
 @media(max-width:899px){.dpane{display:none}.dpane.on{display:block}}
 
 .ladder{font:400 11.5px/1 var(--mono);padding:6px 0}
@@ -637,6 +670,9 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
     </div>
   </div>
 
+  <!-- ABOVE the chart, in one row, the way a venue header is built. -->
+  <div class="strip" id="ck-strip"></div>
+
   <div class="chart-wrap">
     <div id="ck-svg"></div>
     <div class="readout" id="ck-readout">Touch or hover the chart to read a day.</div>
@@ -678,18 +714,13 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
     </div>
   </div>
 
-  <!-- WHAT SITS BETWEEN THE CHART AND THE BOOK, AND WHY IT IS ALMOST NOTHING.
-       The order was chart, readout, key, verdict, four tiles, book. That is five
-       screens on a 390px phone before reaching the one panel that changes every
-       second - which is method rule 75 again, written this week, applied to my
-       own new work within the hour: present, correct and effectively absent.
-
-       Live things first. The readout and the verdict stay with the chart because
-       they describe the bar under your finger. The key is read once and then
-       never again, so it goes last. The venue stats are context, so they follow
-       the book rather than stand in front of it. -->
-  <div class="tiles" id="ck-tiles" style="margin-top:12px"></div>
-
+  <!-- The four stat tiles that used to sit here are gone. They carried 24h
+       volume, open interest, funding and your position in four 90px cards, and
+       three of those four are in the strip above the chart now, in one row, next
+       to the mark and the oracle they should always have been read against.
+       Deleting them is the point rather than a side effect: the complaint was
+       that this page reads as a report, and four large cards restating numbers
+       that belong in a header is exactly what a report looks like. -->
   <div class="pnl" style="margin-top:12px">
     <h2><span class="car">&#9656;</span>what the colours mean</h2>
     <div class="legend">
@@ -1644,15 +1675,68 @@ function renderChartHead() {
   chg.textContent = (m.chg >= 0 ? "+" : "") + (m.chg * 100).toFixed(2) + "%";
   chg.className = "chg num " + (m.chg >= 0 ? "pos" : "neg");
 
+  renderStrip(m);
+}
+
+/**
+ * The venue header: mark, oracle, the day's move, what has traded, what is
+ * open, the funding rate with the time until it is next paid, and your
+ * position - in one row, in that order.
+ *
+ * WHY THE ORACLE IS HERE AT ALL. It is the only cell a reader would not think
+ * to ask for, and it is the one that can tell them something is wrong: the mark
+ * is what a liquidation is computed against and the oracle is the external
+ * reference funding pulls towards, so a gap between them is the venue and the
+ * outside world disagreeing about the price of the thing you are holding. The
+ * plan already refuses to trade on a wide divergence - OracleDivergence - and
+ * until now the page that shows you the market had no way to display the
+ * quantity that decision is made on.
+ */
+function renderStrip(m) {
   const pos = ckPosition();
-  $("ck-tiles").innerHTML = [
-    ["24h volume", compact(m.vol), "venue"],
-    ["open interest", compact(m.oi), "across the venue"],
-    ["funding", (m.fundYr * 100).toFixed(1) + "%", "annualised, current hour"],
-    ["your position", pos ? ckNum(Math.abs(pos.size)) + " " + S.chartCoin : "flat",
-      pos ? "entry " + ckNum(pos.entry) : (S.addr ? "connected, nothing open" : "not connected")],
-  ].map(t => `<div class="tile"><div class="k">${t[0]}</div>`
-    + `<div class="v num">${t[1]}</div><div class="s">${t[2]}</div></div>`).join("");
+
+  // Funding on Hyperliquid is quoted and PAID per hour, on the hour, which is
+  // unlike most venues and is why the countdown is to the top of the hour
+  // rather than to one of three fixed times a day. Everything else in this
+  // project quotes funding annualised so it can be compared; the strip shows
+  // the annualised figure and the countdown to the next actual payment, which
+  // are the two questions a holder has.
+  const now = new Date();
+  const secs = 3600 - (now.getUTCMinutes() * 60 + now.getUTCSeconds());
+  const mm = String(Math.floor(secs / 60)).padStart(2, "0");
+  const ss = String(secs % 60).padStart(2, "0");
+
+  const fund = (m.fundYr * 100).toFixed(1) + "%";
+
+  // The oracle is shown as the GAP, not as a second price. Two nearly identical
+  // long numbers side by side is a spot-the-difference puzzle; one number and a
+  // difference in basis points is the answer to the question being asked.
+  const gapBps = m.oracle > 0 ? ((m.mark - m.oracle) / m.oracle) * 10000 : null;
+
+  // NO MARK CELL AND NO 24H CELL, and their absence is the point. The big
+  // number beside the picker forty pixels above IS the mark, and the coloured
+  // percentage next to it IS the 24h move. Putting them in the strip as well
+  // gave the header two sizes of the same two numbers, which is precisely the
+  // texture that makes a page read as a report rather than a venue: it is not
+  // that a report has fewer numbers, it is that it says each of them once.
+  const cells = [
+    ["oracle", m.oracle > 0 ? ckNum(m.oracle) : "&mdash;",
+      gapBps === null ? "" : "<small>" + (gapBps >= 0 ? "+" : "")
+        + gapBps.toFixed(1) + " bps</small>"],
+    ["24h volume", compact(m.vol), ""],
+    ["open interest", compact(m.oi), ""],
+    ["funding, annualised", fund, "<small>" + mm + ":" + ss + "</small>",
+      m.fundYr >= 0 ? "pos" : "neg"],
+    ["your position",
+      pos ? ckNum(Math.abs(pos.size)) + " " + S.chartCoin : "flat",
+      pos ? "<small>entry " + ckNum(pos.entry) + "</small>"
+          : (S.addr ? "" : "<small>not connected</small>"),
+      pos ? "acc" : ""],
+  ];
+
+  $("ck-strip").innerHTML = cells.map(c =>
+    '<div class="cell"><div class="k">' + c[0] + '</div>'
+    + '<div class="v ' + (c[3] || "") + '">' + c[1] + (c[2] || "") + '</div></div>').join("");
 }
 
 /**
@@ -1988,6 +2072,12 @@ function markets() {
   return S.meta.universe.map((u, i) => {
     const c = S.ctx[i] || {};
     const mark = parseFloat(c.markPx || c.midPx || 0);
+    // The venue publishes both and they are not the same number: the mark is
+    // what your PnL and your liquidation are computed against, the oracle is the
+    // external reference the funding rate is pulled towards. When they diverge,
+    // that gap IS the story - it is what OracleDivergence exists to watch - so
+    // the page should not be quietly showing one and calling it the price.
+    const oracle = parseFloat(c.oraclePx || 0);
     const prev = parseFloat(c.prevDayPx || 0);
     const f = parseFloat(c.funding || 0);
     return {
@@ -1995,6 +2085,7 @@ function markets() {
       delisted: !!u.isDelisted,
       lev: u.maxLeverage,
       mark,
+      oracle,
       chg: prev > 0 ? (mark - prev) / prev : 0,
       vol: parseFloat(c.dayNtlVlm || 0),
       oi: parseFloat(c.openInterest || 0) * mark,
@@ -3683,6 +3774,10 @@ function tickClock() {
 async function boot() {
   tickClock();
   setInterval(tickClock, 1000);
+  // The funding countdown lives in the strip and has to move. Cheap: it only
+  // redraws while the chart is the view, and renderChartHead is the one place
+  // that knows which market the strip is describing.
+  setInterval(() => { if (S.view === "chart" && !document.hidden) renderChartHead(); }, 1000);
   renderResearch();
 
   loadAnalyst();
