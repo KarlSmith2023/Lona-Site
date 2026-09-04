@@ -1,9 +1,9 @@
 {
-  "at": "2026-09-03T00:17:53.4370387+00:00",
+  "at": "2026-09-04T00:17:54.3120844+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 370,
+  "paperEquityUsd": 390,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -28,23 +28,23 @@
     "SUI"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.15,
+  "deployedFraction": 0.30,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 370,
+  "smallestViableAccountUsd": 390,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -1.29,
-  "openPaperPnlPct": -0.003498,
+  "openPaperPnlUsd": 0.30,
+  "openPaperPnlPct": 0.000762,
   "forward": {
     "hasHistory": true,
-    "runs": 32,
+    "runs": 33,
     "startUsd": 1000,
-    "currentUsd": 1039.59,
+    "currentUsd": 1046.10,
     "peakUsd": 1048.83,
-    "returnSinceStart": 0.039591,
-    "drawdown": -0.008810,
+    "returnSinceStart": 0.046104,
+    "drawdown": -0.002601,
     "worstDrawdown": -0.016867,
-    "bandUsed": 0.0326,
+    "bandUsed": 0.0096,
     "outsideNormalBand": false,
     "history": [
       {
@@ -206,6 +206,11 @@
         "at": "2026-09-03T00:17:53.4370387+00:00",
         "equityUsd": 1039.59,
         "drawdown": -0.008810
+      },
+      {
+        "at": "2026-09-04T00:17:54.3120844+00:00",
+        "equityUsd": 1046.10,
+        "drawdown": -0.002601
       }
     ]
   },
@@ -220,19 +225,19 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 2,
-    "deployedFraction": 0.10,
+    "heldCount": 5,
+    "deployedFraction": 0.25,
     "releasedEarly": [
       "XMR"
     ],
-    "openPaperPnlUsd": 0.05,
-    "givenUpUsd": -1.35,
+    "openPaperPnlUsd": 0.33,
+    "givenUpUsd": -0.03,
     "forward": {
-      "daysRecorded": 17,
-      "daysDiffered": 13,
-      "incumbentUsd": 336.81,
-      "shadowUsd": 313.78,
-      "returnGap": -0.076750,
+      "daysRecorded": 18,
+      "daysDiffered": 14,
+      "incumbentUsd": 343.32,
+      "shadowUsd": 318.87,
+      "returnGap": -0.081489,
       "incumbentWorstDrawdown": -0.051909,
       "shadowWorstDrawdown": -0.063205,
       "drawdownGap": -0.011296
@@ -241,10 +246,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 13,
-    "daysRemaining": 77,
+    "cleanDaysInARow": 14,
+    "daysRemaining": 76,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-09-03",
+    "lastRecorded": "2026-09-04",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -252,58 +257,106 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "13 of 90 clean days. 77 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "14 of 90 clean days. 76 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
-      "coin": "LIT",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 3.7857,
-      "price": 3.8173,
-      "returnSinceEntry": 0.008347,
-      "notionalUsd": 18.50,
-      "paperPnlUsd": 0.15
-    },
-    {
       "coin": "UNI",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 5.8593,
-      "price": 5.8269,
-      "returnSinceEntry": -0.005530,
-      "notionalUsd": 18.50,
-      "paperPnlUsd": -0.10
+      "entryPrice": 6.3245,
+      "price": 6.4115,
+      "returnSinceEntry": 0.013756,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": 0.27
+    },
+    {
+      "coin": "LIT",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 4.4415,
+      "price": 4.4848,
+      "returnSinceEntry": 0.009749,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": 0.19
+    },
+    {
+      "coin": "BTC",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 81244.0,
+      "price": 81269.0,
+      "returnSinceEntry": 0.000308,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": 0.01
+    },
+    {
+      "coin": "HYPE",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 87.486,
+      "price": 87.4139,
+      "returnSinceEntry": -0.000824,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": -0.02
     },
     {
       "coin": "XMR",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
       "entryPrice": 521.7,
-      "price": 483.732,
-      "returnSinceEntry": -0.072777,
-      "notionalUsd": 18.50,
-      "paperPnlUsd": -1.35
+      "price": 520.9,
+      "returnSinceEntry": -0.001533,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": -0.03
+    },
+    {
+      "coin": "ZEC",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 953.17,
+      "price": 947.25,
+      "returnSinceEntry": -0.006211,
+      "notionalUsd": 19.50,
+      "paperPnlUsd": -0.12
     }
   ],
   "orders": [
     {
+      "coin": "BTC",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 19.50,
+      "placeable": true
+    },
+    {
+      "coin": "HYPE",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 19.50,
+      "placeable": true
+    },
+    {
       "coin": "LIT",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.50,
+      "deltaNotionalUsd": 19.50,
       "placeable": true
     },
     {
       "coin": "UNI",
       "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.50,
+      "deltaNotionalUsd": 19.50,
       "placeable": true
     },
     {
       "coin": "XMR",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 18.50,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 19.50,
+      "placeable": true
+    },
+    {
+      "coin": "ZEC",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 19.50,
       "placeable": true
     }
   ],
@@ -311,8 +364,18 @@
     "wasChecked": true,
     "clean": true,
     "hasInversion": false,
-    "summary": "paper only - the rule wants 3 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "summary": "paper only - the rule wants 6 position(s) and none has been placed, which is the expected state while nothing is being traded",
     "problems": [
+      {
+        "coin": "BTC",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "HYPE",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
       {
         "coin": "LIT",
         "status": "Missing",
@@ -325,6 +388,11 @@
       },
       {
         "coin": "XMR",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "ZEC",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
       }
