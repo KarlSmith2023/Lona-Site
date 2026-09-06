@@ -308,15 +308,17 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
 <!-- ============================================================== status -->
 <section id="status">
   <h2>Status</h2>
-  <h3>Where the platform is on 27 August 2026</h3>
+  <h3 id="platform-asof">Where the platform is <span class="faint">(reading&hellip;)</span></h3>
 
   <div class="tiles" style="margin:18px 0">
     <div class="tile"><div class="k">Order-book tape</div>
-      <div class="v pos">LIVE</div><div class="s">30 markets &middot; 18 days &middot; 7.7 GB</div></div>
+      <div class="v pos" id="tile-tape-v">reading&hellip;</div>
+      <div class="s" id="tile-tape-s">from status.json</div></div>
     <div class="tile"><div class="k">Forward record</div>
-      <div class="v pos">25 runs</div><div class="s">running daily &middot; 6 of 90 clean days</div></div>
+      <div class="v pos" id="tile-fwd-v">reading&hellip;</div>
+      <div class="s" id="tile-fwd-s">from the published record</div></div>
     <div class="tile"><div class="k">Test cases</div>
-      <div class="v">437</div><div class="s">across 7 suites</div></div>
+      <div class="v">437</div><div class="s">across 7 suites &middot; <span class="faint">last typed count</span></div></div>
     <div class="tile"><div class="k">Orders placed</div>
       <div class="v faint">0</div><div class="s">deliberately</div></div>
   </div>
@@ -324,8 +326,8 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
   <div class="scroll" style="margin-bottom:18px"><table>
     <thead><tr><th>Component</th><th>State</th><th>Detail</th></tr></thead>
     <tbody>
-      <tr><td>Order-book recorder</td><td class="pos">running</td>
-        <td>~500 MB/day &middot; ~90 GB per six months &middot; <span class="warn">measured 28 Aug</span></td></tr>
+      <tr><td>Order-book recorder</td><td class="pos" id="row-rec-state">reading&hellip;</td>
+        <td id="row-rec-detail">from status.json</td></tr>
       <tr><td>Universe rule</td><td class="pos">single definition</td>
         <td><code>Lona.Rules</code> &middot; recorder and planner call the same code</td></tr>
       <tr><td>Per-market watchdog</td><td class="pos">live</td>
@@ -360,15 +362,13 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
     <p>That is much better than a hint and still not a live result. Every figure
     on this page is a backtest. <b>The only test that cannot be searched is the
     one that has not happened yet</b>, which is what the forward record and the
-    order-book tape are for, and they are ten days old.</p>
-    <p><b>And the forward record is currently stopped.</b> An update on 16 August
+    order-book tape are for. Their age is whatever <code>status.json</code> says on the tiles above.</p>
+    <p><b>The forward record was stopped once.</b> An update on 16 August
     replaced a launcher script and silently deleted a hook that lived only on the
-    recording machine, so the daily plan has not run since. The order-book tape
-    never stopped and is unaffected. Those missing days are gone for good &mdash;
-    a recomputed entry is a backtest, not a forward record &mdash; and the fix is
-    to give the plan its own scheduled task so it can never again depend on a
-    script doing an unrelated job. That is written and tested; it needs someone at
-    the machine to install it.</p>
+    recording machine, so the daily plan missed days. Those missing days are gone
+    for good &mdash; a recomputed entry is a backtest, not a forward record. The
+    plan later got its own schedule again; whether it is healthy <em>today</em> is
+    the live row above (and the Forward record tile), not this paragraph.</p>
     <p>Two of those figures have since been re-examined by their own authors.
     Finding 036 replaced the statistical null used to reject variants &mdash; it
     had been a number chosen by the analyst rather than derived from the data
@@ -1279,6 +1279,113 @@ try{if(window.navigator.standalone===true){document.documentElement.className+="
       st.className = "warn";
       st.textContent = "unknown";
       nt.textContent = "could not read the published record";
+    });
+}());
+</script>
+<script>
+/* LIVE PLATFORM TILES — 6 September 2026.
+   The 27 August heading and "18 days / 7.7 GB" were typed by hand and went
+   stale while the recorder kept writing. Same class of bug as the plan-state
+   row below: anything that changes by itself must read a published file.
+   status.json is rewritten on the PC every minute and published with BRIEF /
+   PUBLISH-PAGES; this page fetches the published copy. */
+(function () {
+  var STATUS_URL = "https://karlsmith2023.github.io/Lona-Site/status.json";
+  var ORDERS_URL = "https://karlsmith2023.github.io/Lona-Site/orders.json";
+  var asof = document.getElementById("platform-asof");
+  var tapeV = document.getElementById("tile-tape-v");
+  var tapeS = document.getElementById("tile-tape-s");
+  var fwdV = document.getElementById("tile-fwd-v");
+  var fwdS = document.getElementById("tile-fwd-s");
+  var recSt = document.getElementById("row-rec-state");
+  var recDe = document.getElementById("row-rec-detail");
+
+  function fmtDay(iso) {
+    if (!iso) return null;
+    var d = new Date(iso.indexOf("T") >= 0 ? iso : iso + "T12:00:00Z");
+    if (isNaN(d.getTime())) return iso;
+    var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return d.getUTCDate() + " " + months[d.getUTCMonth()] + " " + d.getUTCFullYear();
+  }
+
+  function fillStatus(h) {
+    var t = h.tape || {};
+    var dayLabel = fmtDay(t.today || h.at) || "today";
+    if (asof) asof.innerHTML = "Where the platform is on " + dayLabel;
+
+    var staleMin = h.staleAfterMinutes != null ? Number(h.staleAfterMinutes) : 5;
+    var ageMin = h.at ? (Date.now() - new Date(h.at).getTime()) / 60000 : 999;
+    // Prefer the file's own clock: secondsSinceWrite when present.
+    if (t.secondsSinceWrite != null) ageMin = Number(t.secondsSinceWrite) / 60;
+    var live = h.allWell !== false && ageMin <= staleMin;
+
+    if (tapeV) {
+      tapeV.className = live ? "v pos" : "v warn";
+      tapeV.textContent = live ? "LIVE" : "STALE";
+    }
+    if (tapeS) {
+      var bits = [];
+      if (t.markets != null) bits.push(t.markets + " markets");
+      if (t.days != null) bits.push(t.days + " days");
+      if (t.gigabytes != null) bits.push(Number(t.gigabytes).toFixed(1) + " GB");
+      tapeS.textContent = bits.length ? bits.join(" · ") : (h.verdict || "status.json");
+    }
+    if (recSt) {
+      recSt.className = live ? "pos" : "warn";
+      recSt.textContent = live ? "running" : "stale / attention";
+    }
+    if (recDe) {
+      recDe.textContent = h.verdict || ("age " + ageMin.toFixed(1) + " min");
+    }
+  }
+
+  function fillOrders(o) {
+    if (!fwdV || !fwdS) return;
+    var at = new Date(o.at);
+    var ageH = (Date.now() - at.getTime()) / 36e5;
+    var g = o.goLive || {};
+    var runs = (o.plan && o.plan.runs != null) ? o.plan.runs : null;
+    // status.json also carries plan.runs — prefer orders goLive for clean days
+    if (ageH > 26) {
+      fwdV.className = "v warn";
+      fwdV.textContent = "stalled";
+      fwdS.textContent = "last " + at.toISOString().slice(0,10) + " · " + ageH.toFixed(0) + "h ago";
+    } else {
+      fwdV.className = "v pos";
+      fwdV.textContent = runs != null ? (runs + " runs") : "running";
+      fwdS.textContent = g.cleanDaysInARow != null
+        ? ("daily · " + g.cleanDaysInARow + " of 90 clean days")
+        : "on schedule";
+    }
+  }
+
+  fetch(STATUS_URL + "?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(fillStatus)
+    .catch(function () {
+      if (tapeV) { tapeV.className = "v warn"; tapeV.textContent = "unknown"; }
+      if (tapeS) tapeS.textContent = "could not read status.json";
+      if (asof) asof.textContent = "Where the platform is (status unread)";
+    });
+
+  fetch(ORDERS_URL + "?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (o) {
+      // Merge plan.runs from status if orders lacks it — second fetch already done;
+      // enrich from status.plan when available via a tiny re-read of tape tile only.
+      fillOrders(o);
+      return fetch(STATUS_URL + "?t=" + Date.now(), { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (h) {
+          if (h.plan && h.plan.runs != null && fwdV && fwdV.textContent.indexOf("runs") < 0 && fwdV.textContent !== "stalled") {
+            fwdV.textContent = h.plan.runs + " runs";
+          }
+        })
+        .catch(function () {});
+    })
+    .catch(function () {
+      if (fwdV) { fwdV.className = "v warn"; fwdV.textContent = "unknown"; }
+      if (fwdS) fwdS.textContent = "could not read orders.json";
     });
 }());
 </script>
