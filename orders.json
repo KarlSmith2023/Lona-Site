@@ -1,9 +1,9 @@
 {
-  "at": "2026-09-09T00:18:29.3914368+00:00",
+  "at": "2026-09-10T00:17:47.0005725+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 440,
+  "paperEquityUsd": 450,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -31,20 +31,20 @@
   "deployedFraction": 0.45,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 440,
+  "smallestViableAccountUsd": 450,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -9.69,
-  "openPaperPnlPct": -0.022019,
+  "openPaperPnlUsd": -15.11,
+  "openPaperPnlPct": -0.033582,
   "forward": {
     "hasHistory": true,
-    "runs": 38,
+    "runs": 39,
     "startUsd": 1000,
-    "currentUsd": 1051.68,
+    "currentUsd": 1047.06,
     "peakUsd": 1059.22,
-    "returnSinceStart": 0.051675,
-    "drawdown": -0.007127,
+    "returnSinceStart": 0.047056,
+    "drawdown": -0.011488,
     "worstDrawdown": -0.016867,
-    "bandUsed": 0.0264,
+    "bandUsed": 0.0425,
     "outsideNormalBand": false,
     "history": [
       {
@@ -236,6 +236,11 @@
         "at": "2026-09-09T00:18:29.3914368+00:00",
         "equityUsd": 1051.68,
         "drawdown": -0.007127
+      },
+      {
+        "at": "2026-09-10T00:17:47.0005725+00:00",
+        "equityUsd": 1047.06,
+        "drawdown": -0.011488
       }
     ]
   },
@@ -250,26 +255,24 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 1,
-    "deployedFraction": 0.05,
+    "heldCount": 3,
+    "deployedFraction": 0.15,
     "releasedEarly": [
       "HYPE",
-      "ZEC",
       "ENA",
-      "NEAR",
       "XMR",
       "UNI",
       "TAO",
       "LINK"
     ],
-    "openPaperPnlUsd": 0.11,
-    "givenUpUsd": -9.80,
+    "openPaperPnlUsd": -1.43,
+    "givenUpUsd": -13.68,
     "forward": {
-      "daysRecorded": 23,
-      "daysDiffered": 18,
-      "incumbentUsd": 348.89,
-      "shadowUsd": 323.21,
-      "returnGap": -0.085593,
+      "daysRecorded": 24,
+      "daysDiffered": 19,
+      "incumbentUsd": 344.27,
+      "shadowUsd": 321.93,
+      "returnGap": -0.074474,
       "incumbentWorstDrawdown": -0.051909,
       "shadowWorstDrawdown": -0.063205,
       "drawdownGap": -0.011296
@@ -278,10 +281,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 19,
-    "daysRemaining": 71,
+    "cleanDaysInARow": 20,
+    "daysRemaining": 70,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-09-09",
+    "lastRecorded": "2026-09-10",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -289,170 +292,163 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "19 of 90 clean days. 71 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "20 of 90 clean days. 70 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
-      "coin": "LIT",
+      "coin": "NEAR",
       "barsSinceEntry": 0,
       "barsRemaining": 4,
-      "entryPrice": 4.8339,
-      "price": 4.8574,
-      "returnSinceEntry": 0.004861,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": 0.11
-    },
-    {
-      "coin": "TAO",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 266.27,
-      "price": 260.05,
-      "returnSinceEntry": -0.023360,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -0.51
-    },
-    {
-      "coin": "HYPE",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 87.943,
-      "price": 85.49,
-      "returnSinceEntry": -0.027893,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -0.61
-    },
-    {
-      "coin": "NEAR",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 2.4407,
-      "price": 2.3588,
-      "returnSinceEntry": -0.033556,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -0.74
+      "entryPrice": 2.4874,
+      "price": 2.4774,
+      "returnSinceEntry": -0.004020,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -0.09
     },
     {
       "coin": "ZEC",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 1227.9,
-      "price": 1185.4,
-      "returnSinceEntry": -0.034612,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -0.76
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 1244.7,
+      "price": 1237.4,
+      "returnSinceEntry": -0.005865,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -0.13
     },
     {
-      "coin": "LINK",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 13.252,
-      "price": 12.537,
-      "returnSinceEntry": -0.053954,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -1.19
+      "coin": "TAO",
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
+      "entryPrice": 266.27,
+      "price": 252.56,
+      "returnSinceEntry": -0.051489,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -1.16
     },
     {
-      "coin": "UNI",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 7.308,
-      "price": 6.7432,
-      "returnSinceEntry": -0.077285,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -1.70
+      "coin": "HYPE",
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
+      "entryPrice": 87.943,
+      "price": 83.359,
+      "returnSinceEntry": -0.052125,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -1.17
     },
     {
-      "coin": "ENA",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
-      "entryPrice": 0.17644,
-      "price": 0.160659,
-      "returnSinceEntry": -0.089441,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -1.97
+      "coin": "LIT",
+      "barsSinceEntry": 1,
+      "barsRemaining": 3,
+      "entryPrice": 4.8339,
+      "price": 4.574,
+      "returnSinceEntry": -0.053766,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -1.21
     },
     {
       "coin": "XMR",
+      "barsSinceEntry": 4,
+      "barsRemaining": 0,
+      "entryPrice": 556.96,
+      "price": 509.93,
+      "returnSinceEntry": -0.084441,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -1.90
+    },
+    {
+      "coin": "LINK",
       "barsSinceEntry": 3,
       "barsRemaining": 1,
-      "entryPrice": 556.96,
-      "price": 498.4,
-      "returnSinceEntry": -0.105142,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -2.31
+      "entryPrice": 13.252,
+      "price": 11.76,
+      "returnSinceEntry": -0.112587,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -2.53
+    },
+    {
+      "coin": "ENA",
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
+      "entryPrice": 0.17644,
+      "price": 0.150997,
+      "returnSinceEntry": -0.144202,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -3.24
+    },
+    {
+      "coin": "UNI",
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
+      "entryPrice": 7.308,
+      "price": 6.1157,
+      "returnSinceEntry": -0.163150,
+      "notionalUsd": 22.50,
+      "paperPnlUsd": -3.67
     }
   ],
   "orders": [
     {
-      "coin": "GMX",
-      "reason": "exit - no longer in the book",
-      "deltaNotionalUsd": -15.78,
-      "placeable": false,
-      "refusal": "price unknown for a market outside the plan"
-    },
-    {
       "coin": "ENA",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "HYPE",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "LINK",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "LIT",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "NEAR",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "TAO",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "UNI",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "XMR",
-      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": true
     },
     {
       "coin": "ZEC",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 22.50,
       "placeable": false,
-      "refusal": "rounding would move the weight by 46 %, more than the 25 % tolerance"
+      "refusal": "rounding would move the weight by 45 %, more than the 25 % tolerance"
     }
   ],
   "reconciliation": {
     "wasChecked": true,
-    "clean": false,
+    "clean": true,
     "hasInversion": false,
-    "summary": "1 unexpected",
+    "summary": "paper only - the rule wants 9 position(s) and none has been placed, which is the expected state while nothing is being traded",
     "problems": [
       {
         "coin": "ENA",
@@ -498,11 +494,6 @@
         "coin": "ZEC",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
-      },
-      {
-        "coin": "GMX",
-        "status": "Unexpected",
-        "detail": "held but the rule did not ask for it"
       }
     ]
   }
