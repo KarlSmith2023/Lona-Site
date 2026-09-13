@@ -1,9 +1,9 @@
 {
-  "at": "2026-09-12T00:17:47.3127785+00:00",
+  "at": "2026-09-13T00:20:43.5278745+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 440,
+  "paperEquityUsd": 430,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -28,23 +28,23 @@
     "kPEPE"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.15,
+  "deployedFraction": 0.20,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 440,
+  "smallestViableAccountUsd": 430,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -4.84,
-  "openPaperPnlPct": -0.011005,
+  "openPaperPnlUsd": -5.90,
+  "openPaperPnlPct": -0.013714,
   "forward": {
     "hasHistory": true,
-    "runs": 41,
+    "runs": 42,
     "startUsd": 1000,
-    "currentUsd": 1038.42,
+    "currentUsd": 1037.12,
     "peakUsd": 1059.22,
-    "returnSinceStart": 0.038421,
-    "drawdown": -0.019641,
-    "worstDrawdown": -0.019641,
-    "bandUsed": 0.0727,
+    "returnSinceStart": 0.037121,
+    "drawdown": -0.020868,
+    "worstDrawdown": -0.020868,
+    "bandUsed": 0.0773,
     "outsideNormalBand": false,
     "history": [
       {
@@ -251,6 +251,11 @@
         "at": "2026-09-12T00:17:47.3127785+00:00",
         "equityUsd": 1038.42,
         "drawdown": -0.019641
+      },
+      {
+        "at": "2026-09-13T00:20:43.5278745+00:00",
+        "equityUsd": 1037.12,
+        "drawdown": -0.020868
       }
     ]
   },
@@ -265,33 +270,33 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 0,
-    "deployedFraction": 0,
+    "heldCount": 1,
+    "deployedFraction": 0.05,
     "releasedEarly": [
       "ZEC",
       "LIT",
       "NEAR"
     ],
-    "openPaperPnlUsd": 0,
-    "givenUpUsd": -4.84,
+    "openPaperPnlUsd": -0.01,
+    "givenUpUsd": -5.89,
     "forward": {
-      "daysRecorded": 26,
-      "daysDiffered": 21,
-      "incumbentUsd": 335.63,
+      "daysRecorded": 27,
+      "daysDiffered": 22,
+      "incumbentUsd": 334.33,
       "shadowUsd": 318.26,
-      "returnGap": -0.057927,
-      "incumbentWorstDrawdown": -0.058367,
+      "returnGap": -0.053595,
+      "incumbentWorstDrawdown": -0.062014,
       "shadowWorstDrawdown": -0.063205,
-      "drawdownGap": -0.004838
+      "drawdownGap": -0.001191
     },
     "verdict": "Not adopted, and it is not an arbiter. Finding 035 measured that this comparison needs about 8.7 years to resolve, so it will never be settled by waiting. It is kept as a DIVERGENCE MONITOR: it is worth reading only if the two books drift further apart than the backtest says they should, which is evidence about the plumbing and never about which rule is better."
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 22,
-    "daysRemaining": 68,
+    "cleanDaysInARow": 23,
+    "daysRemaining": 67,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-09-12",
+    "lastRecorded": "2026-09-13",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -299,68 +304,110 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "22 of 90 clean days. 68 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "23 of 90 clean days. 67 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
+      "coin": "ETH",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 2525.4,
+      "price": 2524.8,
+      "returnSinceEntry": -0.000238,
+      "notionalUsd": 21.50,
+      "paperPnlUsd": -0.01
+    },
+    {
       "coin": "NEAR",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
       "entryPrice": 2.4874,
-      "price": 2.3559,
-      "returnSinceEntry": -0.052866,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -1.16
+      "price": 2.3714,
+      "returnSinceEntry": -0.046635,
+      "notionalUsd": 21.50,
+      "paperPnlUsd": -1.00
     },
     {
       "coin": "ZEC",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
       "entryPrice": 1244.7,
-      "price": 1159.3,
-      "returnSinceEntry": -0.068611,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -1.51
+      "price": 1120.9,
+      "returnSinceEntry": -0.099462,
+      "notionalUsd": 21.50,
+      "paperPnlUsd": -2.14
     },
     {
       "coin": "LIT",
-      "barsSinceEntry": 3,
-      "barsRemaining": 1,
+      "barsSinceEntry": 4,
+      "barsRemaining": 0,
       "entryPrice": 4.8339,
-      "price": 4.357189,
-      "returnSinceEntry": -0.098618,
-      "notionalUsd": 22.00,
-      "paperPnlUsd": -2.17
+      "price": 4.2154,
+      "returnSinceEntry": -0.127951,
+      "notionalUsd": 21.50,
+      "paperPnlUsd": -2.75
     }
   ],
   "orders": [
     {
+      "coin": "HYPE",
+      "reason": "exit - no longer in the book",
+      "deltaNotionalUsd": -17.48,
+      "placeable": false,
+      "refusal": "price unknown for a market outside the plan"
+    },
+    {
+      "coin": "PAXG",
+      "reason": "exit - no longer in the book",
+      "deltaNotionalUsd": -17.42,
+      "placeable": false,
+      "refusal": "price unknown for a market outside the plan"
+    },
+    {
+      "coin": "TRX",
+      "reason": "exit - no longer in the book",
+      "deltaNotionalUsd": -17.68,
+      "placeable": false,
+      "refusal": "price unknown for a market outside the plan"
+    },
+    {
+      "coin": "ETH",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 21.50,
+      "placeable": true
+    },
+    {
       "coin": "LIT",
-      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 21.50,
       "placeable": true
     },
     {
       "coin": "NEAR",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 21.50,
       "placeable": true
     },
     {
       "coin": "ZEC",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 22.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 21.50,
       "placeable": false,
-      "refusal": "rounding would move the weight by 47 %, more than the 25 % tolerance"
+      "refusal": "rounding would move the weight by 48 %, more than the 25 % tolerance"
     }
   ],
   "reconciliation": {
     "wasChecked": true,
-    "clean": true,
+    "clean": false,
     "hasInversion": false,
-    "summary": "paper only - the rule wants 3 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "summary": "3 unexpected",
     "problems": [
+      {
+        "coin": "ETH",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
       {
         "coin": "LIT",
         "status": "Missing",
@@ -375,6 +422,21 @@
         "coin": "ZEC",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "HYPE",
+        "status": "Unexpected",
+        "detail": "held but the rule did not ask for it"
+      },
+      {
+        "coin": "PAXG",
+        "status": "Unexpected",
+        "detail": "held but the rule did not ask for it"
+      },
+      {
+        "coin": "TRX",
+        "status": "Unexpected",
+        "detail": "held but the rule did not ask for it"
       }
     ]
   }
