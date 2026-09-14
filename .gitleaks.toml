@@ -1,0 +1,14 @@
+# Gitleaks config for Lona-Site (public Pages source).
+# Soft rule: clean scan = no keys of recognised gitleaks shape, not "no secrets."
+title = "Lona-Site"
+
+[extend]
+useDefault = true
+
+# analyst.json JSON field "key" holds coin.metric ids (e.g. BTC.funding_annual),
+# not API credentials. Without this, every briefing snapshot walls the scanner.
+[allowlist]
+description = "analyst.json metric-id key fields (not credentials)"
+paths = [
+  '''analyst\.json''',
+]
