@@ -1,9 +1,9 @@
 {
-  "at": "2026-09-16T00:20:55.9007838+00:00",
+  "at": "2026-09-17T00:20:22.6561813+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 430,
+  "paperEquityUsd": 470,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -28,23 +28,23 @@
     "LINK"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.05,
+  "deployedFraction": 0.15,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 430,
+  "smallestViableAccountUsd": 470,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -1.04,
-  "openPaperPnlPct": -0.002427,
+  "openPaperPnlUsd": -0.37,
+  "openPaperPnlPct": -0.000786,
   "forward": {
     "hasHistory": true,
-    "runs": 45,
+    "runs": 46,
     "startUsd": 1000,
-    "currentUsd": 1037.49,
+    "currentUsd": 1037.68,
     "peakUsd": 1059.22,
-    "returnSinceStart": 0.037485,
-    "drawdown": -0.020524,
+    "returnSinceStart": 0.037678,
+    "drawdown": -0.020342,
     "worstDrawdown": -0.023082,
-    "bandUsed": 0.0760,
+    "bandUsed": 0.0753,
     "outsideNormalBand": false,
     "history": [
       {
@@ -271,6 +271,11 @@
         "at": "2026-09-16T00:20:55.9007838+00:00",
         "equityUsd": 1037.49,
         "drawdown": -0.020524
+      },
+      {
+        "at": "2026-09-17T00:20:22.6561813+00:00",
+        "equityUsd": 1037.68,
+        "drawdown": -0.020342
       }
     ]
   },
@@ -285,19 +290,19 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 0,
-    "deployedFraction": 0,
+    "heldCount": 2,
+    "deployedFraction": 0.10,
     "releasedEarly": [
       "ETH"
     ],
-    "openPaperPnlUsd": 0,
-    "givenUpUsd": -1.04,
+    "openPaperPnlUsd": 0.57,
+    "givenUpUsd": -0.94,
     "forward": {
-      "daysRecorded": 30,
-      "daysDiffered": 25,
-      "incumbentUsd": 334.70,
+      "daysRecorded": 31,
+      "daysDiffered": 26,
+      "incumbentUsd": 334.89,
       "shadowUsd": 318.11,
-      "returnGap": -0.055295,
+      "returnGap": -0.055937,
       "incumbentWorstDrawdown": -0.068594,
       "shadowWorstDrawdown": -0.063205,
       "drawdownGap": 0.005389
@@ -306,10 +311,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 26,
-    "daysRemaining": 64,
+    "cleanDaysInARow": 27,
+    "daysRemaining": 63,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-09-16",
+    "lastRecorded": "2026-09-17",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -317,39 +322,94 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "26 of 90 clean days. 64 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "27 of 90 clean days. 63 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
+      "coin": "NEAR",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 2.6219,
+      "price": 2.6695,
+      "returnSinceEntry": 0.018155,
+      "notionalUsd": 23.50,
+      "paperPnlUsd": 0.43
+    },
+    {
+      "coin": "ZEC",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 1337.4,
+      "price": 1345.635,
+      "returnSinceEntry": 0.006157,
+      "notionalUsd": 23.50,
+      "paperPnlUsd": 0.14
+    },
+    {
       "coin": "ETH",
-      "barsSinceEntry": 3,
-      "barsRemaining": 1,
+      "barsSinceEntry": 4,
+      "barsRemaining": 0,
       "entryPrice": 2525.4,
-      "price": 2402.8,
-      "returnSinceEntry": -0.048547,
-      "notionalUsd": 21.50,
-      "paperPnlUsd": -1.04
+      "price": 2424.3,
+      "returnSinceEntry": -0.040033,
+      "notionalUsd": 23.50,
+      "paperPnlUsd": -0.94
     }
   ],
   "orders": [
     {
+      "coin": "LINK",
+      "reason": "exit - no longer in the book",
+      "deltaNotionalUsd": -15.53,
+      "placeable": false,
+      "refusal": "price unknown for a market outside the plan"
+    },
+    {
       "coin": "ETH",
-      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 21.50,
+      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 23.50,
       "placeable": true
+    },
+    {
+      "coin": "NEAR",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 23.50,
+      "placeable": true
+    },
+    {
+      "coin": "ZEC",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 23.50,
+      "placeable": false,
+      "refusal": "rounding would move the weight by 43 %, more than the 25 % tolerance"
     }
   ],
   "reconciliation": {
     "wasChecked": true,
-    "clean": true,
+    "clean": false,
     "hasInversion": false,
-    "summary": "paper only - the rule wants 1 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "summary": "1 unexpected",
     "problems": [
       {
         "coin": "ETH",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "NEAR",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "ZEC",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      },
+      {
+        "coin": "LINK",
+        "status": "Unexpected",
+        "detail": "held but the rule did not ask for it"
       }
     ]
   }
