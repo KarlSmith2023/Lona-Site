@@ -1,7 +1,7 @@
 {
-  "asOf": "2026-09-26T02:41:02.8405127Z",
+  "asOf": "2026-09-26T03:41:04.3087224Z",
   "audience": "public",
-  "brief": "LONA briefing  2026-09-26 02:41 UTC\r\n--------------------------------------------------------------\r\n\r\nWORTH A LOOK\r\n  The breakout book is +80% deployed against a backtested average of 16%.\r\n      Broad strength like this is when the rule earns most of its return and also when it takes its worst drawdowns - everything it holds falls together.\r\n      breakout.deployed = +80%\r\n\r\nWHAT THE RULES DID\r\n  3 new breakout(s) fired today.\r\n      breakout.count = 16  ·  breakout.new_today = 3  ·  breakout.deployed = +80%\r\n  The carry book got richer: mean yield moved +846.1 bp since yesterday.\r\n      Still gross of the hedge. Finding 012 showed this number is only worth what the spot leg costs to hold.\r\n      carry.mean_yield.change_1d = +846.1 bp  ·  carry.mean_yield = +30.27%\r\n\r\nCONTEXT\r\n  Carry book is 4 legs at +30.27% a year, gross.\r\n      That is what funding pays, not what the trade returns. Finding 012 showed the same yield turning negative once the spot hedge is charged for, so this number is only worth what the hedge is worth. Nothing here has measured this account's actual borrow cost or basis slippage.\r\n      carry.legs = 4  ·  carry.mean_yield = +30.27%\r\n  Fear and Greed reads 74 - greed.\r\n      Recorded for later testing. LONA has not established that this index predicts anything, so it informs no rule.\r\n      sentiment.fear_greed = 74\r\n  Biggest moves in the universe since yesterday: CASHCAT +22.05%, ENA +17.82%, PUMP +11.08%.\r\n      CASHCAT.mark.move_1d = +22.05%  ·  ENA.mark.move_1d = +17.82%  ·  PUMP.mark.move_1d = +11.08%\r\n",
+  "brief": "LONA briefing  2026-09-26 03:41 UTC\r\n--------------------------------------------------------------\r\n\r\nWORTH A LOOK\r\n  The breakout book is +80% deployed against a backtested average of 16%.\r\n      Broad strength like this is when the rule earns most of its return and also when it takes its worst drawdowns - everything it holds falls together.\r\n      breakout.deployed = +80%\r\n\r\nWHAT THE RULES DID\r\n  3 new breakout(s) fired today.\r\n      breakout.count = 16  ·  breakout.new_today = 3  ·  breakout.deployed = +80%\r\n  The carry book got thinner: mean yield moved -421.7 bp since yesterday.\r\n      Still gross of the hedge. Finding 012 showed this number is only worth what the spot leg costs to hold.\r\n      carry.mean_yield.change_1d = -421.7 bp  ·  carry.mean_yield = +11.84%\r\n\r\nCONTEXT\r\n  Carry book is 4 legs at +11.84% a year, gross.\r\n      That is what funding pays, not what the trade returns. Finding 012 showed the same yield turning negative once the spot hedge is charged for, so this number is only worth what the hedge is worth. Nothing here has measured this account's actual borrow cost or basis slippage.\r\n      carry.legs = 4  ·  carry.mean_yield = +11.84%\r\n  Fear and Greed reads 74 - greed.\r\n      Recorded for later testing. LONA has not established that this index predicts anything, so it informs no rule.\r\n      sentiment.fear_greed = 74\r\n  Biggest moves in the universe since yesterday: CASHCAT +23.6%, ENA +20.19%, PUMP +9.86%.\r\n      CASHCAT.mark.move_1d = +23.6%  ·  ENA.mark.move_1d = +20.19%  ·  PUMP.mark.move_1d = +9.86%\r\n",
   "problems": [],
   "alarms": 0,
   "warnings": 1,
@@ -49,33 +49,41 @@
     {
       "key": "ARB.funding_annual.change_7d",
       "subject": "ARB",
-      "value": -4076.02800000,
-      "display": "-4076 bp",
+      "value": -5793.1719600000,
+      "display": "-5793.2 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "ARB.mark",
       "subject": "ARB",
-      "value": 0.22348,
-      "display": "$0.2235",
+      "value": 0.22209,
+      "display": "$0.2221",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "ARB.mark.move_1d",
       "subject": "ARB",
-      "value": 0.0335769124040329294237350846,
-      "display": "+3.36%",
+      "value": 0.0238808722511640772670692914,
+      "display": "+2.39%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "ARB.mark.move_7d",
       "subject": "ARB",
-      "value": 0.0340073104150279924119742747,
-      "display": "+3.4%",
+      "value": 0.0497731140102098695405558707,
+      "display": "+4.98%",
       "unit": "percent",
+      "source": "history"
+    },
+    {
+      "key": "ARB.mark.streak",
+      "subject": "ARB",
+      "value": 2,
+      "display": "2",
+      "unit": "number",
       "source": "history"
     },
     {
@@ -105,96 +113,96 @@
     {
       "key": "BTC.funding_annual",
       "subject": "BTC",
-      "value": 0.0739221360,
-      "display": "+7.39%",
+      "value": 0.0971562840,
+      "display": "+9.72%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "BTC.funding_annual.change_1d",
       "subject": "BTC",
-      "value": -355.7786400000,
-      "display": "-355.8 bp",
+      "value": -123.4371600000,
+      "display": "-123.4 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "BTC.funding_annual.change_7d",
       "subject": "BTC",
-      "value": -355.7786400000,
-      "display": "-355.8 bp",
+      "value": -123.4371600000,
+      "display": "-123.4 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "BTC.mark",
       "subject": "BTC",
-      "value": 83995.0,
-      "display": "$83,995",
+      "value": 83956.0,
+      "display": "$83,956",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "BTC.mark.move_1d",
       "subject": "BTC",
-      "value": -0.0046806493660386301694513568,
-      "display": "-0.47%",
+      "value": -0.0041987901791009370181473135,
+      "display": "-0.42%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "BTC.mark.move_7d",
       "subject": "BTC",
-      "value": 0.0323361683299739442505284893,
-      "display": "+3.23%",
+      "value": 0.0343612551899170845294269839,
+      "display": "+3.44%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "CASHCAT.funding_annual",
       "subject": "CASHCAT",
-      "value": 3.9298709040,
-      "display": "+392.99%",
+      "value": 3.6532633920,
+      "display": "+365.33%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "CASHCAT.funding_annual.change_1d",
       "subject": "CASHCAT",
-      "value": 38203.7090400000,
-      "display": "+38203.7 bp",
+      "value": 35437.6339200000,
+      "display": "+35437.6 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "CASHCAT.funding_annual.change_7d",
       "subject": "CASHCAT",
-      "value": 37964.5785600000,
-      "display": "+37964.6 bp",
+      "value": 35437.6339200000,
+      "display": "+35437.6 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "CASHCAT.mark",
       "subject": "CASHCAT",
-      "value": 0.19531,
-      "display": "$0.1953",
+      "value": 0.19714,
+      "display": "$0.1971",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "CASHCAT.mark.move_1d",
       "subject": "CASHCAT",
-      "value": 0.2204586640004999062675748297,
-      "display": "+22.05%",
+      "value": 0.2359874608150470219435736677,
+      "display": "+23.6%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "CASHCAT.mark.move_7d",
       "subject": "CASHCAT",
-      "value": -0.1404365812868585511838746589,
-      "display": "-14.04%",
+      "value": -0.1118219499008830419895476662,
+      "display": "-11.18%",
       "unit": "percent",
       "source": "history"
     },
@@ -233,48 +241,48 @@
     {
       "key": "DOGE.funding_annual",
       "subject": "DOGE",
-      "value": 0.1120763160,
-      "display": "+11.21%",
+      "value": 0.1095000,
+      "display": "+10.95%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "DOGE.funding_annual.change_1d",
       "subject": "DOGE",
-      "value": -368.4806400000,
-      "display": "-368.5 bp",
+      "value": 0.0000000,
+      "display": "0 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "DOGE.funding_annual.change_7d",
       "subject": "DOGE",
-      "value": 25.7631600000,
-      "display": "+25.8 bp",
+      "value": 0.0000000,
+      "display": "0 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "DOGE.mark",
       "subject": "DOGE",
-      "value": 0.098579,
-      "display": "$0.0986",
+      "value": 0.098219,
+      "display": "$0.0982",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "DOGE.mark.move_1d",
       "subject": "DOGE",
-      "value": 0.0329438885105045318803374024,
-      "display": "+3.29%",
+      "value": 0.0328079159612614223072797821,
+      "display": "+3.28%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "DOGE.mark.move_7d",
       "subject": "DOGE",
-      "value": 0.1122782867716748657309202509,
-      "display": "+11.23%",
+      "value": 0.1165437038889583593847692885,
+      "display": "+11.65%",
       "unit": "percent",
       "source": "history"
     },
@@ -305,48 +313,48 @@
     {
       "key": "ENA.funding_annual",
       "subject": "ENA",
-      "value": 0.1095000,
-      "display": "+10.95%",
+      "value": 0.1260931920,
+      "display": "+12.61%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "ENA.funding_annual.change_1d",
       "subject": "ENA",
-      "value": -43.3357200000,
-      "display": "-43.3 bp",
+      "value": 165.9319200000,
+      "display": "+165.9 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "ENA.funding_annual.change_7d",
       "subject": "ENA",
-      "value": -7507.8718800000,
-      "display": "-7507.9 bp",
+      "value": -13478.9944800000,
+      "display": "-13479 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "ENA.mark",
       "subject": "ENA",
-      "value": 0.26609,
-      "display": "$0.2661",
+      "value": 0.26832,
+      "display": "$0.2683",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "ENA.mark.move_1d",
       "subject": "ENA",
-      "value": 0.1782235210768685795253276656,
-      "display": "+17.82%",
+      "value": 0.2018812989921612541993281075,
+      "display": "+20.19%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "ENA.mark.move_7d",
       "subject": "ENA",
-      "value": 0.5145426603676930957937275884,
-      "display": "+51.45%",
+      "value": 0.486372701085752271216485708,
+      "display": "+48.64%",
       "unit": "percent",
       "source": "history"
     },
@@ -401,80 +409,88 @@
     {
       "key": "ETH.funding_annual.change_7d",
       "subject": "ETH",
-      "value": 0.0000000,
-      "display": "0 bp",
+      "value": -279.5140800000,
+      "display": "-279.5 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "ETH.mark",
       "subject": "ETH",
-      "value": 2691.9,
-      "display": "$2,692",
+      "value": 2689.2,
+      "display": "$2,689",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "ETH.mark.move_1d",
       "subject": "ETH",
-      "value": 0.0038784262539623345142644043,
-      "display": "+0.39%",
+      "value": 0.0036949949613705072220356063,
+      "display": "+0.37%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "ETH.mark.move_7d",
       "subject": "ETH",
-      "value": 0.0270899309397535197832805525,
-      "display": "+2.71%",
+      "value": 0.0255862644969127916067594418,
+      "display": "+2.56%",
       "unit": "percent",
+      "source": "history"
+    },
+    {
+      "key": "ETH.mark.streak",
+      "subject": "ETH",
+      "value": 2,
+      "display": "2",
+      "unit": "number",
       "source": "history"
     },
     {
       "key": "FARTCOIN.funding_annual",
       "subject": "FARTCOIN",
-      "value": 0.193061640,
-      "display": "+19.31%",
+      "value": 0.1238427480,
+      "display": "+12.38%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "FARTCOIN.funding_annual.change_1d",
       "subject": "FARTCOIN",
-      "value": 835.616400000,
-      "display": "+835.6 bp",
+      "value": 143.4274800000,
+      "display": "+143.4 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "FARTCOIN.funding_annual.change_7d",
       "subject": "FARTCOIN",
-      "value": -493.2230400000,
-      "display": "-493.2 bp",
+      "value": -896.6385600000,
+      "display": "-896.6 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "FARTCOIN.mark",
       "subject": "FARTCOIN",
-      "value": 0.19494,
-      "display": "$0.1949",
+      "value": 0.19522,
+      "display": "$0.1952",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "FARTCOIN.mark.move_1d",
       "subject": "FARTCOIN",
-      "value": 0.0574450772986167615947925142,
-      "display": "+5.74%",
+      "value": 0.062826655052264808362369338,
+      "display": "+6.28%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "FARTCOIN.mark.move_7d",
       "subject": "FARTCOIN",
-      "value": 0.1965381782469923889025288485,
-      "display": "+19.65%",
+      "value": 0.2005411721296353237808252875,
+      "display": "+20.05%",
       "unit": "percent",
       "source": "history"
     },
@@ -529,24 +545,24 @@
     {
       "key": "HYPE.mark",
       "subject": "HYPE",
-      "value": 92.13,
-      "display": "$92.13",
+      "value": 92.227,
+      "display": "$92.227",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "HYPE.mark.move_1d",
       "subject": "HYPE",
-      "value": 0.0104854454120692302630135784,
-      "display": "+1.05%",
+      "value": 0.0096004378762999452654625068,
+      "display": "+0.96%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "HYPE.mark.move_7d",
       "subject": "HYPE",
-      "value": -0.0180655475619504396482813749,
-      "display": "-1.81%",
+      "value": -0.0179109563513614243576228051,
+      "display": "-1.79%",
       "unit": "percent",
       "source": "history"
     },
@@ -577,48 +593,48 @@
     {
       "key": "LIT.funding_annual",
       "subject": "LIT",
-      "value": -0.1642736520,
-      "display": "-16.43%",
+      "value": 0.1095000,
+      "display": "+10.95%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "LIT.funding_annual.change_1d",
       "subject": "LIT",
-      "value": -2737.7365200000,
-      "display": "-2737.7 bp",
+      "value": 0.0000000,
+      "display": "0 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "LIT.funding_annual.change_7d",
       "subject": "LIT",
-      "value": -20750.3989200000,
-      "display": "-20750.4 bp",
+      "value": -11091.2287200000,
+      "display": "-11091.2 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "LIT.mark",
       "subject": "LIT",
-      "value": 4.8488,
-      "display": "$4.8488",
+      "value": 4.8341,
+      "display": "$4.8341",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "LIT.mark.move_1d",
       "subject": "LIT",
-      "value": -0.018958017197774405665149216,
-      "display": "-1.9%",
+      "value": -0.0245374013761930706055653086,
+      "display": "-2.45%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "LIT.mark.move_7d",
       "subject": "LIT",
-      "value": -0.0175068892851353541903063706,
-      "display": "-1.75%",
+      "value": -0.0212589338138527262051790812,
+      "display": "-2.13%",
       "unit": "percent",
       "source": "history"
     },
@@ -665,71 +681,71 @@
     {
       "key": "NEAR.funding_annual.change_7d",
       "subject": "NEAR",
-      "value": -1555.6621200000,
-      "display": "-1555.7 bp",
+      "value": -2312.5173600000,
+      "display": "-2312.5 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "NEAR.mark",
       "subject": "NEAR",
-      "value": 4.9039,
-      "display": "$4.9039",
+      "value": 4.8953,
+      "display": "$4.8953",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "NEAR.mark.move_1d",
       "subject": "NEAR",
-      "value": 0.0913319238900634249471458774,
-      "display": "+9.13%",
+      "value": 0.096141013985857400681603425,
+      "display": "+9.61%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "NEAR.mark.move_7d",
       "subject": "NEAR",
-      "value": 0.2741704991295762205420011952,
-      "display": "+27.42%",
+      "value": 0.2830371651727210777375897678,
+      "display": "+28.3%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "NEAR.mark.streak",
       "subject": "NEAR",
-      "value": 3,
-      "display": "3",
+      "value": 2,
+      "display": "2",
       "unit": "number",
       "source": "history"
     },
     {
       "key": "PUMP.funding_annual",
       "subject": "PUMP",
-      "value": 0.7612834200,
-      "display": "+76.13%",
+      "value": 0.612534240,
+      "display": "+61.25%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "PUMP.funding_annual.change_1d",
       "subject": "PUMP",
-      "value": 6517.8342000000,
-      "display": "+6517.8 bp",
+      "value": 5030.342400000,
+      "display": "+5030.3 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "PUMP.funding_annual.change_7d",
       "subject": "PUMP",
-      "value": 6517.8342000000,
-      "display": "+6517.8 bp",
+      "value": 5030.342400000,
+      "display": "+5030.3 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "PUMP.mark",
       "subject": "PUMP",
-      "value": 0.004292,
+      "value": 0.004313,
       "display": "$0.0043",
       "unit": "usd",
       "source": "hyperliquid"
@@ -737,16 +753,16 @@
     {
       "key": "PUMP.mark.move_1d",
       "subject": "PUMP",
-      "value": 0.1107660455486542443064182195,
-      "display": "+11.08%",
+      "value": 0.0985736118186449312277126847,
+      "display": "+9.86%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "PUMP.mark.move_7d",
       "subject": "PUMP",
-      "value": 0.0009328358208955223880597015,
-      "display": "+0.09%",
+      "value": 0.0074748890446157439850502219,
+      "display": "+0.75%",
       "unit": "percent",
       "source": "history"
     },
@@ -793,24 +809,24 @@
     {
       "key": "SOL.mark",
       "subject": "SOL",
-      "value": 121.6358,
-      "display": "$121.6358",
+      "value": 120.7735,
+      "display": "$120.7735",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "SOL.mark.move_1d",
       "subject": "SOL",
-      "value": 0.0364331970006816632583503749,
-      "display": "+3.64%",
+      "value": 0.0321639176138791556277241261,
+      "display": "+3.22%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "SOL.mark.move_7d",
       "subject": "SOL",
-      "value": 0.0705491990846681922196796339,
-      "display": "+7.05%",
+      "value": 0.0650220458553791887125220459,
+      "display": "+6.5%",
       "unit": "percent",
       "source": "history"
     },
@@ -849,48 +865,48 @@
     {
       "key": "TAO.funding_annual",
       "subject": "TAO",
-      "value": 0.1355916600,
-      "display": "+13.56%",
+      "value": 0.387673800,
+      "display": "+38.77%",
       "unit": "percent",
       "source": "hyperliquid"
     },
     {
       "key": "TAO.funding_annual.change_1d",
       "subject": "TAO",
-      "value": 260.9166000000,
-      "display": "+260.9 bp",
+      "value": 2781.738000000,
+      "display": "+2781.7 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "TAO.funding_annual.change_7d",
       "subject": "TAO",
-      "value": -5057.6998800000,
-      "display": "-5057.7 bp",
+      "value": -4354.2981600000,
+      "display": "-4354.3 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "TAO.mark",
       "subject": "TAO",
-      "value": 316.33,
-      "display": "$316.33",
+      "value": 313.88,
+      "display": "$313.88",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "TAO.mark.move_1d",
       "subject": "TAO",
-      "value": 0.0789249292267812681196493741,
-      "display": "+7.89%",
+      "value": 0.0619481002808133437087661129,
+      "display": "+6.19%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "TAO.mark.move_7d",
       "subject": "TAO",
-      "value": 0.2404125166653595796408124853,
-      "display": "+24.04%",
+      "value": 0.2145648724993228340362960957,
+      "display": "+21.46%",
       "unit": "percent",
       "source": "history"
     },
@@ -929,24 +945,24 @@
     {
       "key": "TRUMP.mark",
       "subject": "TRUMP",
-      "value": 2.1321,
-      "display": "$2.1321",
+      "value": 2.1346,
+      "display": "$2.1346",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "TRUMP.mark.move_1d",
       "subject": "TRUMP",
-      "value": 0.0334448160535117056856187291,
-      "display": "+3.34%",
+      "value": 0.0277817901680389041359718812,
+      "display": "+2.78%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "TRUMP.mark.move_7d",
       "subject": "TRUMP",
-      "value": 0.03,
-      "display": "+3%",
+      "value": 0.0431510531202658456726775155,
+      "display": "+4.32%",
       "unit": "percent",
       "source": "history"
     },
@@ -1001,32 +1017,32 @@
     {
       "key": "UNI.funding_annual.change_7d",
       "subject": "UNI",
-      "value": -3329.3606400000,
-      "display": "-3329.4 bp",
+      "value": -1992.9613200000,
+      "display": "-1993 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "UNI.mark",
       "subject": "UNI",
-      "value": 9.6186,
-      "display": "$9.6186",
+      "value": 9.60893,
+      "display": "$9.6089",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "UNI.mark.move_1d",
       "subject": "UNI",
-      "value": 0.0552611657834973504920514762,
-      "display": "+5.53%",
+      "value": 0.0518231076569426960757484538,
+      "display": "+5.18%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "UNI.mark.move_7d",
       "subject": "UNI",
-      "value": 0.064334085778781038374717833,
-      "display": "+6.43%",
+      "value": 0.0641118493909191583610188261,
+      "display": "+6.41%",
       "unit": "percent",
       "source": "history"
     },
@@ -1073,32 +1089,32 @@
     {
       "key": "VVV.funding_annual.change_7d",
       "subject": "VVV",
-      "value": -12698.0842800000,
-      "display": "-12698.1 bp",
+      "value": -2416.3321200000,
+      "display": "-2416.3 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "VVV.mark",
       "subject": "VVV",
-      "value": 30.418,
-      "display": "$30.418",
+      "value": 30.384,
+      "display": "$30.384",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "VVV.mark.move_1d",
       "subject": "VVV",
-      "value": -0.0032277620303770091589795684,
-      "display": "-0.32%",
+      "value": -0.0068316281502304448730101657,
+      "display": "-0.68%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "VVV.mark.move_7d",
       "subject": "VVV",
-      "value": 0.0422477299982867911598423848,
-      "display": "+4.22%",
+      "value": 0.073677515106540867168451182,
+      "display": "+7.37%",
       "unit": "percent",
       "source": "history"
     },
@@ -1137,40 +1153,40 @@
     {
       "key": "XMR.funding_annual.change_1d",
       "subject": "XMR",
-      "value": -4509.6742800000,
-      "display": "-4509.7 bp",
+      "value": -4175.9095200000,
+      "display": "-4175.9 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "XMR.funding_annual.change_7d",
       "subject": "XMR",
-      "value": -4576.486800000,
-      "display": "-4576.5 bp",
+      "value": -2736.5626800000,
+      "display": "-2736.6 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "XMR.mark",
       "subject": "XMR",
-      "value": 558.38,
-      "display": "$558.38",
+      "value": 554.08,
+      "display": "$554.08",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "XMR.mark.move_1d",
       "subject": "XMR",
-      "value": -0.008294112423408223070775242,
-      "display": "-0.83%",
+      "value": -0.0133376070659045176914721228,
+      "display": "-1.33%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "XMR.mark.move_7d",
       "subject": "XMR",
-      "value": -0.0359294877328683160966176902,
-      "display": "-3.59%",
+      "value": -0.0283900608483700703175688709,
+      "display": "-2.84%",
       "unit": "percent",
       "source": "history"
     },
@@ -1217,32 +1233,32 @@
     {
       "key": "XRP.funding_annual.change_7d",
       "subject": "XRP",
-      "value": -2440.4571600000,
-      "display": "-2440.5 bp",
+      "value": -1330.9593600000,
+      "display": "-1331 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "XRP.mark",
       "subject": "XRP",
-      "value": 1.5667,
-      "display": "$1.5667",
+      "value": 1.5607,
+      "display": "$1.5607",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "XRP.mark.move_1d",
       "subject": "XRP",
-      "value": 0.0231844305120167189132706374,
-      "display": "+2.32%",
+      "value": 0.0183348558006002870938274827,
+      "display": "+1.83%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "XRP.mark.move_7d",
       "subject": "XRP",
-      "value": 0.0995929253228523301516002246,
-      "display": "+9.96%",
+      "value": 0.1048421350700835339091037803,
+      "display": "+10.48%",
       "unit": "percent",
       "source": "history"
     },
@@ -1289,8 +1305,8 @@
     {
       "key": "ZEC.funding_annual.change_1d",
       "subject": "ZEC",
-      "value": -464.7705600000,
-      "display": "-464.8 bp",
+      "value": 0.0000000,
+      "display": "0 bp",
       "unit": "basispoints",
       "source": "history"
     },
@@ -1305,24 +1321,24 @@
     {
       "key": "ZEC.mark",
       "subject": "ZEC",
-      "value": 1539.1333,
-      "display": "$1,539",
+      "value": 1533.9,
+      "display": "$1,534",
       "unit": "usd",
       "source": "hyperliquid"
     },
     {
       "key": "ZEC.mark.move_1d",
       "subject": "ZEC",
-      "value": -0.0009520316759704011424120473,
-      "display": "-0.1%",
+      "value": -0.0155067791013250127321756761,
+      "display": "-1.55%",
       "unit": "percent",
       "source": "history"
     },
     {
       "key": "ZEC.mark.move_7d",
       "subject": "ZEC",
-      "value": -0.0058273880845264201581882951,
-      "display": "-0.58%",
+      "value": -0.0053174242915504831074508787,
+      "display": "-0.53%",
       "unit": "percent",
       "source": "history"
     },
@@ -1384,23 +1400,16 @@
     },
     {
       "key": "carry.best_yield",
-      "value": 0.8823036960,
-      "display": "+88.23%",
+      "value": 0.1284697800,
+      "display": "+12.85%",
       "unit": "percent",
       "source": "computed"
     },
     {
       "key": "carry.best_yield.change_1d",
-      "value": 3849.0914400000,
-      "display": "+3849.1 bp",
+      "value": -1852.5823200000,
+      "display": "-1852.6 bp",
       "unit": "basispoints",
-      "source": "history"
-    },
-    {
-      "key": "carry.best_yield.streak",
-      "value": 2,
-      "display": "2",
-      "unit": "number",
       "source": "history"
     },
     {
@@ -1426,30 +1435,23 @@
     },
     {
       "key": "carry.mean_yield",
-      "value": 0.3027009240,
-      "display": "+30.27%",
+      "value": 0.1183907430,
+      "display": "+11.84%",
       "unit": "percent",
       "source": "computed"
     },
     {
       "key": "carry.mean_yield.change_1d",
-      "value": 846.0802200000,
-      "display": "+846.1 bp",
+      "value": -421.6626000000,
+      "display": "-421.7 bp",
       "unit": "basispoints",
       "source": "history"
     },
     {
       "key": "carry.mean_yield.change_7d",
-      "value": -5032.6178100000,
-      "display": "-5032.6 bp",
+      "value": -5208.5624100000,
+      "display": "-5208.6 bp",
       "unit": "basispoints",
-      "source": "history"
-    },
-    {
-      "key": "carry.mean_yield.streak",
-      "value": 2,
-      "display": "2",
-      "unit": "number",
       "source": "history"
     },
     {
@@ -1471,7 +1473,7 @@
     {
       "key": "kPEPE.mark",
       "subject": "kPEPE",
-      "value": 0.004475,
+      "value": 0.004458,
       "display": "$0.0045",
       "unit": "usd",
       "source": "hyperliquid"
@@ -1499,22 +1501,22 @@
     },
     {
       "key": "recorder.mb_today",
-      "value": 61.423166,
-      "display": "61.423166",
+      "value": 82.300413,
+      "display": "82.300413",
       "unit": "number",
       "source": "disk"
     },
     {
       "key": "recorder.mb_today.change_1d",
-      "value": -2.272546,
-      "display": "-2.272546",
+      "value": -4.472636,
+      "display": "-4.472636",
       "unit": "number",
       "source": "history"
     },
     {
       "key": "recorder.minutes_since_write",
-      "value": 0.00864667333333334,
-      "display": "0.00864667333333334",
+      "value": 0.000858991666666667,
+      "display": "0.000858991666666667",
       "unit": "number",
       "source": "disk"
     },
@@ -1577,21 +1579,21 @@
     {
       "severity": "signal",
       "topic": "changes",
-      "headline": "The carry book got richer: mean yield moved +846.1 bp since yesterday.",
+      "headline": "The carry book got thinner: mean yield moved -421.7 bp since yesterday.",
       "detail": "Still gross of the hedge. Finding 012 showed this number is only worth what the spot leg costs to hold.",
       "evidence": [
-        "carry.mean_yield.change_1d = +846.1 bp",
-        "carry.mean_yield = +30.27%"
+        "carry.mean_yield.change_1d = -421.7 bp",
+        "carry.mean_yield = +11.84%"
       ]
     },
     {
       "severity": "note",
       "topic": "carry",
-      "headline": "Carry book is 4 legs at +30.27% a year, gross.",
+      "headline": "Carry book is 4 legs at +11.84% a year, gross.",
       "detail": "That is what funding pays, not what the trade returns. Finding 012 showed the same yield turning negative once the spot hedge is charged for, so this number is only worth what the hedge is worth. Nothing here has measured this account's actual borrow cost or basis slippage.",
       "evidence": [
         "carry.legs = 4",
-        "carry.mean_yield = +30.27%"
+        "carry.mean_yield = +11.84%"
       ]
     },
     {
@@ -1606,11 +1608,11 @@
     {
       "severity": "note",
       "topic": "changes",
-      "headline": "Biggest moves in the universe since yesterday: CASHCAT +22.05%, ENA +17.82%, PUMP +11.08%.",
+      "headline": "Biggest moves in the universe since yesterday: CASHCAT +23.6%, ENA +20.19%, PUMP +9.86%.",
       "evidence": [
-        "CASHCAT.mark.move_1d = +22.05%",
-        "ENA.mark.move_1d = +17.82%",
-        "PUMP.mark.move_1d = +11.08%"
+        "CASHCAT.mark.move_1d = +23.6%",
+        "ENA.mark.move_1d = +20.19%",
+        "PUMP.mark.move_1d = +9.86%"
       ]
     }
   ],
