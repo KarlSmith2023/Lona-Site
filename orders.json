@@ -1,9 +1,9 @@
 {
-  "at": "2026-09-28T00:20:13.1071077+00:00",
+  "at": "2026-09-29T00:21:42.6290511+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 520,
+  "paperEquityUsd": 500,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -11,40 +11,40 @@
     "HYPE",
     "ZEC",
     "SOL",
+    "NEAR",
     "XRP",
     "PUMP",
-    "NEAR",
     "LIT",
-    "ENA",
     "UNI",
-    "XMR",
+    "ENA",
     "ARB",
-    "CASHCAT",
+    "XMR",
     "TAO",
+    "SUI",
     "VVV",
+    "XPL",
+    "CASHCAT",
     "DOGE",
-    "FARTCOIN",
-    "kPEPE",
-    "SUI"
+    "kPEPE"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.35,
+  "deployedFraction": 0.25,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 520,
+  "smallestViableAccountUsd": 500,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -4.06,
-  "openPaperPnlPct": -0.007805,
+  "openPaperPnlUsd": -9.02,
+  "openPaperPnlPct": -0.018049,
   "forward": {
     "hasHistory": true,
-    "runs": 57,
+    "runs": 58,
     "startUsd": 1000,
-    "currentUsd": 1071.03,
+    "currentUsd": 1058.96,
     "peakUsd": 1072.74,
-    "returnSinceStart": 0.071030,
-    "drawdown": -0.001592,
+    "returnSinceStart": 0.058957,
+    "drawdown": -0.012845,
     "worstDrawdown": -0.023082,
-    "bandUsed": 0.0059,
+    "bandUsed": 0.0476,
     "outsideNormalBand": false,
     "history": [
       {
@@ -331,6 +331,11 @@
         "at": "2026-09-28T00:20:13.1071077+00:00",
         "equityUsd": 1071.03,
         "drawdown": -0.001592
+      },
+      {
+        "at": "2026-09-29T00:21:42.6290511+00:00",
+        "equityUsd": 1058.96,
+        "drawdown": -0.012845
       }
     ]
   },
@@ -345,20 +350,21 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 5,
-    "deployedFraction": 0.25,
+    "heldCount": 2,
+    "deployedFraction": 0.10,
     "releasedEarly": [
+      "ZEC",
       "SOL",
-      "LIT"
+      "TAO"
     ],
-    "openPaperPnlUsd": -0.85,
-    "givenUpUsd": -3.21,
+    "openPaperPnlUsd": -4.51,
+    "givenUpUsd": -4.51,
     "forward": {
-      "daysRecorded": 42,
-      "daysDiffered": 34,
-      "incumbentUsd": 368.24,
-      "shadowUsd": 341.60,
-      "returnGap": -0.088801,
+      "daysRecorded": 43,
+      "daysDiffered": 35,
+      "incumbentUsd": 356.17,
+      "shadowUsd": 331.55,
+      "returnGap": -0.082058,
       "incumbentWorstDrawdown": -0.068594,
       "shadowWorstDrawdown": -0.063205,
       "drawdownGap": 0.005389
@@ -367,10 +373,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 38,
-    "daysRemaining": 52,
+    "cleanDaysInARow": 39,
+    "daysRemaining": 51,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-09-28",
+    "lastRecorded": "2026-09-29",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -378,146 +384,102 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "38 of 90 clean days. 52 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "39 of 90 clean days. 51 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
-      "coin": "SUI",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 1.2649,
-      "price": 1.282,
-      "returnSinceEntry": 0.013519,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": 0.35
-    },
-    {
       "coin": "SOL",
-      "barsSinceEntry": 2,
-      "barsRemaining": 2,
+      "barsSinceEntry": 3,
+      "barsRemaining": 1,
       "entryPrice": 122.16,
-      "price": 122.45,
-      "returnSinceEntry": 0.002374,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": 0.06
-    },
-    {
-      "coin": "ENA",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 0.27268,
-      "price": 0.27213,
-      "returnSinceEntry": -0.002017,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": -0.05
-    },
-    {
-      "coin": "NEAR",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
-      "entryPrice": 5.3915,
-      "price": 5.3775,
-      "returnSinceEntry": -0.002597,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": -0.07
+      "price": 118.55,
+      "returnSinceEntry": -0.029551,
+      "notionalUsd": 25.00,
+      "paperPnlUsd": -0.74
     },
     {
       "coin": "TAO",
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
+      "entryPrice": 321.48,
+      "price": 306.68,
+      "returnSinceEntry": -0.046037,
+      "notionalUsd": 25.00,
+      "paperPnlUsd": -1.15
+    },
+    {
+      "coin": "ENA",
       "barsSinceEntry": 1,
       "barsRemaining": 3,
-      "entryPrice": 321.48,
-      "price": 320.55,
-      "returnSinceEntry": -0.002893,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": -0.08
+      "entryPrice": 0.27268,
+      "price": 0.25407,
+      "returnSinceEntry": -0.068248,
+      "notionalUsd": 25.00,
+      "paperPnlUsd": -1.71
     },
     {
       "coin": "ZEC",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
       "entryPrice": 1653.2,
-      "price": 1589.4,
-      "returnSinceEntry": -0.038592,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": -1.00
+      "price": 1479.6,
+      "returnSinceEntry": -0.105008,
+      "notionalUsd": 25.00,
+      "paperPnlUsd": -2.63
     },
     {
-      "coin": "LIT",
-      "barsSinceEntry": 4,
-      "barsRemaining": 0,
-      "entryPrice": 5.308,
-      "price": 4.6398,
-      "returnSinceEntry": -0.125885,
-      "notionalUsd": 26.00,
-      "paperPnlUsd": -3.27
+      "coin": "NEAR",
+      "barsSinceEntry": 1,
+      "barsRemaining": 3,
+      "entryPrice": 5.3915,
+      "price": 4.7869,
+      "returnSinceEntry": -0.112139,
+      "notionalUsd": 25.00,
+      "paperPnlUsd": -2.80
     }
   ],
   "orders": [
     {
-      "coin": "ETH",
-      "reason": "exit - no longer in the book",
-      "deltaNotionalUsd": -18.05,
-      "placeable": false,
-      "refusal": "price unknown for a market outside the plan"
-    },
-    {
       "coin": "ENA",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
-      "placeable": true
-    },
-    {
-      "coin": "LIT",
-      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 25.00,
       "placeable": true
     },
     {
       "coin": "NEAR",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 25.00,
       "placeable": true
     },
     {
       "coin": "SOL",
-      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
-      "placeable": true
-    },
-    {
-      "coin": "SUI",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
+      "reason": "entry - new high, 3 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 25.00,
       "placeable": true
     },
     {
       "coin": "TAO",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 25.00,
       "placeable": true
     },
     {
       "coin": "ZEC",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 26.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 25.00,
       "placeable": false,
-      "refusal": "rounding would move the weight by 39 %, more than the 25 % tolerance"
+      "refusal": "rounding would move the weight by 41 %, more than the 25 % tolerance"
     }
   ],
   "reconciliation": {
     "wasChecked": true,
-    "clean": false,
+    "clean": true,
     "hasInversion": false,
-    "summary": "1 unexpected",
+    "summary": "paper only - the rule wants 5 position(s) and none has been placed, which is the expected state while nothing is being traded",
     "problems": [
       {
         "coin": "ENA",
-        "status": "Missing",
-        "detail": "the rule wants it and the account does not hold it"
-      },
-      {
-        "coin": "LIT",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
       },
@@ -532,11 +494,6 @@
         "detail": "the rule wants it and the account does not hold it"
       },
       {
-        "coin": "SUI",
-        "status": "Missing",
-        "detail": "the rule wants it and the account does not hold it"
-      },
-      {
         "coin": "TAO",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
@@ -545,11 +502,6 @@
         "coin": "ZEC",
         "status": "Missing",
         "detail": "the rule wants it and the account does not hold it"
-      },
-      {
-        "coin": "ETH",
-        "status": "Unexpected",
-        "detail": "held but the rule did not ask for it"
       }
     ]
   }
