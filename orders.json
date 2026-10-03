@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-02T00:20:30.7526244+00:00",
+  "at": "2026-10-03T00:18:19.4636224+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
@@ -28,23 +28,23 @@
     "kPEPE"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0.15,
+  "deployedFraction": 0.05,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
   "smallestViableAccountUsd": 470,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -5.45,
-  "openPaperPnlPct": -0.011594,
+  "openPaperPnlUsd": -2.12,
+  "openPaperPnlPct": -0.004508,
   "forward": {
     "hasHistory": true,
-    "runs": 61,
+    "runs": 62,
     "startUsd": 1000,
-    "currentUsd": 1055.76,
+    "currentUsd": 1052.48,
     "peakUsd": 1072.74,
-    "returnSinceStart": 0.055759,
-    "drawdown": -0.015827,
+    "returnSinceStart": 0.052482,
+    "drawdown": -0.018882,
     "worstDrawdown": -0.023082,
-    "bandUsed": 0.0586,
+    "bandUsed": 0.0699,
     "outsideNormalBand": false,
     "history": [
       {
@@ -351,6 +351,11 @@
         "at": "2026-10-02T00:20:30.7526244+00:00",
         "equityUsd": 1055.76,
         "drawdown": -0.015827
+      },
+      {
+        "at": "2026-10-03T00:18:19.4636224+00:00",
+        "equityUsd": 1052.48,
+        "drawdown": -0.018882
       }
     ]
   },
@@ -365,20 +370,19 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 1,
-    "deployedFraction": 0.05,
+    "heldCount": 0,
+    "deployedFraction": 0,
     "releasedEarly": [
-      "NEAR",
-      "ENA"
+      "PUMP"
     ],
-    "openPaperPnlUsd": -0.43,
-    "givenUpUsd": -5.02,
+    "openPaperPnlUsd": 0,
+    "givenUpUsd": -2.12,
     "forward": {
-      "daysRecorded": 46,
-      "daysDiffered": 38,
-      "incumbentUsd": 352.97,
-      "shadowUsd": 331.54,
-      "returnGap": -0.071437,
+      "daysRecorded": 47,
+      "daysDiffered": 39,
+      "incumbentUsd": 349.70,
+      "shadowUsd": 329.82,
+      "returnGap": -0.066254,
       "incumbentWorstDrawdown": -0.068594,
       "shadowWorstDrawdown": -0.063205,
       "drawdownGap": 0.005389
@@ -387,10 +391,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 42,
-    "daysRemaining": 48,
+    "cleanDaysInARow": 43,
+    "daysRemaining": 47,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-10-02",
+    "lastRecorded": "2026-10-03",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -398,57 +402,25 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "42 of 90 clean days. 48 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "43 of 90 clean days. 47 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
       "coin": "PUMP",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
       "entryPrice": 0.005934,
-      "price": 0.005826,
-      "returnSinceEntry": -0.018200,
+      "price": 0.005399,
+      "returnSinceEntry": -0.090158,
       "notionalUsd": 23.50,
-      "paperPnlUsd": -0.43
-    },
-    {
-      "coin": "NEAR",
-      "barsSinceEntry": 4,
-      "barsRemaining": 0,
-      "entryPrice": 5.3915,
-      "price": 4.8277,
-      "returnSinceEntry": -0.104572,
-      "notionalUsd": 23.50,
-      "paperPnlUsd": -2.46
-    },
-    {
-      "coin": "ENA",
-      "barsSinceEntry": 4,
-      "barsRemaining": 0,
-      "entryPrice": 0.27268,
-      "price": 0.24293,
-      "returnSinceEntry": -0.109102,
-      "notionalUsd": 23.50,
-      "paperPnlUsd": -2.56
+      "paperPnlUsd": -2.12
     }
   ],
   "orders": [
     {
-      "coin": "ENA",
-      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 23.50,
-      "placeable": true
-    },
-    {
-      "coin": "NEAR",
-      "reason": "entry - new high, 4 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 23.50,
-      "placeable": true
-    },
-    {
       "coin": "PUMP",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
       "deltaNotionalUsd": 23.50,
       "placeable": true
     }
@@ -457,18 +429,8 @@
     "wasChecked": true,
     "clean": true,
     "hasInversion": false,
-    "summary": "paper only - the rule wants 3 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "summary": "paper only - the rule wants 1 position(s) and none has been placed, which is the expected state while nothing is being traded",
     "problems": [
-      {
-        "coin": "ENA",
-        "status": "Missing",
-        "detail": "the rule wants it and the account does not hold it"
-      },
-      {
-        "coin": "NEAR",
-        "status": "Missing",
-        "detail": "the rule wants it and the account does not hold it"
-      },
       {
         "coin": "PUMP",
         "status": "Missing",
