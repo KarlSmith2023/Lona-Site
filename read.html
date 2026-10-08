@@ -3,6 +3,19 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<!-- THE PHONE'S CLOCK. Same arrangement as the other five pages, and it is
+     pinned rather than reasoned: viewport-fit=cover plus black-translucent means
+     the page DEFINITELY owns the strip the clock and battery live in, on every
+     iOS version and whenever the home-screen icon was installed. The page then
+     pads itself with max(env(safe-area-inset-top), 44px) - env when iOS reports
+     it, the floor for the configuration where it comes back 0, which is the case
+     that started all of this. See StatusBarTests; this bug has shipped twice.
+
+     This page matters most of the five for it. It is the only page a stranger
+     ever opens, it is the URL in the X bio, and almost every one of those opens
+     is a phone. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="LONA"/>
 <title>LONA — public read</title>
 <meta name="description" content="LONA is method-first crypto research. We try to kill our own ideas in public. Paper only. No signals."/>
 <meta name="robots" content="index,follow"/>
@@ -13,12 +26,32 @@
   --acc:#2de0a5; --acc2:#31a8ff; --warn:#f0a02a;
   --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
 a{color:var(--acc2);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
+
+/* The floor, guarded twice. display-mode:standalone has not always matched
+   inside an iOS web app, so the head script sets a class as well. Either guard
+   alone would be a single point of failure for a fix on its third attempt. */
+@supports (-webkit-touch-callout:none){
+  @media all and (display-mode:standalone){
+    :root{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+  }
+}
+html.ios-standalone{--safe-t:max(env(safe-area-inset-top,0px),44px)}
+
+/* A floor defined and never applied is the same as no floor, so the thing that
+   sits at the top of the screen is the thing that carries it. */
+.stickytop{position:sticky;top:0;z-index:90;padding-top:var(--safe-t);
+  background:rgba(5,8,11,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+.stickytop .in{max-width:720px;margin:0 auto;padding:10px 22px}
+.wrap{max-width:720px;margin:0 auto;padding:28px 22px calc(80px + var(--safe-b))}
 .logo{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .logo i{color:var(--acc);font-style:normal}
 h1{font-size:34px;line-height:1.15;margin:18px 0 10px;font-weight:650}
@@ -34,10 +67,19 @@ h1{font-size:34px;line-height:1.15;margin:18px 0 10px;font-weight:650}
 .cta:hover{text-decoration:none;background:rgba(45,224,165,.08)}
 .foot{margin-top:40px;font-size:12px;color:var(--faint);font-family:var(--mono)}
 </style>
+<script>/* iOS does not always report display-mode:standalone. This is the other half of the guard on --safe-t; see the status-bar comment above. */
+try{if(window.navigator.standalone===true){document.documentElement.className+=" ios-standalone";}}catch(e){}</script>
 </head>
 <body>
-<main class="wrap">
+<!-- NO PAGE SWITCHER HERE, DELIBERATELY. This is the one page that is public -
+     see cloudflare-public-read-access-2026-09-06.md. The other five sit behind
+     Cloudflare Access, Karl only, so a switcher here would offer a stranger five
+     links to a login screen and advertise the gated surface at the same time.
+     PageSwitcherTests exempts this page BY NAME and says why. -->
+<div class="stickytop"><div class="in">
   <div class="logo"><i>LONA</i> · public read</div>
+</div></div>
+<main class="wrap">
   <h1>We try to kill our own ideas.</h1>
   <p class="lede">Method-first crypto research. Pre-register. Measure. Kill what fails. Paper book only — never a tip sheet.</p>
 
