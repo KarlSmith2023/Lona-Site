@@ -1,9 +1,9 @@
 {
-  "at": "2026-10-20T00:18:28.8667444+00:00",
+  "at": "2026-10-21T00:19:04.5929808+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 430,
+  "paperEquityUsd": 460,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -31,20 +31,20 @@
   "deployedFraction": 0.05,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 430,
+  "smallestViableAccountUsd": 460,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -0.08,
-  "openPaperPnlPct": -0.000182,
+  "openPaperPnlUsd": -0.60,
+  "openPaperPnlPct": -0.001297,
   "forward": {
     "hasHistory": true,
-    "runs": 79,
+    "runs": 80,
     "startUsd": 1000,
-    "currentUsd": 1049.97,
+    "currentUsd": 1049.49,
     "peakUsd": 1072.74,
-    "returnSinceStart": 0.049971,
-    "drawdown": -0.021222,
+    "returnSinceStart": 0.049490,
+    "drawdown": -0.021671,
     "worstDrawdown": -0.023082,
-    "bandUsed": 0.0786,
+    "bandUsed": 0.0803,
     "outsideNormalBand": false,
     "history": [
       {
@@ -441,6 +441,11 @@
         "at": "2026-10-20T00:18:28.8667444+00:00",
         "equityUsd": 1049.97,
         "drawdown": -0.021222
+      },
+      {
+        "at": "2026-10-21T00:19:04.5929808+00:00",
+        "equityUsd": 1049.49,
+        "drawdown": -0.021671
       }
     ]
   },
@@ -458,26 +463,26 @@
     "heldCount": 1,
     "deployedFraction": 0.05,
     "releasedEarly": [],
-    "openPaperPnlUsd": -0.08,
+    "openPaperPnlUsd": -0.60,
     "givenUpUsd": 0.00,
     "forward": {
-      "daysRecorded": 64,
+      "daysRecorded": 65,
       "daysDiffered": 45,
-      "incumbentUsd": 347.19,
-      "shadowUsd": 326.46,
+      "incumbentUsd": 346.70,
+      "shadowUsd": 325.98,
       "returnGap": -0.069079,
       "incumbentWorstDrawdown": -0.068594,
-      "shadowWorstDrawdown": -0.063205,
-      "drawdownGap": 0.005389
+      "shadowWorstDrawdown": -0.064252,
+      "drawdownGap": 0.004342
     },
     "verdict": "Not adopted, and it is not an arbiter. Finding 035 measured that this comparison needs about 8.7 years to resolve, so it will never be settled by waiting. It is kept as a DIVERGENCE MONITOR: it is worth reading only if the two books drift further apart than the backtest says they should, which is evidence about the plumbing and never about which rule is better."
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 60,
-    "daysRemaining": 30,
+    "cleanDaysInARow": 61,
+    "daysRemaining": 29,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-10-20",
+    "lastRecorded": "2026-10-21",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -485,26 +490,26 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "60 of 90 clean days. 30 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "61 of 90 clean days. 29 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
       "coin": "XMR",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
+      "barsSinceEntry": 1,
+      "barsRemaining": 3,
       "entryPrice": 606.4,
-      "price": 604.19,
-      "returnSinceEntry": -0.003644,
-      "notionalUsd": 21.50,
-      "paperPnlUsd": -0.08
+      "price": 590.671,
+      "returnSinceEntry": -0.025938,
+      "notionalUsd": 23.00,
+      "paperPnlUsd": -0.60
     }
   ],
   "orders": [
     {
       "coin": "XMR",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 21.50,
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 23.00,
       "placeable": true
     }
   ],
