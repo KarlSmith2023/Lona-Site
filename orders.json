@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-05T00:18:54.2304421+00:00",
+  "at": "2026-11-06T00:17:57.2109556+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
@@ -33,18 +33,18 @@
   "accountTooSmall": false,
   "smallestViableAccountUsd": 460,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -0.03,
-  "openPaperPnlPct": -0.000075,
+  "openPaperPnlUsd": -0.69,
+  "openPaperPnlPct": -0.001490,
   "forward": {
     "hasHistory": true,
-    "runs": 95,
+    "runs": 96,
     "startUsd": 1000,
-    "currentUsd": 1050.39,
+    "currentUsd": 1049.73,
     "peakUsd": 1072.74,
-    "returnSinceStart": 0.050386,
-    "drawdown": -0.020836,
+    "returnSinceStart": 0.049734,
+    "drawdown": -0.021443,
     "worstDrawdown": -0.023082,
-    "bandUsed": 0.0772,
+    "bandUsed": 0.0794,
     "outsideNormalBand": false,
     "history": [
       {
@@ -521,6 +521,11 @@
         "at": "2026-11-05T00:18:54.2304421+00:00",
         "equityUsd": 1050.39,
         "drawdown": -0.020836
+      },
+      {
+        "at": "2026-11-06T00:17:57.2109556+00:00",
+        "equityUsd": 1049.73,
+        "drawdown": -0.021443
       }
     ]
   },
@@ -538,26 +543,26 @@
     "heldCount": 1,
     "deployedFraction": 0.05,
     "releasedEarly": [],
-    "openPaperPnlUsd": -0.03,
+    "openPaperPnlUsd": -0.69,
     "givenUpUsd": 0.00,
     "forward": {
-      "daysRecorded": 80,
+      "daysRecorded": 81,
       "daysDiffered": 48,
-      "incumbentUsd": 347.60,
-      "shadowUsd": 326.15,
+      "incumbentUsd": 346.95,
+      "shadowUsd": 325.50,
       "returnGap": -0.071488,
       "incumbentWorstDrawdown": -0.068594,
-      "shadowWorstDrawdown": -0.065090,
-      "drawdownGap": 0.003504
+      "shadowWorstDrawdown": -0.065625,
+      "drawdownGap": 0.002968
     },
     "verdict": "Not adopted, and it is not an arbiter. Finding 035 measured that this comparison needs about 8.7 years to resolve, so it will never be settled by waiting. It is kept as a DIVERGENCE MONITOR: it is worth reading only if the two books drift further apart than the backtest says they should, which is evidence about the plumbing and never about which rule is better."
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 76,
-    "daysRemaining": 14,
+    "cleanDaysInARow": 77,
+    "daysRemaining": 13,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-11-05",
+    "lastRecorded": "2026-11-06",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -565,25 +570,25 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": false,
-    "summary": "76 of 90 clean days. 14 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
+    "summary": "77 of 90 clean days. 13 to go, and any single missed day sends it back to zero. 4 day(s) in this span ran on time and recorded a position the rule could not have opened; reported, not deducted - the count is what the pre-registration says it is, and contamination breaks the streak only from 2026-08-29.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
       "coin": "XMR",
-      "barsSinceEntry": 0,
-      "barsRemaining": 4,
+      "barsSinceEntry": 1,
+      "barsRemaining": 3,
       "entryPrice": 643.36,
-      "price": 642.4,
-      "returnSinceEntry": -0.001492,
+      "price": 624.19,
+      "returnSinceEntry": -0.029797,
       "notionalUsd": 23.00,
-      "paperPnlUsd": -0.03
+      "paperPnlUsd": -0.69
     }
   ],
   "orders": [
     {
       "coin": "XMR",
-      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
       "deltaNotionalUsd": 23.00,
       "placeable": true
     }
