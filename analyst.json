@@ -1,13 +1,13 @@
 {
-  "asOf": "2026-11-17T07:41:02.4346803Z",
+  "asOf": "2026-11-17T10:41:02.3448959Z",
   "audience": "public",
-  "brief": "LONA briefing  2026-11-17 07:41 UTC\r\n--------------------------------------------------------------\r\n\r\nWORTH A LOOK\r\n  hyperliquid collector failed — market section not measured.\r\n      hyperliquid: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)\r\n  fear and greed collector failed — sentiment not measured.\r\n      fear and greed: HttpRequestException - No such host is known. (api.alternative.me:443)\r\n  account collector failed — account section not measured.\r\n      account: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)\r\n  breakout block missing — breakout.count was not measured.\r\n  carry block missing — carry.mean_yield / carry.eligible / carry.legs absent.\r\n  universe block missing — universe.size was not measured.\r\n  funding block missing — no funding_annual fact was measured.\r\n  account block missing - no account.* fact was measured.\r\n",
+  "brief": "LONA briefing  2026-11-17 10:41 UTC\r\n--------------------------------------------------------------\r\n\r\nNEEDS ATTENTION NOW\r\n  The recorder has written nothing for 183.751526966667.\r\n      This data cannot be backfilled. Check the recorder window now.\r\n      recorder.minutes_since_write = 183.751526966667\r\n\r\nWORTH A LOOK\r\n  hyperliquid collector failed — market section not measured.\r\n      hyperliquid: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)\r\n  fear and greed collector failed — sentiment not measured.\r\n      fear and greed: HttpRequestException - No such host is known. (api.alternative.me:443)\r\n  account collector failed — account section not measured.\r\n      account: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)\r\n  breakout block missing — breakout.count was not measured.\r\n  carry block missing — carry.mean_yield / carry.eligible / carry.legs absent.\r\n  universe block missing — universe.size was not measured.\r\n  funding block missing — no funding_annual fact was measured.\r\n  account block missing - no account.* fact was measured.\r\n",
   "problems": [
     "hyperliquid: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)",
     "fear and greed: HttpRequestException - No such host is known. (api.alternative.me:443)",
     "account: HttpRequestException - No such host is known. (api.hyperliquid.xyz:443)"
   ],
-  "alarms": 0,
+  "alarms": 1,
   "warnings": 8,
   "facts": [
     {
@@ -26,20 +26,29 @@
     },
     {
       "key": "recorder.mb_today.change_1d",
-      "value": 116.395054,
-      "display": "116.395054",
+      "value": 56.886961,
+      "display": "56.886961",
       "unit": "number",
       "source": "history"
     },
     {
       "key": "recorder.minutes_since_write",
-      "value": 3.74628411833333,
-      "display": "3.74628411833333",
+      "value": 183.751526966667,
+      "display": "183.751526966667",
       "unit": "number",
       "source": "disk"
     }
   ],
   "observations": [
+    {
+      "severity": "alarm",
+      "topic": "recorder",
+      "headline": "The recorder has written nothing for 183.751526966667.",
+      "detail": "This data cannot be backfilled. Check the recorder window now.",
+      "evidence": [
+        "recorder.minutes_since_write = 183.751526966667"
+      ]
+    },
     {
       "severity": "warning",
       "topic": "collector",
