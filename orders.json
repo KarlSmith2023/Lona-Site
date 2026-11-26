@@ -1,9 +1,9 @@
 {
-  "at": "2026-11-25T00:18:41.8470111+00:00",
+  "at": "2026-11-26T00:17:47.8300954+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 350,
+  "paperEquityUsd": 360,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -28,16 +28,16 @@
     "ZRO"
   ],
   "weightPerLeg": 0.05,
-  "deployedFraction": 0,
+  "deployedFraction": 0.05,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 350,
+  "smallestViableAccountUsd": 360,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": 0,
-  "openPaperPnlPct": 0,
+  "openPaperPnlUsd": -0.05,
+  "openPaperPnlPct": -0.000133,
   "forward": {
     "hasHistory": true,
-    "runs": 115,
+    "runs": 116,
     "startUsd": 1000,
     "currentUsd": 1042.96,
     "peakUsd": 1072.74,
@@ -621,6 +621,11 @@
         "at": "2026-11-25T00:18:41.8470111+00:00",
         "equityUsd": 1042.96,
         "drawdown": -0.027754
+      },
+      {
+        "at": "2026-11-26T00:17:47.8300954+00:00",
+        "equityUsd": 1042.96,
+        "drawdown": -0.027754
       }
     ]
   },
@@ -635,13 +640,13 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 0,
-    "deployedFraction": 0,
+    "heldCount": 1,
+    "deployedFraction": 0.05,
     "releasedEarly": [],
-    "openPaperPnlUsd": 0,
-    "givenUpUsd": 0,
+    "openPaperPnlUsd": -0.05,
+    "givenUpUsd": 0.00,
     "forward": {
-      "daysRecorded": 100,
+      "daysRecorded": 101,
       "daysDiffered": 54,
       "incumbentUsd": 340.18,
       "shadowUsd": 322.81,
@@ -654,10 +659,10 @@
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 96,
+    "cleanDaysInARow": 97,
     "daysRemaining": 0,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-11-25",
+    "lastRecorded": "2026-11-26",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -665,16 +670,40 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": true,
-    "summary": "96 clean days in a row. The operational gate is met; the next step is one hand-placed minimum-size order watched by a human, not a program.",
+    "summary": "97 clean days in a row. The operational gate is met; the next step is one hand-placed minimum-size order watched by a human, not a program.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
-  "positions": [],
-  "orders": [],
+  "positions": [
+    {
+      "coin": "VVV",
+      "barsSinceEntry": 0,
+      "barsRemaining": 4,
+      "entryPrice": 29.298,
+      "price": 29.22,
+      "returnSinceEntry": -0.002662,
+      "notionalUsd": 18.00,
+      "paperPnlUsd": -0.05
+    }
+  ],
+  "orders": [
+    {
+      "coin": "VVV",
+      "reason": "entry - new high, 0 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 18.00,
+      "placeable": true
+    }
+  ],
   "reconciliation": {
     "wasChecked": true,
     "clean": true,
     "hasInversion": false,
-    "summary": "flat account, empty book - nothing to hold and nothing held",
-    "problems": []
+    "summary": "paper only - the rule wants 1 position(s) and none has been placed, which is the expected state while nothing is being traded",
+    "problems": [
+      {
+        "coin": "VVV",
+        "status": "Missing",
+        "detail": "the rule wants it and the account does not hold it"
+      }
+    ]
   }
 }
