@@ -1,9 +1,9 @@
 {
-  "at": "2026-11-27T00:17:44.4913694+00:00",
+  "at": "2026-11-28T00:17:43.1860455+00:00",
   "mode": "DryRun",
   "paper": true,
   "note": "Paper book only. No order has been placed and nothing here is an account balance.",
-  "paperEquityUsd": 340,
+  "paperEquityUsd": 350,
   "eligibleCount": 20,
   "eligible": [
     "BTC",
@@ -31,20 +31,20 @@
   "deployedFraction": 0.05,
   "excludedNonCrypto": [],
   "accountTooSmall": false,
-  "smallestViableAccountUsd": 340,
+  "smallestViableAccountUsd": 350,
   "minimumOrderValueUsd": 10,
-  "openPaperPnlUsd": -1.66,
-  "openPaperPnlPct": -0.004876,
+  "openPaperPnlUsd": -2.00,
+  "openPaperPnlPct": -0.005726,
   "forward": {
     "hasHistory": true,
-    "runs": 117,
+    "runs": 118,
     "startUsd": 1000,
-    "currentUsd": 1041.25,
+    "currentUsd": 1040.93,
     "peakUsd": 1072.74,
-    "returnSinceStart": 0.041253,
-    "drawdown": -0.029349,
-    "worstDrawdown": -0.029349,
-    "bandUsed": 0.1087,
+    "returnSinceStart": 0.040933,
+    "drawdown": -0.029648,
+    "worstDrawdown": -0.029648,
+    "bandUsed": 0.1098,
     "outsideNormalBand": false,
     "history": [
       {
@@ -631,6 +631,11 @@
         "at": "2026-11-27T00:17:44.4913694+00:00",
         "equityUsd": 1041.25,
         "drawdown": -0.029349
+      },
+      {
+        "at": "2026-11-28T00:17:43.1860455+00:00",
+        "equityUsd": 1040.93,
+        "drawdown": -0.029648
       }
     ]
   },
@@ -645,29 +650,31 @@
     "holdDays": 2,
     "note": "A second book scored alongside the first and traded by nobody. Same markets, same ranking, same day - it differs only in when it lets go. Nothing here is adopted and nothing here can place an order.",
     "why": "Finding 029: exiting a failed breakout after two days rather than five more than halved the drawdown in every year tested. It was the best column of a 70-cell grid, so no backtest can settle it - only days nobody has seen yet.",
-    "heldCount": 1,
-    "deployedFraction": 0.05,
-    "releasedEarly": [],
-    "openPaperPnlUsd": -1.66,
-    "givenUpUsd": 0.00,
+    "heldCount": 0,
+    "deployedFraction": 0,
+    "releasedEarly": [
+      "VVV"
+    ],
+    "openPaperPnlUsd": 0,
+    "givenUpUsd": -2.00,
     "forward": {
-      "daysRecorded": 102,
-      "daysDiffered": 54,
-      "incumbentUsd": 338.47,
-      "shadowUsd": 321.10,
+      "daysRecorded": 103,
+      "daysDiffered": 55,
+      "incumbentUsd": 338.15,
+      "shadowUsd": 320.78,
       "returnGap": -0.057890,
-      "incumbentWorstDrawdown": -0.085104,
-      "shadowWorstDrawdown": -0.078262,
-      "drawdownGap": 0.006842
+      "incumbentWorstDrawdown": -0.085969,
+      "shadowWorstDrawdown": -0.079181,
+      "drawdownGap": 0.006789
     },
     "verdict": "Not adopted, and it is not an arbiter. Finding 035 measured that this comparison needs about 8.7 years to resolve, so it will never be settled by waiting. It is kept as a DIVERGENCE MONITOR: it is worth reading only if the two books drift further apart than the backtest says they should, which is evidence about the plumbing and never about which rule is better."
   },
   "goLive": {
     "requiredCleanDays": 90,
-    "cleanDaysInARow": 98,
+    "cleanDaysInARow": 99,
     "daysRemaining": 0,
     "streakStarted": "2026-08-22",
-    "lastRecorded": "2026-11-27",
+    "lastRecorded": "2026-11-28",
     "missedDays": 3,
     "contaminatedDays": 4,
     "voidedDays": 0,
@@ -675,26 +682,26 @@
     "longestGapHours": 103.4,
     "stalled": false,
     "met": true,
-    "summary": "98 clean days in a row. The operational gate is met; the next step is one hand-placed minimum-size order watched by a human, not a program.",
+    "summary": "99 clean days in a row. The operational gate is met; the next step is one hand-placed minimum-size order watched by a human, not a program.",
     "note": "Clearing this permits ONE hand-placed minimum-size order watched by a human. It does not permit automated trading, and there is no order-placement code in this build to permit."
   },
   "positions": [
     {
       "coin": "VVV",
-      "barsSinceEntry": 1,
-      "barsRemaining": 3,
+      "barsSinceEntry": 2,
+      "barsRemaining": 2,
       "entryPrice": 29.298,
-      "price": 26.441,
-      "returnSinceEntry": -0.097515,
-      "notionalUsd": 17.00,
-      "paperPnlUsd": -1.66
+      "price": 25.943,
+      "returnSinceEntry": -0.114513,
+      "notionalUsd": 17.50,
+      "paperPnlUsd": -2.00
     }
   ],
   "orders": [
     {
       "coin": "VVV",
-      "reason": "entry - new high, 1 bar(s) into a 5-bar hold",
-      "deltaNotionalUsd": 17.00,
+      "reason": "entry - new high, 2 bar(s) into a 5-bar hold",
+      "deltaNotionalUsd": 17.50,
       "placeable": true
     }
   ],
